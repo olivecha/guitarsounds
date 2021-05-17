@@ -124,5 +124,8 @@ man/man1
 share/
 ssl/
 
+# User files
+Nbooks/
+
 # macos
 .DS_Store
