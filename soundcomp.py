@@ -6,12 +6,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from noisereduce import reduce_noise
+import scipy
 from scipy import signal as sig
+
 
 """
 Global functions
 """
 
+def power_split(signal, x,  xmax, nbins):
+    """ Return the index of the splitted bins of a signal with equal integrals"""
+    imax = np.where(x > xmax)[0][0]
+    A = scipy.integrate.trapezoid(signal[:imax])
+    I = A / nbins
+    indexes = [0]*nbins
+    for i in range(nbins-1):
+        i1 = indexes[i]
+        i2 = i1 + 1
+        while scipy.integrate.trapezoid(signal[i1:i2]) < I:
+            i2 += 1
+        indexes[i + 1] = i2
+    return indexes
 
 def time_compare(*sons, fbin='all'):
     """
@@ -26,18 +41,27 @@ def time_compare(*sons, fbin='all'):
             _ = plt.figure(figsize=(10, 8))
             # plot chaque son dans l'appel de la fonction
             for i, son in enumerate(sons):
-                son.bins[key].plot('envelop', label=(key + ' ' + str(i + 1)))
+                son.bins[key].normalise().plot('envelop', label=(key + ' ' + str(i + 1)))
                 plt.xscale('log')
                 plt.legend()
     elif fbin in sons[0].bins.keys():
         plt.figure(figsize=(10, 8))
         # plot chaque son dans l'appel de la fonction
         for i, son in enumerate(sons):
-            son.bins[fbin].plot('envelop', label=(fbin + ' ' + str(i + 1)))
+            son.bins[fbin].normalise().plot('envelop', label=(fbin + ' ' + str(i + 1)))
             plt.xscale('log')
             plt.legend()
     else:
         print('fbin invalid')
+
+def fft_mirror(son1, son2, max_freq=4000):
+    index = np.where(son1.signal.fft_freqs > max_freq)[0][0]
+    plt.figure(figsize=(10, 8))
+    plt.yscale('symlog')
+    plt.plot(son1.signal.fft_freqs[:index], son1.signal.fft[:index], label='1 : ' + son1.name)
+    plt.plot(son2.signal.fft_freqs[:index], -son2.signal.fft[:index], label='2 : ' + son2.name)
+    plt.legend()
+    plt.show()
 
 """
 Classes
@@ -49,7 +73,7 @@ class Signal(object):
     Signal class to do computation on a audio signal the class tries to never change the .signal attribute
     """
 
-    def __init__(self, signal, sr):
+    def __init__(self, signal, sr, range=None):
         """ Create a Signal class from a vector of samples and a sample rate"""
         self.onset = None
         self.signal = signal
@@ -57,8 +81,8 @@ class Signal(object):
         self.envelop()
         self.time()
         self.fft()
+        self.range = range
 
-    # noinspection PyTypeChecker
     def listen(self):
         """Method to listen the sound signal in a Jupyter Notebook"""
         file = 'temp.wav'
@@ -72,6 +96,7 @@ class Signal(object):
         supported kinds of plots:
         - 'signal'
         - 'envelop'
+        - 'norm_envelop'
         - 'fft'
         - 'spectrogram'
         """
@@ -172,7 +197,10 @@ class Signal(object):
             self.trim_onset(inplace=True)
             return Signal(reduce_noise(audio_clip=self.signal, noise_clip=self.noise), self.sr)
 
-    def make_freq_bins(self, bins=None):
+    def normalise(self):
+        return Signal(self.signal / np.max(self.signal), self.sr)
+
+    def make_freq_bins(self, fundamental, bins=None, ):
         """
         Method to divide a signal in frequency bins using butterworth filters
         bins are passed as a dictionnary, default values are :
@@ -185,7 +213,9 @@ class Signal(object):
         """
 
         if bins is None:
-            bins = {"bass": 70, "mid": 500, "highmid": 2000, "uppermid": 4000, "presence": 6000}
+            # If the fundamental is between 0 and 150, it will be in the mid bin
+            if fundamental < 200:
+                bins = {"bass": fundamental, "mid": 700, "highmid": 2000, "uppermid": 4000, "presence": 6000}
 
         bass_filter = sig.butter(12, bins["bass"], 'lp', fs=self.sr, output='sos')
         mid_filter = sig.butter(12, [bins["bass"], bins['mid']], 'bp', fs=self.sr, output='sos')
@@ -195,12 +225,12 @@ class Signal(object):
         bril_filter = sig.butter(12, bins['presence'], 'hp', fs=self.sr, output='sos')
 
         return {
-            "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr),
-            "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr),
-            "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr),
-            "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr),
-            "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr),
-            "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr)}
+            "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr, range=[0, bins["bass"]]),
+            "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr, range=[bins["bass"], bins["mid"]]),
+            "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr, range=[bins["mid"], bins["highmid"]]),
+            "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr, range=[bins["highmid"], bins["uppermid"]]),
+            "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr, range=[bins['uppermid'], bins["presence"]]),
+            "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr, range=[bins["presence"], max(self.fft_freqs)])}
 
     def make_soundfile(self, name, path=''):
         """ Create a soundfile from a signal """
@@ -210,23 +240,48 @@ class Signal(object):
 class Sound(object):
     """A class to store audio signals obtained from a sound and compare them"""
 
-    def __init__(self, file):
+    def __init__(self, file, name='', fundamental=None):
         """.__init__ method creating a Sound object from a .wav file, using Signal objects"""
+        # Load the soundfile using librosa
         signal, sr = librosa.load(file)
-        # values of the signal and sample rate
+
+        # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr)
 
-        # Trim the signal
-        self.trimmed_signal = self.raw_signal.trim_onset()
+        # Allow user specified fundamental
+        self.fundamental = fundamental
+        self.name = name
 
-        # Filter the noise
-        self.signal = self.trimmed_signal.filter_noise()
+    def condition(self):
+        """ a general method applying all the pre-conditioning methods to the sound"""
+        self.trim_signal()
+        self.filter_noise()
+        self.get_fundamental()
+        self.bin_divide()
 
+    def bin_divide(self):
+        """ a method to divide the main signal into frequency bins"""
         # divide in frequency bins
-        self.bins = self.signal.make_freq_bins()
-
+        self.bins = self.signal.make_freq_bins(self.fundamental)
         # unpack the bins
         self.bass, self.mid, self.highmid, self.uppermid, self.presence, self.brillance = self.bins.values()
+
+    def filter_noise(self):
+        """ a method to filter the noise from the trimmed signal"""
+        # filter the noise in the Signal class
+        self.signal = self.trimmed_signal.filter_noise()
+
+    def trim_signal(self, delay=100):
+        """ a method to trim the signal to a specific delay before the onset, the default value is 100 ms"""
+        # Trim the signal in the signal class
+        self.trimmed_signal = self.raw_signal.trim_onset(delay=delay)
+
+    def get_fundamental(self):
+        """ finds the fundamental of the signal using a librosa function `librosa.yin`
+            if the user specified a sound when instanciating the Sound class, this
+            fundamental is used instead."""
+        if self.fundamental is None:  # fundamental is not user specified
+            self.fundamental = np.mean(librosa.yin(self.signal.signal, 40, 2000)[3:-3])
 
     def validate_trim(self):
         """
@@ -256,6 +311,8 @@ class Sound(object):
     def plot_freq_bins(self):
         """ Method to plot all the frequency bins of a sound"""
         for key in self.bins.keys():
-            self.bins[key].plot('envelop', label=key)
+            lab = key + ': [' + str(int(self.bins[key].range[0])) + ', ' + str(int(self.bins[key].range[1])) + ']'
+            self.bins[key].plot('envelop', label=lab)
         plt.xscale('log')
+        plt.yscale('log')
         plt.legend()
