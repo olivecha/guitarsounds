@@ -9,19 +9,37 @@ from noisereduce import reduce_noise
 import scipy
 from scipy import signal as sig
 
-
 """
 Global functions
 """
 
-def octave_values(fraction):
+
+def double_plot(plot1, plot2, **kwargs):
+    """
+    Plot two plots side by side **kwargs pass in the plotting arguments, such as kind.
+    Plots are the same
+    Useful to compare data from two different sounds
+    Example :
+    soundcomp.double_plot(Sound1.signal.plot, Sound2.signal.plot, kind='envelop')
+    """
+    plt.figure(figsize=(14, 6))
+    plt.subplot(1, 2, 1)
+    plot1(**kwargs)
+    plt.subplot(1, 2, 2)
+    plot2(**kwargs)
+
+
+def octave_values(fraction, min_freq=10, max_freq=20200):
+    """
+    Compute octave fraction bin center values from min_freq to max_freq.
+    `soundcomp.octave_values(3)` returns the bins corresponding to 1/3 octave values
+    from 10 Hz to 20200 Hz.
+    """
     # Compute the octave bins
-    max_freq = 20200
-    min_freq = 15
-    f = 1000.  # référence
+    f = 1000.  # fréquence de référence
     f_up = f
     f_down = f
-    multiplicator = 2 ** (1/fraction)
+    multiplicator = 2 ** (1 / fraction)
     octave_bins = [f]
     while f_up < max_freq or f_down > min_freq:
         f_up = f_up * multiplicator
@@ -32,33 +50,39 @@ def octave_values(fraction):
             octave_bins.append(f_up)
     return np.array(octave_bins)
 
-def octave_histogram(band_fraction):
+
+def octave_histogram(fraction, **kwargs):
+    """
+    Compute the octave histogram bins limits corresponding an octave fraction.
+    min_freq and max_freq can be provided in the **kwargs.
+    """
     # get the octave bins
-    octave_bins = octave_values(band_fraction)
+    octave_bins = octave_values(fraction, **kwargs)
 
     # Compute the histogram bins
     hist_bins = []
     for f_o in octave_bins:
         # Bornes inférieures qui s'intersectent
-        hist_bins.append(f_o / 2 ** (1/(2*band_fraction)))
+        hist_bins.append(f_o / 2 ** (1 / (2 * fraction)))
     # La dernière borne supérieure
-    hist_bins.append(f_o * 2 ** (1/(2*band_fraction)))
+    hist_bins.append(f_o * 2 ** (1 / (2 * fraction)))
     return np.array(hist_bins)
 
 
-def power_split(signal, x,  xmax, nbins):
-    """ Return the index of the splitted bins of a signal with equal integrals"""
+def power_split(signal, x, xmax, nbins):
+    """ Return the index of the split bins of a signal FT with equal integrals"""
     imax = np.where(x > xmax)[0][0]
     A = scipy.integrate.trapezoid(signal[:imax])
     I = A / nbins
-    indexes = [0]*nbins
-    for i in range(nbins-1):
+    indexes = [0] * nbins
+    for i in range(nbins - 1):
         i1 = indexes[i]
         i2 = i1 + 1
         while scipy.integrate.trapezoid(signal[i1:i2]) < I:
             i2 += 1
         indexes[i + 1] = i2
     return indexes
+
 
 def time_compare(*sons, fbin='all'):
     """
@@ -73,7 +97,8 @@ def time_compare(*sons, fbin='all'):
             _ = plt.figure(figsize=(10, 8))
             # plot chaque son dans l'appel de la fonction
             for i, son in enumerate(sons):
-                lab = ' ' + key + ' : ' + str(int(son.bins[key].range[0])) + ' - ' + str(int(son.bins[key].range[1])) + ' Hz'
+                lab = ' ' + key + ' : ' + str(int(son.bins[key].range[0])) + ' - ' + str(
+                    int(son.bins[key].range[1])) + ' Hz'
                 son.bins[key].normalise().plot('envelop', label=(str(i + 1) + '. ' + son.name + lab))
                 plt.xscale('log')
                 plt.legend()
@@ -81,12 +106,14 @@ def time_compare(*sons, fbin='all'):
         plt.figure(figsize=(10, 8))
         # plot chaque son dans l'appel de la fonction
         for i, son in enumerate(sons):
-            lab = ' ' + fbin + ' : ' + str(int(son.bins[fbin].range[0])) + ' - ' + str(int(son.bins[fbin].range[1])) + ' Hz'
+            lab = ' ' + fbin + ' : ' + str(int(son.bins[fbin].range[0])) + ' - ' + str(
+                int(son.bins[fbin].range[1])) + ' Hz'
             son.bins[fbin].normalise().plot('envelop', label=(str(i + 1) + '. ' + son.name + lab))
             plt.xscale('log')
             plt.legend()
     else:
         print('fbin invalid')
+
 
 def fft_mirror(son1, son2, max_freq=4000):
     """ Plot the fourier transforms of two signals on the y and -y axes to compare them"""
@@ -101,7 +128,15 @@ def fft_mirror(son1, son2, max_freq=4000):
     plt.legend()
     plt.show()
 
-def fft_diff(son1, son2, fraction=3, log=False):
+
+def fft_diff(son1, son2, fraction=3):
+    """
+    Compare the Fourier Transform of two sounds by computing the diffenrence of the octave bins heights.
+    The two FTs are superimposed on the first plot to show differences
+    The difference between the two FTs is plotted on the second plot
+    The `fraction` value corresponds to the octave bin fraction.
+    A higher number will show a more precise comparison but conclusions may be harder to draw.
+    """
     # Compute plotting bins
     x_values = octave_values(fraction)
     hist_bins = octave_histogram(fraction)
@@ -110,8 +145,10 @@ def fft_diff(son1, son2, fraction=3, log=False):
     plt.figure(figsize=(12, 6))
     plt.subplot(1, 2, 1)
     plt.title('Histogramme de la FT des deux sons')
-    plot1 = plt.hist(son1.signal.fft_bins(), octave_histogram(fraction), color='blue', alpha=0.6, label='1 ' + son1.name)
-    plot2 = plt.hist(son2.signal.fft_bins(), octave_histogram(fraction), color='orange', alpha=0.6, label='2 ' + son2.name)
+    plot1 = plt.hist(son1.signal.fft_bins(), octave_histogram(fraction), color='blue', alpha=0.6,
+                     label='1 ' + son1.name)
+    plot2 = plt.hist(son2.signal.fft_bins(), octave_histogram(fraction), color='orange', alpha=0.6,
+                     label='2 ' + son2.name)
     plt.xscale('log')
     plt.xlabel('Fréquence (Hz)')
     plt.ylabel('Amplitude')
@@ -132,8 +169,6 @@ def fft_diff(son1, son2, fraction=3, log=False):
     plt.xlabel('Fréquence (Hz)')
     plt.ylabel('<- Son 2 : Son 1 ->')
     plt.grid('on')
-
-
 
 
 """
@@ -164,7 +199,7 @@ class Signal(object):
         ipd.display(ipd.Audio(file))
         os.remove(file)
 
-    def plot(self, kind, fft_range=2000, band_fraction=3, **kwargs):
+    def plot(self, kind, fft_range=2000, fraction=3, **kwargs):
         """
         General plotting method for signals
         supported kinds of plots:
@@ -200,13 +235,12 @@ class Signal(object):
 
         elif kind == 'fft hist':
             # Histogram of frequency values occurences in octave bins
-            plt.hist(self.fft_bins(), octave_histogram(band_fraction), alpha=0.7, **kwargs)
+            plt.hist(self.fft_bins(), octave_histogram(fraction), alpha=0.7, **kwargs)
             plt.xlabel('Fréquence (Hz)')
             plt.ylabel('Amplitude')
             plt.xscale('log')
             plt.yscale('log')
             plt.grid('on')
-
 
         elif kind == 'spectrogram':
             # Compute the spectrogram data
@@ -224,7 +258,7 @@ class Signal(object):
         """ Method to compute the fast fourrier transform of the signal"""
         fft = np.fft.fft(self.signal)
         self.fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric of the absolute value
-        self.fft = self.fft/np.max(self.fft)
+        self.fft = self.fft / np.max(self.fft)
         fft_freqs = np.fft.fftfreq(len(fft), 1 / self.sr)  # Frequencies corresponding to the bins
         self.fft_freqs = fft_freqs[:int(len(fft) // 2)]
 
@@ -232,7 +266,7 @@ class Signal(object):
         """ Method to get binned frequency values from the Fourier transform"""
 
         # Make the FT values integers
-        fft_integers = [int(np.around(sample*100, 0)) for sample in self.fft]
+        fft_integers = [int(np.around(sample * 100, 0)) for sample in self.fft]
 
         # Create a list of the frequency occurences in the signal
         occurences = []
@@ -242,22 +276,25 @@ class Signal(object):
         # flatten the list
         return [item for sublist in occurences for item in sublist]
 
-    def envelop(self, frame_size=512, hop_length=None):
+    def envelop(self, log=False):
         """
         Method calculating the amplitude envelope of a signal.
         frame_size : number of samples in the moving maximum
         hop_length : intersection between two successive frames
         """
-        if hop_length is None:
-            hop_length = int(frame_size // 2)
+        if log:
+            pass
 
-        if frame_size > hop_length:
+        if not log:
+            frame_size = 524
+            hop_length = None
+            if hop_length is None:
+                hop_length = int(frame_size // 2)
+
             self.envelop = np.array(
                 [max(self.signal[i:i + frame_size]) for i in range(0, len(self.signal), hop_length)])
             frames = range(len(self.envelop))
             self.envelop_time = librosa.frames_to_time(frames, hop_length=hop_length)
-        else:
-            print('hop_length must be less than frame size')
 
     def trim_onset(self, delay=100, inplace=False):
         """
@@ -308,7 +345,10 @@ class Signal(object):
                 return Signal(reduce_noise(audio_clip=self.signal, noise_clip=self.noise), self.sr)
 
     def normalise(self):
-        return Signal(self.signal / np.max(self.signal), self.sr)
+        """
+        A function to normalise the signal to [-1,1]
+        """
+        return Signal(self.signal / np.max(np.abs(self.signal)), self.sr)
 
     def make_freq_bins(self, fundamental, bins=None, ):
         """
@@ -340,9 +380,12 @@ class Signal(object):
             "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr, range=[0, bins["bass"]]),
             "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr, range=[bins["bass"], bins["mid"]]),
             "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr, range=[bins["mid"], bins["highmid"]]),
-            "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr, range=[bins["highmid"], bins["uppermid"]]),
-            "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr, range=[bins['uppermid'], bins["presence"]]),
-            "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr, range=[bins["presence"], max(self.fft_freqs)])}
+            "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr,
+                               range=[bins["highmid"], bins["uppermid"]]),
+            "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr,
+                               range=[bins['uppermid'], bins["presence"]]),
+            "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr,
+                                range=[bins["presence"], max(self.fft_freqs)])}
 
     def make_soundfile(self, name, path=''):
         """ Create a soundfile from a signal """
@@ -393,7 +436,7 @@ class Sound(object):
             if the user specified a sound when instanciating the Sound class, this
             fundamental is used instead."""
         if self.fundamental is None:  # fundamental is not user specified
-            self.fundamental = np.mean(librosa.yin(self.signal.signal, 40, 2000)[3:-3])
+            self.fundamental = np.min(librosa.yin(self.signal.signal, 60, 2000, frame_length=1032))
 
     def validate_trim(self):
         """
@@ -422,7 +465,6 @@ class Sound(object):
 
     def plot_freq_bins(self):
         """ Method to plot all the frequency bins of a sound"""
-        plt.figure(figsize=(10, 8))
         for key in self.bins.keys():
             lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'
             self.bins[key].plot('envelop', label=lab)
