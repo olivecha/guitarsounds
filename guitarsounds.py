@@ -28,6 +28,7 @@ def double_plot(plot1, plot2, **kwargs):
     plt.subplot(1, 2, 2)
     plot2(**kwargs)
 
+
 def octave_values(fraction, min_freq=10, max_freq=20200):
     """
     Compute octave fraction bin center values from min_freq to max_freq.
@@ -49,6 +50,7 @@ def octave_values(fraction, min_freq=10, max_freq=20200):
             octave_bins.append(f_up)
     return np.array(octave_bins)
 
+
 def octave_histogram(fraction, **kwargs):
     """
     Compute the octave histogram bins limits corresponding an octave fraction.
@@ -66,6 +68,7 @@ def octave_histogram(fraction, **kwargs):
     hist_bins.append(f_o * 2 ** (1 / (2 * fraction)))
     return np.array(hist_bins)
 
+
 def power_split(signal, x, xmax, nbins):
     """ Return the index of the split bins of a signal FT with equal integrals"""
     imax = np.where(x > xmax)[0][0]
@@ -79,6 +82,7 @@ def power_split(signal, x, xmax, nbins):
             i2 += 1
         indexes[i + 1] = i2
     return indexes
+
 
 def time_compare(*sons, fbin='all'):
     """
@@ -110,6 +114,7 @@ def time_compare(*sons, fbin='all'):
     else:
         print('fbin invalid')
 
+
 def fft_mirror(son1, son2, max_freq=4000):
     """ Plot the fourier transforms of two signals on the y and -y axes to compare them"""
     index = np.where(son1.signal.fft_freqs > max_freq)[0][0]
@@ -122,6 +127,7 @@ def fft_mirror(son1, son2, max_freq=4000):
     plt.ylabel('Amplitude')
     plt.legend()
     plt.show()
+
 
 def fft_diff(son1, son2, fraction=3):
     """
@@ -164,41 +170,46 @@ def fft_diff(son1, son2, fraction=3):
     plt.ylabel('<- Son 2 : Son 1 ->')
     plt.grid('on')
 
+def fft_coherence(son1, son2):
+    pass
+
 """
 Classes
 """
+
 
 class SP(object):
     """
     Sound parameters for the different analyses
     """
+    test = 1
+    parm = {'env': {'frame size': 500,
+                    'hop_len': 100},
+            'env2': {'frame2': 300,
+                     'hop2': 50}
+            }
 
-    class env(object):
+    class envelop(object):
         frame_size = 524  # frame size for the regular envelop in samples
         hop_length = None  # Default is 1/2 times the frame size
 
-    class gen(object):
+    class general(object):
         octave_fraction = 3  # octave fraction for computations
         fft_range = 2000  # range of the FT plot in hz
         onset_delay = 100  # time in milliseconds to keep before the onset
 
-    class log_e(object):
+    class log_envelop(object):
         """ Parameters for the log envelop method"""
         start_time = 0.01  # first time value for the log envelop plot
         min_window = None  # Default value is computed from the start time
         max_window = 2048  # Maximum width of the window
 
-    class fund(object):
+    class fundamental(object):
         """ Parameters for the function finding the fundamental"""
         min_freq = 60
         max_freq = 2000
         frame_length = 1024
 
-    # Subclasses to store specific function parameters
-    general = gen
-    log_envelop = log_e
-    fund = fund
-    envelop = env
     # Frequency bins to divide the signal
     bins = {"bass": 100, "mid": 700, "highmid": 2000, "uppermid": 4000, "presence": 6000}
 
@@ -207,6 +218,7 @@ class SP(object):
 
     def print_parameters(self):
         pass
+
 
 class Signal(object):
     """
@@ -282,12 +294,18 @@ class Signal(object):
             plt.grid('on')
 
         elif kind == 'spectrogram':
-            # Compute the spectrogram data
-            D = librosa.stft(self.signal)
-            S_db = librosa.amplitude_to_db(np.abs(D), ref=np.max)
 
-            # Plot the spectrogram
-            librosa.display.specshow(S_db, x_axis='time', y_axis='linear')
+            if hasattr(self, 'specgram_db'):
+                librosa.display.specshow(self.specgram_db, x_axis='time', y_axis='linear')
+            else:
+                self.get_spectrogram()
+                librosa.display.specshow(self.specgram_db, x_axis='time', y_axis='linear')
+
+    def get_spectrogram(self):
+        # Compute the spectrogram data
+        D = librosa.stft(self.signal)
+        self.specgram_db = librosa.amplitude_to_db(np.abs(D), ref=np.max)
+
 
     def time(self):
         """ Method to create the time vector associated to the signal"""
@@ -345,7 +363,7 @@ class Signal(object):
             self.onset = self.onset
 
         start_time = self.SP.log_envelop.start_time
-        while start_time > (self.onset/self.sr):
+        while start_time > (self.onset / self.sr):
             start_time = start_time / 10.
 
         start_exponent = int(np.log10(start_time))  # closest 10^x value for smooth graph
@@ -452,7 +470,8 @@ class Signal(object):
         return {
             "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr, self.SP, range=[0, bins["bass"]]),
             "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr, self.SP, range=[bins["bass"], bins["mid"]]),
-            "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr, self.SP, range=[bins["mid"], bins["highmid"]]),
+            "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr, self.SP,
+                              range=[bins["mid"], bins["highmid"]]),
             "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr, self.SP,
                                range=[bins["highmid"], bins["uppermid"]]),
             "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr, self.SP,
@@ -463,6 +482,7 @@ class Signal(object):
     def make_soundfile(self, name, path=''):
         """ Create a soundfile from a signal """
         write(path + name + ".wav", self.signal, self.sr)
+
 
 class Sound(object):
     """A class to store audio signals obtained from a sound and compare them"""
@@ -519,8 +539,9 @@ class Sound(object):
             if the user specified a sound when instanciating the Sound class, this
             fundamental is used instead."""
         if self.fundamental is None:  # fundamental is not user specified
-            self.fundamental = np.min(librosa.yin(self.signal.signal, self.SP.fund.min_freq, self.SP.fund.max_freq,
-                                                  frame_length=self.SP.fund.frame_length))
+            self.fundamental = np.min(librosa.yin(self.signal.signal, self.SP.fundamental.min_freq,
+                                                  self.SP.fundamental.max_freq,
+                                                  frame_length=self.SP.fundamental.frame_length))
 
     def validate_trim(self):
         """
