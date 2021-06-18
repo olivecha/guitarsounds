@@ -7,12 +7,19 @@ import numpy as np
 import os
 from noisereduce import reduce_noise
 import scipy
+import scipy.integrate
 from scipy import signal as sig
+from guitarsounds_parameters import sound_parameters
+
+"""
+Getting the sound parameters from the guitarsounds_parameters file
+"""
+
+SP = sound_parameters()
 
 """
 Global functions
 """
-
 
 def double_plot(plot1, plot2, **kwargs):
     """
@@ -36,14 +43,14 @@ def octave_values(fraction, min_freq=10, max_freq=20200):
     from 10 Hz to 20200 Hz.
     """
     # Compute the octave bins
-    f = 1000.  # fréquence de référence
+    f = 1000.  # Reference Frequency
     f_up = f
     f_down = f
-    multiplicator = 2 ** (1 / fraction)
+    multiple = 2 ** (1 / fraction)
     octave_bins = [f]
     while f_up < max_freq or f_down > min_freq:
-        f_up = f_up * multiplicator
-        f_down = f_down / multiplicator
+        f_up = f_up * multiple
+        f_down = f_down / multiple
         if f_down > min_freq:
             octave_bins.insert(0, f_down)
         if f_up < max_freq:
@@ -62,9 +69,9 @@ def octave_histogram(fraction, **kwargs):
     # Compute the histogram bins
     hist_bins = []
     for f_o in octave_bins:
-        # Bornes inférieures qui s'intersectent
+        # Intersecting lower bounds
         hist_bins.append(f_o / 2 ** (1 / (2 * fraction)))
-    # La dernière borne supérieure
+    # Last upper bound
     hist_bins.append(f_o * 2 ** (1 / (2 * fraction)))
     return np.array(hist_bins)
 
@@ -112,7 +119,7 @@ def time_compare(*sons, fbin='all'):
             plt.xscale('log')
             plt.legend()
     else:
-        print('fbin invalid')
+        print('invalid frequency bin')
 
 
 def fft_mirror(son1, son2, max_freq=4000):
@@ -170,62 +177,92 @@ def fft_diff(son1, son2, fraction=3):
     plt.ylabel('<- Son 2 : Son 1 ->')
     plt.grid('on')
 
-def fft_coherence(son1, son2):
-    pass
+
+def coherence(son1, son2, **kwargs):
+    f, C = sig.coherence(son1.signal.signal, son2.signal.signal, son1.signal.sr)
+    plt.plot(f, C, color='k', **kwargs)
+    plt.yscale('log')
+    plt.xlabel('Fréquence (Hz)')
+    plt.ylabel('Coherence [0, 1]')
+    if (son1.name == '') | (son2.name == ''):
+        title = 'Cohérence entre les deux sons'
+    else:
+        title = 'Cohérence entre les sons ' + son1.name + ' et ' + son2.name
+    plt.title(title)
+
+
+def average_envelop_plot(*sounds, kind='signal', show_sounds=True, show_rejects=True, **kwargs):
+    sample_number = np.min([len(s1.signal.log_envelop) for s1 in sounds])
+
+    if kind == 'signal':
+        log_envelops = np.stack([s1.signal.normalise().log_envelop[:sample_number] for s1 in sounds])
+    elif kind in SP.bins.__dict__.keys():
+        log_envelops = np.stack([s1.bins[kind].normalise().log_envelop[:sample_number] for s1 in sounds])
+    else:
+        print('Wrong kind')
+
+    average_log_envelop = np.mean(log_envelops, axis=0)
+    std = np.std(log_envelops, axis=0)
+    means = np.tile(average_log_envelop, (len(sounds), 1))
+    diffs = np.sum(np.abs(means - log_envelops), axis=1)
+    diff = np.mean(diffs)
+
+    good_sounds = np.array(sounds)[diffs < diff]
+    rejected_sounds = np.array(sounds)[diffs > diff]
+    average_log_envelop = np.mean(log_envelops[diffs < diff], axis=0)
+
+    if kind == 'signal':
+        if show_sounds:
+            for s1 in good_sounds[:-1]:
+                s1.signal.normalise().plot(kind='log envelop', alpha=0.2, color='k')
+            sounds[-1].signal.normalise().plot(kind='log envelop', alpha=0.2, color='k', label='sounds')
+
+        if show_rejects:
+            if len(rejected_sounds) > 1:
+                for s2 in rejected_sounds[:-1]:
+                    s1.signal.normalise().plot(kind='log envelop', alpha=0.3, color='r')
+                rejected_sounds[-1].signal.normalise().plot(kind='log envelop', alpha=0.3, color='r',
+                                                            label='rejected sounds')
+            if len(rejected_sounds) == 1:
+                rejected_sounds[0].signal.normalise().plot(kind='log envelop', alpha=0.3, color='r',
+                                                           label='rejected sounds')
+
+        plt.plot(good_sounds[0].signal.log_envelop_time, average_log_envelop, **kwargs)
+
+    else:
+        if show_sounds:
+            for s1 in good_sounds[:-1]:
+                s1.bins[kind].normalise().plot(kind='log envelop', alpha=0.2, color='k')
+            sounds[-1].bins[kind].normalise().plot(kind='log envelop', alpha=0.2, color='k', label='sounds')
+
+        if show_rejects:
+            if len(rejected_sounds) > 1:
+                for s2 in rejected_sounds[:-1]:
+                    s1.bins[kind].normalise().plot(kind='log envelop', alpha=0.3, color='r')
+                rejected_sounds[-1].bins[kind].normalise().plot(kind='log envelop', alpha=0.3, color='r',
+                                                                label='rejected sounds')
+            if len(rejected_sounds) == 1:
+                rejected_sounds.bins[kind].normalise().plot(kind='log envelop', alpha=0.3, color='r',
+                                                            label='rejected sounds')
+
+        plt.plot(good_sounds[0].signal.log_envelop_time[:sample_number], average_log_envelop, **kwargs)
+
+    plt.xlabel('time (s)')
+    plt.ylabel('Amplitude')
+    plt.legend()
+    plt.xscale('log')
+
 
 """
 Classes
 """
-
-
-class SP(object):
-    """
-    Sound parameters for the different analyses
-    """
-    test = 1
-    parm = {'env': {'frame size': 500,
-                    'hop_len': 100},
-            'env2': {'frame2': 300,
-                     'hop2': 50}
-            }
-
-    class envelop(object):
-        frame_size = 524  # frame size for the regular envelop in samples
-        hop_length = None  # Default is 1/2 times the frame size
-
-    class general(object):
-        octave_fraction = 3  # octave fraction for computations
-        fft_range = 2000  # range of the FT plot in hz
-        onset_delay = 100  # time in milliseconds to keep before the onset
-
-    class log_envelop(object):
-        """ Parameters for the log envelop method"""
-        start_time = 0.01  # first time value for the log envelop plot
-        min_window = None  # Default value is computed from the start time
-        max_window = 2048  # Maximum width of the window
-
-    class fundamental(object):
-        """ Parameters for the function finding the fundamental"""
-        min_freq = 60
-        max_freq = 2000
-        frame_length = 1024
-
-    # Frequency bins to divide the signal
-    bins = {"bass": 100, "mid": 700, "highmid": 2000, "uppermid": 4000, "presence": 6000}
-
-    def build_dict(self):
-        pass
-
-    def print_parameters(self):
-        pass
-
 
 class Signal(object):
     """
     Signal class to do computation on a audio signal the class tries to never change the .signal attribute
     """
 
-    def __init__(self, signal, sr, SoundParam, range=None):
+    def __init__(self, signal, sr, SoundParam, freq_range=None):
         """ Create a Signal class from a vector of samples and a sample rate"""
         self.SP = SoundParam
         self.onset = None
@@ -235,7 +272,7 @@ class Signal(object):
         self.time()
         self.get_log_envelop()
         self.get_fft()
-        self.range = range
+        self.range = freq_range
         self.trimmed = None
 
     def listen(self):
@@ -253,6 +290,7 @@ class Signal(object):
         - 'envelop'
         - 'norm_envelop'
         - 'fft'
+        - 'fft hist'
         - 'spectrogram'
         """
         if kind == 'signal':
@@ -271,6 +309,7 @@ class Signal(object):
             plt.plot(self.log_envelop_time, self.log_envelop, **kwargs)
             plt.xlabel("time (s)")
             plt.ylabel("amplitude")
+            plt.xscale('log')
 
         elif kind == 'fft':
             # find the index corresponding to the fft range
@@ -286,7 +325,7 @@ class Signal(object):
 
         elif kind == 'fft hist':
             # Histogram of frequency values occurences in octave bins
-            plt.hist(self.fft_bins(), octave_histogram(self.SP.general.octave_fraction), alpha=0.7, **kwargs)
+            plt.hist(self.fft_bins(), octave_histogram(self.SP.general.octave_fraction.value), alpha=0.7, **kwargs)
             plt.xlabel('Fréquence (Hz)')
             plt.ylabel('Amplitude')
             plt.xscale('log')
@@ -305,7 +344,6 @@ class Signal(object):
         # Compute the spectrogram data
         D = librosa.stft(self.signal)
         self.specgram_db = librosa.amplitude_to_db(np.abs(D), ref=np.max)
-
 
     def time(self):
         """ Method to create the time vector associated to the signal"""
@@ -339,13 +377,10 @@ class Signal(object):
         frame_size : number of samples in the moving maximum
         hop_length : intersection between two successive frames
         """
-        hop_length = self.SP.envelop.hop_length
-
-        if hop_length is None:
-            hop_length = int(self.SP.envelop.frame_size // 2)
+        hop_length = self.SP.envelop.hop_length.value
 
         self.envelop = np.array(
-            [max(self.signal[i:i + self.SP.envelop.frame_size]) for i in range(0, len(self.signal), hop_length)])
+            [max(self.signal[i:i + self.SP.envelop.frame_size.value]) for i in range(0, len(self.signal), hop_length)])
         frames = range(len(self.envelop))
         self.envelop_time = librosa.frames_to_time(frames, hop_length=hop_length)
 
@@ -362,18 +397,18 @@ class Signal(object):
         else:
             self.onset = self.onset
 
-        start_time = self.SP.log_envelop.start_time
+        start_time = self.SP.log_envelop.start_time.value
         while start_time > (self.onset / self.sr):
             start_time = start_time / 10.
 
         start_exponent = int(np.log10(start_time))  # closest 10^x value for smooth graph
 
-        if self.SP.log_envelop.min_window is None:
-            min_window = 10 ** (start_exponent + 4)
-            if min_window < 10:  # Value should at least be 10
-                min_window = 10
+        if self.SP.log_envelop.min_window.value is None:
+            min_window = 15 ** (start_exponent + 4)
+            if min_window < 15:  # Value should at least be 10
+                min_window = 15
         else:
-            min_window = self.SP.log_envelop.min_window
+            min_window = self.SP.log_envelop.min_window.value
 
         # initial values
         current_exponent = start_exponent
@@ -394,10 +429,10 @@ class Signal(object):
                 else:
                     break
 
-            if window * 10 < self.SP.log_envelop.max_window:
+            if window * 10 < self.SP.log_envelop.max_window.value:
                 window = window * 10
             else:
-                window = self.SP.log_envelop.max_window
+                window = self.SP.log_envelop.max_window.value
 
             overlap = window // 2
             current_exponent += 1
@@ -405,12 +440,12 @@ class Signal(object):
         # remove the value where t=0 so the log scale does not break
         self.log_envelop_time.remove(0)
 
-    def trim_onset(self):
+    def trim_onset(self, verbose=True):
         """
         Trim the signal at the onset (max) minus the delay in miliseconds
         Return a trimmed signal with a noise attribute
         """
-        delay_samples = int((self.SP.general.onset_delay / 1000) * self.sr)  # nb of samples to keep before the onset
+        delay_samples = int((self.SP.general.onset_delay.value / 1000) * self.sr)  # nb of samples to keep before the onset
         onset = np.argmax(self.signal)  # find the onset
 
         if onset > delay_samples:  # To make sure the index is positive
@@ -423,12 +458,13 @@ class Signal(object):
             return trimmed_signal
 
         else:
-            print('Signal is too short to be trimmed before onset.')
-            print('')
+            if verbose:
+                print('Signal is too short to be trimmed before onset.')
+                print('')
             self.trimmed = False
             return self
 
-    def filter_noise(self):
+    def filter_noise(self, verbose=True):
         """ Method filtering the noise from the recorded signal and returning a filtered signal.
             If the signal was not trimmed it is trimmed in place then filtered.
             If the signal can not be trimmed it can't be filtered and the original signal is returned"""
@@ -436,8 +472,9 @@ class Signal(object):
             return Signal(reduce_noise(audio_clip=self.signal, noise_clip=self.noise), self.sr, self.SP)
         except AttributeError:
             if self.trimmed is False:
-                print('Not sufficient noise in the raw signal, unable to filter.')
-                print('')
+                if verbose:
+                    print('Not sufficient noise in the raw signal, unable to filter.')
+                    print('')
                 return self
 
     def normalise(self):
@@ -458,26 +495,28 @@ class Signal(object):
          The method return a dict with the divided signal as values and bin names as keys
         """
 
-        bins = self.SP.bins
+        bins = self.SP.bins.__dict__
 
-        bass_filter = sig.butter(12, bins["bass"], 'lp', fs=self.sr, output='sos')
-        mid_filter = sig.butter(12, [bins["bass"], bins['mid']], 'bp', fs=self.sr, output='sos')
-        himid_filter = sig.butter(12, [bins["mid"], bins['highmid']], 'bp', fs=self.sr, output='sos')
-        upmid_filter = sig.butter(12, [bins["highmid"], bins['uppermid']], 'bp', fs=self.sr, output='sos')
-        pres_filter = sig.butter(12, [bins["uppermid"], bins['presence']], 'bp', fs=self.sr, output='sos')
-        bril_filter = sig.butter(12, bins['presence'], 'hp', fs=self.sr, output='sos')
+        bass_filter = sig.butter(12, bins["bass"].value, 'lp', fs=self.sr, output='sos')
+        mid_filter = sig.butter(12, [bins["bass"].value, bins['mid'].value], 'bp', fs=self.sr, output='sos')
+        himid_filter = sig.butter(12, [bins["mid"].value, bins['highmid'].value], 'bp', fs=self.sr, output='sos')
+        upmid_filter = sig.butter(12, [bins["highmid"].value, bins['uppermid'].value], 'bp', fs=self.sr, output='sos')
+        pres_filter = sig.butter(12, [bins["uppermid"].value, bins['presence'].value], 'bp', fs=self.sr, output='sos')
+        bril_filter = sig.butter(12, bins['presence'].value, 'hp', fs=self.sr, output='sos')
 
         return {
-            "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr, self.SP, range=[0, bins["bass"]]),
-            "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr, self.SP, range=[bins["bass"], bins["mid"]]),
+            "bass": Signal(sig.sosfilt(bass_filter, self.signal), self.sr, self.SP,
+                           freq_range=[0, bins["bass"].value]),
+            "mid": Signal(sig.sosfilt(mid_filter, self.signal), self.sr, self.SP,
+                          freq_range=[bins["bass"].value, bins["mid"].value]),
             "highmid": Signal(sig.sosfilt(himid_filter, self.signal), self.sr, self.SP,
-                              range=[bins["mid"], bins["highmid"]]),
+                              freq_range=[bins["mid"].value, bins["highmid"].value]),
             "uppermid": Signal(sig.sosfilt(upmid_filter, self.signal), self.sr, self.SP,
-                               range=[bins["highmid"], bins["uppermid"]]),
+                               freq_range=[bins["highmid"].value, bins["uppermid"].value]),
             "presence": Signal(sig.sosfilt(pres_filter, self.signal), self.sr, self.SP,
-                               range=[bins['uppermid'], bins["presence"]]),
+                               freq_range=[bins['uppermid'].value, bins["presence"].value]),
             "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr, self.SP,
-                                range=[bins["presence"], max(self.fft_freqs)])}
+                                freq_range=[bins["presence"].value, max(self.fft_freqs)])}
 
     def make_soundfile(self, name, path=''):
         """ Create a soundfile from a signal """
@@ -497,7 +536,9 @@ class Sound(object):
 
         # create a copy of the parameters
         if SoundParams is None:
-            self.SP = SP()
+            self.SP = SP
+        else:
+            self.SP = SoundParams
 
         # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr, self.SP)
@@ -506,14 +547,10 @@ class Sound(object):
         self.fundamental = fundamental
         self.name = name
 
-    def change_params(self, SoundParams):
-        self.__init__(self.file, name=self.name, fundamental=self.fundamental, SoundParams=SoundParams)
-        self.condition()
-
-    def condition(self):
+    def condition(self, verbose=True):
         """ a general method applying all the pre-conditioning methods to the sound"""
-        self.trim_signal()
-        self.filter_noise()
+        self.trim_signal(verbose=verbose)
+        self.filter_noise(verbose=verbose)
         self.get_fundamental()
         self.bin_divide()
 
@@ -524,24 +561,24 @@ class Sound(object):
         # unpack the bins
         self.bass, self.mid, self.highmid, self.uppermid, self.presence, self.brillance = self.bins.values()
 
-    def filter_noise(self):
+    def filter_noise(self, verbose=True):
         """ a method to filter the noise from the trimmed signal"""
         # filter the noise in the Signal class
-        self.signal = self.trimmed_signal.filter_noise()
+        self.signal = self.trimmed_signal.filter_noise(verbose=verbose)
 
-    def trim_signal(self):
+    def trim_signal(self, verbose=True):
         """ a method to trim the signal to a specific delay before the onset, the default value is 100 ms"""
         # Trim the signal in the signal class
-        self.trimmed_signal = self.raw_signal.trim_onset()
+        self.trimmed_signal = self.raw_signal.trim_onset(verbose=verbose)
 
     def get_fundamental(self):
         """ finds the fundamental of the signal using a librosa function `librosa.yin`
-            if the user specified a sound when instanciating the Sound class, this
+            if the user specified a sound when instantiating the Sound class, this
             fundamental is used instead."""
         if self.fundamental is None:  # fundamental is not user specified
-            self.fundamental = np.min(librosa.yin(self.signal.signal, self.SP.fundamental.min_freq,
-                                                  self.SP.fundamental.max_freq,
-                                                  frame_length=self.SP.fundamental.frame_length))
+            self.fundamental = np.min(librosa.yin(self.signal.signal, self.SP.fundamental.min_freq.value,
+                                                  self.SP.fundamental.max_freq.value,
+                                                  frame_length=self.SP.fundamental.frame_length.value))
 
     def validate_trim(self):
         """
@@ -568,9 +605,11 @@ class Sound(object):
             print(key)
             self.bins[key].listen()
 
-    def plot_freq_bins(self):
+    def plot_freq_bins(self, keys=None):
         """ Method to plot all the frequency bins of a sound"""
-        for key in self.bins.keys():
+        if keys is None:
+            keys = self.bins.keys()
+        for key in keys:
             lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'
             self.bins[key].plot('log envelop', label=lab)
         plt.xscale('log')
