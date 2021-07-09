@@ -134,9 +134,66 @@ def time_compare(*sons, fbin='all'):
     else:
         print('invalid frequency bin')
 
-def fft_mirror(son1, son2, max_freq=4000):
+def peak_compare(son1, son2):
+    index1 = np.where(son1.signal.fft_frequencies() > son1.SP.general.fft_range.value)[0][0]
+    index2 = np.where(son2.signal.fft_frequencies() > son2.SP.general.fft_range.value)[0][0]
+
+    # Get the peak data from the sounds
+    peaks1 = son1.signal.peaks()
+    peaks2 = son2.signal.peaks()
+    freq1 = son1.signal.fft_frequencies()[:index1]
+    freq2 = son2.signal.fft_frequencies()[:index2]
+    fft1 = son1.signal.fft()[:index1]
+    fft2 = son2.signal.fft()[:index2]
+
+    peak_distance1 = np.mean([freq1[peaks1[i]] - freq1[peaks1[i+1]] for i in range(len(peaks1) - 1)]) / 4
+    peak_distance2 = np.mean([freq2[peaks2[i]] - freq2[peaks2[i+1]] for i in range(len(peaks2) - 1)]) / 4
+    peak_distance = np.abs(np.mean([peak_distance1, peak_distance2]))
+
+    # Align  the two peak vectors
+    new_peaks1 = []
+    new_peaks2 = []
+    for peak1 in peaks1:
+        for peak2 in peaks2:
+            if np.abs(freq1[peak1] - freq2[peak2]) < peak_distance:
+                new_peaks1.append(peak1)
+                new_peaks2.append(peak2)
+    new_peaks1 = np.unique(np.array(new_peaks1))
+    new_peaks2 = np.unique(np.array(new_peaks2))
+
+    different_peaks1 = []
+    different_peaks2 = []
+    difference_treshold = 0.5
+    while len(different_peaks1) < 1:
+        for peak1, peak2 in zip(new_peaks1, new_peaks2):
+            if np.abs(fft1[peak1] - fft2[peak2]) > difference_treshold:
+                different_peaks1.append(peak1)
+                different_peaks2.append(peak2)
+        difference_treshold -= 0.01
+
+    # Plot the output
+    plt.figure(figsize=(10, 8))
+    plt.yscale('symlog', linthresh=10e-4)
+    # Sound1
+    plt.plot(freq1, fft1, color='#919191', label='son 1')
+    plt.scatter(freq1[peaks1], fft1[peaks1], color='r', label='old peaks')
+    plt.scatter(freq1[new_peaks1], fft1[new_peaks1], color='b', label='new peaks')
+    plt.scatter(freq1[different_peaks1], fft1[different_peaks1], color='g', label='diff peaks')
+    annotation_string = 'Peaks with ' + str(np.around(difference_treshold, 1)) + ' difference'
+    plt.annotate(annotation_string, (freq1[different_peaks1] + peak_distance / 2, fft1[different_peaks1]))
+
+    # Sound2
+    plt.plot(freq2, -fft2, color='#3d3d3d', label='son 2')
+    plt.scatter(freq2[peaks2], -fft2[peaks2], color='r')
+    plt.scatter(freq2[new_peaks2], -fft2[new_peaks2], color='b')
+    plt.scatter(freq2[different_peaks2], -fft2[different_peaks2], color='g')
+
+    plt.title('Fourier Transform Peak Analysis')
+    plt.legend()
+
+def fft_mirror(son1, son2):
     """ Plot the fourier transforms of two signals on the y and -y axes to compare them"""
-    index = np.where(son1.signal.fft_freqs > max_freq)[0][0]
+    index = np.where(son1.signal.fft_frequencies() > SP.general.fft_range.value)[0][0]
     plt.figure(figsize=(10, 8))
     plt.yscale('symlog')
     plt.grid('on')
@@ -367,6 +424,40 @@ class Signal(object):
         fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric of the absolute value
         return fft / np.max(fft)
 
+    def peaks(self):
+
+        # Get the fft and fft frequencies from the signal
+        fft, fft_freq = self.fft(), self.fft_frequencies()
+
+        # Find the max index
+        max_index = np.where(fft_freq >= self.SP.general.fft_range.value)[0][0]
+
+        # Find an approximation of the distance between peaks, this only works for harmonic signals
+        peak_distance = np.argmax(fft) // 2
+
+        # Maximum of the signal in a small region on both ends
+        fft_max_start = np.max(fft[:peak_distance])
+        fft_max_end = np.max(fft[max_index - peak_distance:max_index])
+
+        # Build the curve below the peaks but above the noise
+        exponents = np.linspace(np.log10(fft_max_start), np.log10(fft_max_end), max_index)
+        intersect = 10 ** exponents[peak_distance]
+        diff_start = fft_max_start - intersect  # offset by a small distance so that the first max is not a peak
+        min_height = 10 ** np.linspace(np.log10(fft_max_start + diff_start), np.log10(fft_max_end), max_index)
+
+        first_peak_indexes, _ = sig.find_peaks(fft[:max_index], height=min_height, distance=peak_distance)
+
+        number_of_peaks = len(first_peak_indexes)
+        average_len = int(max_index / number_of_peaks) * 3
+
+        if average_len % 2 == 0:
+            average_len += 1
+
+        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 2
+
+        peak_indexes, _ = sig.find_peaks(fft[:max_index], height=average_fft, distance=peak_distance)
+        return peak_indexes
+
     def fft_frequencies(self):
         fft = self.fft()
         fft_frequencies = np.fft.fftfreq(len(fft), 1 / self.sr)  # Frequencies corresponding to the bins
@@ -398,7 +489,7 @@ class Signal(object):
 
         # Compute the envelop
         envelop = np.array(
-            [max(self.signal[i:i + self.SP.envelop().frame_size.value]) for i in range(0, len(self.signal), hop_length)])
+            [max(self.signal[i:i + self.SP.envelop.frame_size.value]) for i in range(0, len(self.signal), hop_length)])
 
         return envelop
 
@@ -410,7 +501,7 @@ class Signal(object):
         # Get the number of frames from the signal envelop
         frames = range(len(self.envelop()))
         # Return the envelop frames computed with Librosa
-        return librosa.frames_to_time(frames, hop_length=self.SP.envelop.hop_length)
+        return librosa.frames_to_time(frames, hop_length=self.SP.envelop.hop_length.value)
 
     def log_envelop(self):
         if self.onset is None:
