@@ -117,7 +117,7 @@ def time_compare(*sons, fbin='all'):
             title2 = 'Normalisation Factor 2 : ' + str(np.around(norm_factors[1], 0)) + 'x'
             plt.title(title1 + title2)
 
-    elif fbin in [SP.bins.__dict__.keys(), 'brillance']:
+    elif fbin in [*list(SP.bins.__dict__.keys())[1:], 'brillance']:
         plt.figure(figsize=(10, 8))
         # Plot every envelop for a single frequency bin
         norm_factors = np.array([son.bins[fbin].normalise().norm_factor for son in sons])
@@ -176,15 +176,13 @@ def peak_compare(son1, son2):
     plt.yscale('symlog', linthresh=10e-4)
     # Sound1
     plt.plot(freq1, fft1, color='#919191', label='son 1')
-    plt.scatter(freq1[peaks1], fft1[peaks1], color='r', label='old peaks')
-    plt.scatter(freq1[new_peaks1], fft1[new_peaks1], color='b', label='new peaks')
+    plt.scatter(freq1[new_peaks1], fft1[new_peaks1], color='b', label='peaks')
     plt.scatter(freq1[different_peaks1], fft1[different_peaks1], color='g', label='diff peaks')
     annotation_string = 'Peaks with ' + str(np.around(difference_treshold, 1)) + ' difference'
     plt.annotate(annotation_string, (freq1[different_peaks1] + peak_distance / 2, fft1[different_peaks1]))
 
     # Sound2
     plt.plot(freq2, -fft2, color='#3d3d3d', label='son 2')
-    plt.scatter(freq2[peaks2], -fft2[peaks2], color='r')
     plt.scatter(freq2[new_peaks2], -fft2[new_peaks2], color='b')
     plt.scatter(freq2[different_peaks2], -fft2[different_peaks2], color='g')
 
@@ -453,7 +451,7 @@ class Signal(object):
         if average_len % 2 == 0:
             average_len += 1
 
-        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 2
+        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 4
 
         peak_indexes, _ = sig.find_peaks(fft[:max_index], height=average_fft, distance=peak_distance)
         return peak_indexes
