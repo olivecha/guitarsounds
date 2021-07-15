@@ -21,7 +21,7 @@ SP = sound_parameters()
 Global functions
 """
 
-def compare(signal1, signal2, attribute,  **kwargs):
+def compare(signal1, signal2, attribute, **kwargs):
     """
     Side by side comparison of an attribute of two signals
     Ex : compare(Sound1.signal, Sound2.signal, 'fft') plots the fft of the two signals side by side
@@ -146,8 +146,8 @@ def peak_compare(son1, son2):
     fft1 = son1.signal.fft()[:index1]
     fft2 = son2.signal.fft()[:index2]
 
-    peak_distance1 = np.mean([freq1[peaks1[i]] - freq1[peaks1[i+1]] for i in range(len(peaks1) - 1)]) / 4
-    peak_distance2 = np.mean([freq2[peaks2[i]] - freq2[peaks2[i+1]] for i in range(len(peaks2) - 1)]) / 4
+    peak_distance1 = np.mean([freq1[peaks1[i]] - freq1[peaks1[i + 1]] for i in range(len(peaks1) - 1)]) / 4
+    peak_distance2 = np.mean([freq2[peaks2[i]] - freq2[peaks2[i + 1]] for i in range(len(peaks2) - 1)]) / 4
     peak_distance = np.abs(np.mean([peak_distance1, peak_distance2]))
 
     # Align  the two peak vectors
@@ -173,16 +173,26 @@ def peak_compare(son1, son2):
 
     # Plot the output
     plt.figure(figsize=(10, 8))
-    plt.yscale('symlog', linthresh=10e-4)
+    plt.yscale('symlog', linthresh=10e-1)
     # Sound1
-    plt.plot(freq1, fft1, color='#919191', label='son 1')
+    if son1.name == '':
+        name1 = 'son 1'
+    else:
+        name1 = son1.name
+    if son2.name == '':
+        name2 = 'son 2'
+    else:
+        name2 = son2.name
+
+    # Sound 1
+    plt.plot(freq1, fft1, color='#919191', label=name1)
     plt.scatter(freq1[new_peaks1], fft1[new_peaks1], color='b', label='peaks')
     plt.scatter(freq1[different_peaks1], fft1[different_peaks1], color='g', label='diff peaks')
     annotation_string = 'Peaks with ' + str(np.around(difference_treshold, 1)) + ' difference'
-    plt.annotate(annotation_string, (freq1[different_peaks1] + peak_distance / 2, fft1[different_peaks1]))
+    plt.annotate(annotation_string, (freq1[different_peaks1[0]] + peak_distance / 2, fft1[different_peaks1[0]]))
 
     # Sound2
-    plt.plot(freq2, -fft2, color='#3d3d3d', label='son 2')
+    plt.plot(freq2, -fft2, color='#3d3d3d', label=name2)
     plt.scatter(freq2[new_peaks2], -fft2[new_peaks2], color='b')
     plt.scatter(freq2[different_peaks2], -fft2[different_peaks2], color='g')
 
@@ -192,11 +202,19 @@ def peak_compare(son1, son2):
 def fft_mirror(son1, son2):
     """ Plot the fourier transforms of two signals on the y and -y axes to compare them"""
     index = np.where(son1.signal.fft_frequencies() > SP.general.fft_range.value)[0][0]
+    if son1.name == '':
+        name1 = 'son 1'
+    else:
+        name1 = son1.name
+    if son2.name == '':
+        name2 = 'son 2'
+    else:
+        name2 = son2.name
     plt.figure(figsize=(10, 8))
     plt.yscale('symlog')
     plt.grid('on')
-    plt.plot(son1.signal.fft_freqs[:index], son1.signal.fft[:index], label='1 : ' + son1.name)
-    plt.plot(son2.signal.fft_freqs[:index], -son2.signal.fft[:index], label='2 : ' + son2.name)
+    plt.plot(son1.signal.fft_frequencies()[:index], son1.signal.fft()[:index], label=name1)
+    plt.plot(son2.signal.fft_frequencies()[:index], -son2.signal.fft()[:index], label=name2)
     plt.xlabel('fréquence (Hz)')
     plt.ylabel('Amplitude')
     plt.legend()
@@ -255,7 +273,7 @@ def coherence(son1, son2, **kwargs):
         title = 'Cohérence entre les sons ' + son1.name + ' et ' + son2.name
     plt.title(title)
 
-def average_envelop_plot(*sounds, kind='signal', difference_factor=1, show_sounds=True, show_rejects=True, **kwargs):
+def combine_envelop(*sounds, kind='signal', difference_factor=1, show_sounds=True, show_rejects=True, **kwargs):
     sample_number = np.min([len(s1.signal.log_envelop()[0]) for s1 in sounds])
 
     if kind == 'signal':
@@ -269,7 +287,7 @@ def average_envelop_plot(*sounds, kind='signal', difference_factor=1, show_sound
     std = np.std(log_envelops, axis=0)
     means = np.tile(average_log_envelop, (len(sounds), 1))
     diffs = np.sum(np.abs(means - log_envelops), axis=1)
-    diff = np.mean(diffs)*difference_factor
+    diff = np.mean(diffs) * difference_factor
 
     good_sounds = np.array(sounds)[diffs < diff]
     rejected_sounds = np.array(sounds)[diffs > diff]
@@ -292,7 +310,10 @@ def average_envelop_plot(*sounds, kind='signal', difference_factor=1, show_sound
                 rejected_sounds[0].signal.normalise().plot(kind='log envelop', alpha=0.3, color='r',
                                                            label='rejected sounds')
         if len(good_sounds) > 0:
-            plt.plot(good_sounds[0].signal.log_envelop()[1], average_log_envelop, **kwargs)
+            if 'label' in kwargs.keys():
+                plt.plot(good_sounds[0].signal.log_envelop()[1], average_log_envelop, **kwargs)
+            else:
+                plt.plot(good_sounds[0].signal.log_envelop()[1], average_log_envelop, label='average', **kwargs)
 
     else:
         if show_sounds:
@@ -320,6 +341,17 @@ def average_envelop_plot(*sounds, kind='signal', difference_factor=1, show_sound
     print('Number of sounds included : ' + str(len(good_sounds)))
     print('Maximum normalisation factor : ' + str(np.around(np.max(norm_factors), 0)) + 'x')
     print('Minimum normalisation factor : ' + str(np.around(np.min(norm_factors), 0)) + 'x')
+
+def equalize_time(*sounds):
+    trim_index = np.min([len(sound.signal.signal) for sound in sounds])
+    output_sounds = []
+    for sound in sounds:
+        new_sound = sound
+        new_sound.signal = sound.signal.trim_time(trim_index / sound.signal.sr)
+        output_sounds.append(new_sound)
+
+    return output_sounds
+
 
 """
 Classes
@@ -458,7 +490,7 @@ class Signal(object):
 
     def fft_frequencies(self):
         fft = self.fft()
-        fft_frequencies = np.fft.fftfreq(len(fft), 1 / self.sr)  # Frequencies corresponding to the bins
+        fft_frequencies = np.fft.fftfreq(len(fft)*2, 1 / self.sr)  # Frequencies corresponding to the bins
         return fft_frequencies[:int(len(fft) // 2)]
 
     def fft_bins(self):
@@ -564,8 +596,6 @@ class Signal(object):
         if onset > delay_samples:  # To make sure the index is positive
             trimmed_signal = Signal(self.signal[onset - delay_samples:], self.sr, self.SP)
             trimmed_signal.noise = self.signal[:onset - delay_samples]
-            onset = np.argmax(trimmed_signal.envelop())
-            trimmed_signal.onset = (trimmed_signal.envelop_time()[onset], trimmed_signal.envelop()[onset])
             trimmed_signal.trimmed = True
             trimmed_signal.onset = np.argmax(trimmed_signal.signal)
             return trimmed_signal
@@ -576,6 +606,12 @@ class Signal(object):
                 print('')
             self.trimmed = False
             return self
+
+    def trim_time(self, time_length):
+        max_index = int(time_length * self.sr)
+        time_trimmed_signal = Signal(self.signal[:max_index], self.sr, self.SP)
+        time_trimmed_signal.time_length = time_length
+        return time_trimmed_signal
 
     def filter_noise(self, verbose=True):
         """ Method filtering the noise from the recorded signal and returning a filtered signal.
@@ -595,7 +631,7 @@ class Signal(object):
         A function to normalise the signal to [-1,1]
         """
         normalised_signal = Signal(self.signal / np.max(np.abs(self.signal)), self.sr, self.SP)
-        normalised_signal.norm_factor = (1/np.max(np.abs(self.signal)))
+        normalised_signal.norm_factor = (1 / np.max(np.abs(self.signal)))
         return normalised_signal
 
     def make_freq_bins(self):
@@ -666,7 +702,6 @@ class Sound(object):
         """ a general method applying all the pre-conditioning methods to the sound"""
         self.trim_signal(verbose=verbose)
         self.filter_noise(verbose=verbose)
-        self.get_fundamental()
         self.bin_divide()
 
     def bin_divide(self):
@@ -681,7 +716,7 @@ class Sound(object):
         # filter the noise in the Signal class
         self.signal = self.trimmed_signal.filter_noise(verbose=verbose)
 
-    def trim_signal(self, verbose=True):
+    def trim_signal(self, end=False, verbose=True):
         """ a method to trim the signal to a specific delay before the onset, the default value is 100 ms"""
         # Trim the signal in the signal class
         self.trimmed_signal = self.raw_signal.trim_onset(verbose=verbose)
@@ -699,20 +734,27 @@ class Sound(object):
         """
         A function to perform a graphic validation of the transformation made by the function 'trim_onset()'
         """
-        fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 6))
-        ax1.plot(self.raw_signal.envelop_time(), self.raw_signal.envelop(), color='k')
-        ax1.set(title='Old Envelop', xlabel='time', ylabel='amplitude')
-        ax2.plot(self.trimmed_signal.envelop_time(), self.trimmed_signal.envelop(), color='k')
-        ax2.plot(*self.trimmed_signal.onset, 'ro')
-        ax2.set(title='Trimmed signal', xlabel='time', ylabel='amplitude')
-        plt.tight_layout()
+        if hasattr(self, 'trimmed_signal'):
+            fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 6))
+            ax1.plot(self.raw_signal.envelop_time(), self.raw_signal.envelop(), color='k')
+            ax1.set(title='Old Envelop', xlabel='time', ylabel='amplitude')
+            ax2.plot(self.trimmed_signal.envelop_time(), self.trimmed_signal.envelop(), color='k')
+            onset_index = self.trimmed_signal.onset
+            ax2.scatter(self.trimmed_signal.time()[onset_index], self.trimmed_signal.signal[onset_index], color='r')
+            ax2.set(title='Trimmed signal', xlabel='time', ylabel='amplitude')
+            plt.tight_layout()
+        else:
+            print('signal was not trimmed')
 
     def validate_noise(self):
         """Method to validate the noise filtering"""
-        print('not filtered')
-        self.trimmed_signal.listen()
-        print('filtered')
-        self.signal.listen()
+        if hasattr(self, 'trimmed_signal'):
+            print('not filtered')
+            self.trimmed_signal.listen()
+            print('filtered')
+            self.signal.listen()
+        else:
+            print('signal was not filtered')
 
     def listen_freq_bins(self):
         """ Method to listen to all the frequency bins of a sound"""
