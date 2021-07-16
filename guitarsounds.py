@@ -21,6 +21,7 @@ SP = sound_parameters()
 Global functions
 """
 
+
 def compare(signal1, signal2, attribute, **kwargs):
     """
     Side by side comparison of an attribute of two signals
@@ -37,6 +38,7 @@ def compare(signal1, signal2, attribute, **kwargs):
     signal1.plot(kind=attribute, **kwargs)
     plt.subplot(1, 2, 2)
     signal2.plot(kind=attribute, **kwargs)
+
 
 def octave_values(fraction, min_freq=10, max_freq=20200):
     """
@@ -59,6 +61,7 @@ def octave_values(fraction, min_freq=10, max_freq=20200):
             octave_bins.append(f_up)
     return np.array(octave_bins)
 
+
 def octave_histogram(fraction, **kwargs):
     """
     Compute the octave histogram bins limits corresponding an octave fraction.
@@ -76,6 +79,7 @@ def octave_histogram(fraction, **kwargs):
     hist_bins.append(f_o * 2 ** (1 / (2 * fraction)))
     return np.array(hist_bins)
 
+
 def power_split(signal, x, xmax, nbins):
     """ Return the index of the split bins of a signal FT with equal integrals"""
     imax = np.where(x > xmax)[0][0]
@@ -89,6 +93,7 @@ def power_split(signal, x, xmax, nbins):
             i2 += 1
         indexes[i + 1] = i2
     return indexes
+
 
 def time_compare(*sons, fbin='all'):
     """
@@ -133,6 +138,7 @@ def time_compare(*sons, fbin='all'):
 
     else:
         print('invalid frequency bin')
+
 
 def peak_compare(son1, son2):
     index1 = np.where(son1.signal.fft_frequencies() > son1.SP.general.fft_range.value)[0][0]
@@ -199,6 +205,7 @@ def peak_compare(son1, son2):
     plt.title('Fourier Transform Peak Analysis')
     plt.legend()
 
+
 def fft_mirror(son1, son2):
     """ Plot the fourier transforms of two signals on the y and -y axes to compare them"""
     index = np.where(son1.signal.fft_frequencies() > SP.general.fft_range.value)[0][0]
@@ -219,6 +226,7 @@ def fft_mirror(son1, son2):
     plt.ylabel('Amplitude')
     plt.legend()
     plt.show()
+
 
 def fft_diff(son1, son2, fraction=3):
     """
@@ -261,6 +269,7 @@ def fft_diff(son1, son2, fraction=3):
     plt.ylabel('<- Son 2 : Son 1 ->')
     plt.grid('on')
 
+
 def coherence(son1, son2, **kwargs):
     f, C = sig.coherence(son1.signal.signal, son2.signal.signal, son1.signal.sr)
     plt.plot(f, C, color='k', **kwargs)
@@ -272,6 +281,7 @@ def coherence(son1, son2, **kwargs):
     else:
         title = 'Cohérence entre les sons ' + son1.name + ' et ' + son2.name
     plt.title(title)
+
 
 def combine_envelop(*sounds, kind='signal', difference_factor=1, show_sounds=True, show_rejects=True, **kwargs):
     sample_number = np.min([len(s1.signal.log_envelop()[0]) for s1 in sounds])
@@ -342,6 +352,7 @@ def combine_envelop(*sounds, kind='signal', difference_factor=1, show_sounds=Tru
     print('Maximum normalisation factor : ' + str(np.around(np.max(norm_factors), 0)) + 'x')
     print('Minimum normalisation factor : ' + str(np.around(np.min(norm_factors), 0)) + 'x')
 
+
 def equalize_time(*sounds):
     trim_index = np.min([len(sound.signal.signal) for sound in sounds])
     output_sounds = []
@@ -356,6 +367,7 @@ def equalize_time(*sounds):
 """
 Classes
 """
+
 
 class Signal(object):
     """
@@ -436,6 +448,21 @@ class Signal(object):
             plt.yscale('log')
             plt.grid('on')
 
+        elif kind == 'peaks':
+            fft_freqs = self.fft_frequencies()
+            fft = self.fft()
+            max_index = np.where(fft_freqs >= self.SP.general.fft_range.value)[0][0]
+            peak_indexes, height = self.peaks(height=True)
+            plt.xlabel('Fréquence (Hz)')
+            plt.ylabel('Amplitude')
+            plt.yscale('log')
+
+            plot_kwargs = {i:kwargs[i] for i in kwargs if i != 'peak_height'}
+            plt.plot(fft_freqs[:max_index], fft[:max_index], color='k', **plot_kwargs)
+            plt.scatter(fft_freqs[peak_indexes], fft[peak_indexes], color='r')
+            if 'peak_height' in kwargs.keys() and kwargs['peak_height']:
+                plt.plot(fft_freqs[:max_index], height, color='r')
+
         elif kind == 'spectrogram':
             # Spectrogram display from Librosa
             librosa.display.specshow(self.spectrogram(), x_axis='time', y_axis='linear')
@@ -454,13 +481,16 @@ class Signal(object):
         fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric of the absolute value
         return fft / np.max(fft)
 
-    def peaks(self):
+    def peaks(self, max_freq=None, height=False, result=False):
+        # Replace None by the default value
+        if max_freq is None:
+            max_freq = self.SP.general.fft_range.value
 
         # Get the fft and fft frequencies from the signal
         fft, fft_freq = self.fft(), self.fft_frequencies()
 
         # Find the max index
-        max_index = np.where(fft_freq >= self.SP.general.fft_range.value)[0][0]
+        max_index = np.where(fft_freq >= max_freq)[0][0]
 
         # Find an approximation of the distance between peaks, this only works for harmonic signals
         peak_distance = np.argmax(fft) // 2
@@ -475,22 +505,66 @@ class Signal(object):
         diff_start = fft_max_start - intersect  # offset by a small distance so that the first max is not a peak
         min_height = 10 ** np.linspace(np.log10(fft_max_start + diff_start), np.log10(fft_max_end), max_index)
 
+
         first_peak_indexes, _ = sig.find_peaks(fft[:max_index], height=min_height, distance=peak_distance)
 
         number_of_peaks = len(first_peak_indexes)
-        average_len = int(max_index / number_of_peaks) * 3
+        if number_of_peaks > 0:
+            average_len = int(max_index / number_of_peaks) * 3
+        else:
+            average_len = int(max_index/3)
 
         if average_len % 2 == 0:
             average_len += 1
 
-        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 4
+        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 2
+        min_freq_index = np.where(fft_freq >= 70)[0][0]
+        average_fft[:min_freq_index] = 1
 
-        peak_indexes, _ = sig.find_peaks(fft[:max_index], height=average_fft, distance=peak_distance)
-        return peak_indexes
+        peak_indexes, res = sig.find_peaks(fft[:max_index], height=average_fft, distance=min_freq_index)
+
+        # Remove noisy peaks at the low frequencies
+        while fft[peak_indexes[0]] < 1e-1:
+            peak_indexes = np.delete(peak_indexes, 0)
+
+        if not height and not result:
+            return peak_indexes
+        elif height:
+            return peak_indexes, average_fft
+        elif result:
+            return peak_indexes, res
+
+    def fundamental(self):
+        """
+        Returns the fundamental approximated by the first peak of the fft
+        :return: fundamental index
+        """
+        index = self.peaks()[0]
+        fundamental = self.fft_frequencies()[index]
+        return fundamental
+
+    def cavity_peak(self):
+        first_index = np.where(self.fft_frequencies() >= 80)[0][0]
+        second_index = np.where(self.fft_frequencies() >= 110)[0][0]
+        cavity_peak = np.argmax(self.fft()[first_index:second_index]) + first_index
+        if self.fundamental() == self.fft_frequencies()[cavity_peak]:
+            print('Cavity peak is obscured by the fundamental')
+        else:
+            return cavity_peak
+
+    def cavity_frequency(self):
+        first_index = np.where(self.fft_frequencies() >= 80)[0][0]
+        second_index = np.where(self.fft_frequencies() >= 110)[0][0]
+        cavity_peak = np.argmax(self.fft()[first_index:second_index]) + first_index
+        if self.fundamental() == self.fft_frequencies()[cavity_peak]:
+            print('Cavity peak is obscured by the fundamental')
+            return 0
+        else:
+            return self.fft_frequencies()[cavity_peak]
 
     def fft_frequencies(self):
         fft = self.fft()
-        fft_frequencies = np.fft.fftfreq(len(fft)*2, 1 / self.sr)  # Frequencies corresponding to the bins
+        fft_frequencies = np.fft.fftfreq(len(fft) * 2, 1 / self.sr)  # Frequencies corresponding to the bins
         return fft_frequencies[:int(len(fft) // 2)]
 
     def fft_bins(self):
