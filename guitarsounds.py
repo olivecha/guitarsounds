@@ -2,6 +2,7 @@ import librosa
 import librosa.display
 from soundfile import write
 import IPython.display as ipd
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -354,20 +355,22 @@ def combine_envelop(*sounds, kind='signal', difference_factor=1, show_sounds=Tru
 
 
 def equalize_time(*sounds):
+    """
+    Trim the sounds so that they all have the length of the shortest sound, trimming is done at the end.
+    :param sounds: an arbitrary number of sounds
+    :return: a list containing the trimmed sounds
+    """
     trim_index = np.min([len(sound.signal.signal) for sound in sounds])
     output_sounds = []
     for sound in sounds:
         new_sound = sound
-        new_sound.signal = sound.signal.trim_time(trim_index / sound.signal.sr)
+        new_sound.signal = new_sound.signal.trim_time(trim_index / sound.signal.sr)
         output_sounds.append(new_sound)
-
     return output_sounds
-
 
 """
 Classes
 """
-
 
 class Signal(object):
     """
@@ -438,6 +441,19 @@ class Signal(object):
             plt.xlabel("frequency"),
             plt.ylabel("amplitude"),
             plt.yscale('log')
+            plt.grid('on')
+
+            if 'label' in kwargs and kwargs['label'] == 'bins':
+                labels = [label for label in self.SP.bins.__dict__ if label != 'name']
+                labels.append('brillance')
+                x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
+                x.append(11250)
+                x_formatter = matplotlib.ticker.FixedFormatter(labels)
+                x_locator = matplotlib.ticker.FixedLocator(x)
+                ax = plt.gca()
+                ax.xaxis.set_major_locator(x_locator)
+                ax.xaxis.set_major_formatter(x_formatter)
+                ax.tick_params(axis="x", labelrotation=90)
 
         elif kind == 'fft hist':
             # Histogram of frequency values occurences in octave bins
@@ -447,6 +463,18 @@ class Signal(object):
             plt.xscale('log')
             plt.yscale('log')
             plt.grid('on')
+
+            if 'label' in kwargs and kwargs['label'] == 'bins':
+                labels = [label for label in self.SP.bins.__dict__ if label != 'name']
+                labels.append('brillance')
+                x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
+                x.append(11250)
+                x_formatter = matplotlib.ticker.FixedFormatter(labels)
+                x_locator = matplotlib.ticker.FixedLocator(x)
+                ax = plt.gca()
+                ax.xaxis.set_major_locator(x_locator)
+                ax.xaxis.set_major_formatter(x_formatter)
+                ax.tick_params(axis="x", labelrotation=90)
 
         elif kind == 'peaks':
             fft_freqs = self.fft_frequencies()
@@ -505,7 +533,6 @@ class Signal(object):
         diff_start = fft_max_start - intersect  # offset by a small distance so that the first max is not a peak
         min_height = 10 ** np.linspace(np.log10(fft_max_start + diff_start), np.log10(fft_max_end), max_index)
 
-
         first_peak_indexes, _ = sig.find_peaks(fft[:max_index], height=min_height, distance=peak_distance)
 
         number_of_peaks = len(first_peak_indexes)
@@ -517,14 +544,14 @@ class Signal(object):
         if average_len % 2 == 0:
             average_len += 1
 
-        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 2
+        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 1.9
         min_freq_index = np.where(fft_freq >= 70)[0][0]
         average_fft[:min_freq_index] = 1
 
         peak_indexes, res = sig.find_peaks(fft[:max_index], height=average_fft, distance=min_freq_index)
 
         # Remove noisy peaks at the low frequencies
-        while fft[peak_indexes[0]] < 1e-1:
+        while fft[peak_indexes[0]] < 5e-2:
             peak_indexes = np.delete(peak_indexes, 0)
 
         if not height and not result:
@@ -593,8 +620,9 @@ class Signal(object):
 
         # Compute the envelop
         envelop = np.array(
-            [max(self.signal[i:i + self.SP.envelop.frame_size.value]) for i in range(0, len(self.signal), hop_length)])
+            [np.max(np.abs(self.signal[i:i + self.SP.envelop.frame_size.value])) for i in range(0, len(self.signal), hop_length)])
 
+        envelop = np.insert(envelop, 0, 0)
         return envelop
 
     def envelop_time(self):
@@ -658,14 +686,46 @@ class Signal(object):
 
         return log_envelop, log_envelop_time
 
+    def find_onset(self, verbose=True, ):
+        """
+        Finds the onset as a
+        :param verbose:
+        :return:
+        """
+        # Index corresponding to the onset time interval
+        window_index = np.ceil(self.SP.onset.onset_time.value * self.sr).astype(int)
+        overlap = window_index // 2  # overlap for algorithm progression
+        # Initial values
+        increase = 0
+        i = 0
+        broke = False
+        while increase <= 0.5:
+            signal_min = np.min(np.abs(self.signal[i:i + window_index]))
+            signal_max = np.max(np.abs(self.signal[i:i + window_index]))
+            if signal_max > 0.5:
+                increase = signal_max / signal_min
+            else:
+                increase = 0
+            i += overlap
+            if i + window_index > len(self.signal):
+                if verbose:
+                    print('Onset detection did not converge \n')
+                    print('Approximating onset with signal max value \n')
+                    broke = True
+                    break
+        if broke:
+            return np.argmax(self.signal)
+        else:
+            return np.argmax(np.abs(self.signal[i:i + window_index])) + i
+
     def trim_onset(self, verbose=True):
         """
         Trim the signal at the onset (max) minus the delay in miliseconds
         Return a trimmed signal with a noise attribute
         """
         # nb of samples to keep before the onset
-        delay_samples = int((self.SP.general.onset_delay.value / 1000) * self.sr)
-        onset = np.argmax(self.signal)  # find the onset
+        delay_samples = int((self.SP.onset.onset_delay.value / 1000) * self.sr)
+        onset = self.find_onset(verbose=verbose)  # find the onset
 
         if onset > delay_samples:  # To make sure the index is positive
             trimmed_signal = Signal(self.signal[onset - delay_samples:], self.sr, self.SP)
@@ -700,12 +760,13 @@ class Signal(object):
                     print('')
                 return self
 
-    def normalise(self):
+    def normalize(self):
         """
         A function to normalise the signal to [-1,1]
         """
-        normalised_signal = Signal(self.signal / np.max(np.abs(self.signal)), self.sr, self.SP)
-        normalised_signal.norm_factor = (1 / np.max(np.abs(self.signal)))
+        factor = np.min([np.max(np.abs(self.signal)), np.max(self.signal)])
+        normalised_signal = Signal((self.signal / factor), self.sr, self.SP)
+        normalised_signal.norm_factor = (1 / factor)
         return normalised_signal
 
     def make_freq_bins(self):
@@ -777,6 +838,13 @@ class Sound(object):
         self.trim_signal(verbose=verbose)
         self.filter_noise(verbose=verbose)
         self.bin_divide()
+        return self
+
+    def use_raw_signal(self, normalized=True):
+        if normalized:
+            self.signal = self.raw_signal.normalize()
+        else:
+            self.signal = self.raw_signal
 
     def bin_divide(self):
         """ a method to divide the main signal into frequency bins"""

@@ -62,7 +62,6 @@ class GlobalParameters(object):
                 if parameter.name == name:
                     parameter.value = value
 
-
 def sound_parameters():
     """
     Function returning the instance of the sound parameters
@@ -71,8 +70,12 @@ def sound_parameters():
     # General
     octave_fraction = Parameter('octave_fraction', 3, 'Fraction of the octave used for octave computations')
     fft_range = Parameter('fft_range', 2000, 'Maximum frequency in the Fourier transform plot')
+    general = ParameterSet('general', octave_fraction, fft_range)
+
+    # Onset
     onset_delay = Parameter('onset_delay', 100, 'Delay before the onset (attack) to keep when trimming the signal')
-    general = ParameterSet('general', octave_fraction, fft_range, onset_delay)
+    onset_time = Parameter('onset_time', 0.025, 'Time interval used to detect the onset in seconds')
+    onset = ParameterSet('onset', onset_delay, onset_time)
 
     # Envelop
     frame_size = Parameter('frame_size', 524, 'Number of samples in the array used to compute a point of the envelop')
@@ -100,6 +103,6 @@ def sound_parameters():
                                            ' the brilliance bin is above this frequency')
     bins = ParameterSet('bins', bass, mid, highmid, uppermid, presence)
 
-    SoundParameters = GlobalParameters(general, envelop, log_envelop, fundamental, bins)
+    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins)
 
     return SoundParameters
