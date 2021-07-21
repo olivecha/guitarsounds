@@ -9,6 +9,7 @@ import os
 from noisereduce import reduce_noise
 import scipy
 import scipy.integrate
+import scipy.interpolate
 from scipy import signal as sig
 from guitarsounds_parameters import sound_parameters
 
@@ -484,12 +485,37 @@ class Signal(object):
             plt.xlabel('Fréquence (Hz)')
             plt.ylabel('Amplitude')
             plt.yscale('log')
+            plt.grid('on')
 
             plot_kwargs = {i:kwargs[i] for i in kwargs if i != 'peak_height'}
             plt.plot(fft_freqs[:max_index], fft[:max_index], color='k', **plot_kwargs)
             plt.scatter(fft_freqs[peak_indexes], fft[peak_indexes], color='r')
             if 'peak_height' in kwargs.keys() and kwargs['peak_height']:
                 plt.plot(fft_freqs[:max_index], height, color='r')
+
+        elif kind == 'damping':
+            # Get the damping ration and peak frequencies
+            zetas = self.peak_damping()
+            peak_freqs = self.fft_frequencies()[self.peaks()]
+
+            if len(zetas) > 3:
+                # plot the points with a spline interpolation
+                plt.scatter(peak_freqs, zetas*100, c='r')
+                frequencies = np.linspace(peak_freqs[0], peak_freqs[-1], 300)
+                damping_spline = scipy.interpolate.InterpolatedUnivariateSpline(peak_freqs, zetas, k=2)
+                plt.plot(frequencies, damping_spline(frequencies)*100, **kwargs)
+                plt.grid('on')
+                plt.title('Damping versus Frequency')
+                plt.xlabel('Frequency (Hz)')
+                plt.ylabel(r'Damping (%)')
+            else:
+                # plot the points with a scatter
+                plt.scatter(peak_freqs, zetas*100, **kwargs)
+                plt.plot(peak_freqs, zetas*100, **kwargs)
+                plt.grid('on')
+                plt.title('Damping versus Frequency')
+                plt.xlabel('Frequency (Hz)')
+                plt.ylabel(r'Damping (%)')
 
         elif kind == 'spectrogram':
             # Spectrogram display from Librosa
@@ -510,6 +536,13 @@ class Signal(object):
         return fft / np.max(fft)
 
     def peaks(self, max_freq=None, height=False, result=False):
+        """
+        Computes the harmonic peaks indexes from the FFT of the signal
+        :param max_freq: Supply a max frequency value overiding the one in guitarsounds_parameters
+        :param height: if True the height threshold is returned to be used in the 'peaks' plot
+        :param result: if True the Scipy peak finding results dictionary is returned
+        :return: peak indexes
+        """
         # Replace None by the default value
         if max_freq is None:
             max_freq = self.SP.general.fft_range.value
@@ -553,6 +586,8 @@ class Signal(object):
         # Remove noisy peaks at the low frequencies
         while fft[peak_indexes[0]] < 5e-2:
             peak_indexes = np.delete(peak_indexes, 0)
+        while fft[peak_indexes[-1]] < 1e-4:
+            peak_indexes = np.delete(peak_indexes, -1)
 
         if not height and not result:
             return peak_indexes
@@ -560,6 +595,24 @@ class Signal(object):
             return peak_indexes, average_fft
         elif result:
             return peak_indexes, res
+        elif height and result:
+            return  peak_indexes, height, res
+
+    def peak_damping(self):
+        zetas = []
+        fft_freqs = self.fft_frequencies()
+        fft = self.fft()[:len(fft_freqs)]
+        for peak in self.peaks():
+            peak_frequency = fft_freqs[peak]
+            peak_height = fft[peak]
+            root_height = peak_height / np.sqrt(2)
+            frequency_roots = scipy.interpolate.InterpolatedUnivariateSpline(fft_freqs, fft - root_height).roots()
+            sorted_roots_indexes = np.argsort(np.abs(frequency_roots - peak_frequency))
+            w2, w1 = frequency_roots[sorted_roots_indexes[:2]]
+            w1, w2 = np.sort([w1, w2])
+            zeta = (w2 - w1) / (2 * peak_frequency)
+            zetas.append(zeta)
+        return np.array(zetas)
 
     def fundamental(self):
         """
@@ -688,20 +741,22 @@ class Signal(object):
 
     def find_onset(self, verbose=True, ):
         """
-        Finds the onset as a
-        :param verbose:
-        :return:
+        Finds the onset as an increase in more of 50% with the maximum normalized value above 0.5
+        :param verbose: Prints a warning if the algorithm does not converge
+        :return: the index of the onset in the signal
         """
         # Index corresponding to the onset time interval
         window_index = np.ceil(self.SP.onset.onset_time.value * self.sr).astype(int)
+        # Use the normalized signal to compare against a fixed value
+        onset_signal = self.normalize()
         overlap = window_index // 2  # overlap for algorithm progression
         # Initial values
         increase = 0
         i = 0
         broke = False
         while increase <= 0.5:
-            signal_min = np.min(np.abs(self.signal[i:i + window_index]))
-            signal_max = np.max(np.abs(self.signal[i:i + window_index]))
+            signal_min = np.min(np.abs(onset_signal.signal[i:i + window_index]))
+            signal_max = np.max(np.abs(onset_signal.signal[i:i + window_index]))
             if signal_max > 0.5:
                 increase = signal_max / signal_min
             else:
@@ -833,14 +888,15 @@ class Sound(object):
         self.fundamental = fundamental
         self.name = name
 
-    def condition(self, verbose=True):
+    def condition(self, verbose=True, return_self=False):
         """ a general method applying all the pre-conditioning methods to the sound"""
         self.trim_signal(verbose=verbose)
         self.filter_noise(verbose=verbose)
         self.bin_divide()
-        return self
+        if return_self:
+            return self
 
-    def use_raw_signal(self, normalized=True):
+    def use_raw_signal(self, normalized=False):
         if normalized:
             self.signal = self.raw_signal.normalize()
         else:
