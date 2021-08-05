@@ -84,7 +84,8 @@ def sound_parameters():
 
     # Log Envelop
     start_time = Parameter('start_time', 0.01, 'First point in the log scale envelop')
-    min_window = Parameter('min_window', None, 'Minimum window size for the log envelop computed from start_time by default')
+    min_window = Parameter('min_window', None, 'Minimum window size for the log envelop computed from start_time by '
+                                               'default')
     max_window = Parameter('max_window', 2048, 'Maximum window size for the log envelop in samples')
     log_envelop = ParameterSet('log_envelop', start_time, min_window, max_window)
 
@@ -103,6 +104,10 @@ def sound_parameters():
                                            ' the brilliance bin is above this frequency')
     bins = ParameterSet('bins', bass, mid, highmid, uppermid, presence)
 
-    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins)
+    # Damping
+    lower_threshold = Parameter('lower_threshold', 0.05, 'lower amplitude treshold for the time damping analysis')
+    damping = ParameterSet('damping', lower_threshold)
+
+    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins, damping)
 
     return SoundParameters

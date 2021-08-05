@@ -6,12 +6,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from noisereduce import reduce_noise
+from noisereduce.noisereducev1 import reduce_noise
 import scipy
+import scipy.optimize
 import scipy.integrate
 import scipy.interpolate
 from scipy import signal as sig
 from guitarsounds_parameters import sound_parameters
+import guitarsounds_utils as utils
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
@@ -369,9 +371,11 @@ def equalize_time(*sounds):
         output_sounds.append(new_sound)
     return output_sounds
 
+
 """
 Classes
 """
+
 
 class Signal(object):
     """
@@ -465,7 +469,7 @@ class Signal(object):
             plt.yscale('log')
             plt.grid('on')
 
-            if 'label' in kwargs and kwargs['label'] == 'bins':
+            if 'ticks' in kwargs and kwargs['label'] == 'bins':
                 labels = [label for label in self.SP.bins.__dict__ if label != 'name']
                 labels.append('brillance')
                 x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
@@ -487,35 +491,95 @@ class Signal(object):
             plt.yscale('log')
             plt.grid('on')
 
-            plot_kwargs = {i:kwargs[i] for i in kwargs if i != 'peak_height'}
+            plot_kwargs = {i: kwargs[i] for i in kwargs if i != 'peak_height'}
             plt.plot(fft_freqs[:max_index], fft[:max_index], color='k', **plot_kwargs)
             plt.scatter(fft_freqs[peak_indexes], fft[peak_indexes], color='r')
             if 'peak_height' in kwargs.keys() and kwargs['peak_height']:
                 plt.plot(fft_freqs[:max_index], height, color='r')
 
-        elif kind == 'damping':
+        elif kind == 'peak damping':
             # Get the damping ration and peak frequencies
-            zetas = self.peak_damping()
+            zetas = 1/np.array(self.peak_damping())
             peak_freqs = self.fft_frequencies()[self.peaks()]
 
-            if len(zetas) > 3:
-                # plot the points with a spline interpolation
-                plt.scatter(peak_freqs, zetas*100, c='r')
-                frequencies = np.linspace(peak_freqs[0], peak_freqs[-1], 300)
-                damping_spline = scipy.interpolate.InterpolatedUnivariateSpline(peak_freqs, zetas, k=2)
-                plt.plot(frequencies, damping_spline(frequencies)*100, **kwargs)
-                plt.grid('on')
-                plt.title('Damping versus Frequency')
-                plt.xlabel('Frequency (Hz)')
-                plt.ylabel(r'Damping (%)')
+            try:
+                n = kwargs['n']
+                scatter_kwargs = {i: kwargs[i] for i in kwargs if i not in ['n', 'ticks', 'normalize']}
+            except KeyError:
+                n = 5
+                scatter_kwargs = {i: kwargs[i] for i in kwargs if i not in ['ticks', 'normalize']}
+
+            if 'label' in scatter_kwargs:
+                scatter_kwargs['c'] = None
+                plot_kwargs = scatter_kwargs.copy()
+                plot_kwargs['label'] = None
             else:
-                # plot the points with a scatter
-                plt.scatter(peak_freqs, zetas*100, **kwargs)
-                plt.plot(peak_freqs, zetas*100, **kwargs)
-                plt.grid('on')
-                plt.title('Damping versus Frequency')
-                plt.xlabel('Frequency (Hz)')
-                plt.ylabel(r'Damping (%)')
+                scatter_kwargs['c'] = 'r'
+                plot_kwargs = scatter_kwargs.copy()
+                plot_kwargs['c'] = 'k'
+
+            if 'normalize' in kwargs.keys() and kwargs['normalize'] == True:
+                zetas = np.array(zetas)/np.array(zetas).max()
+
+            plt.scatter(peak_freqs, zetas, **scatter_kwargs)
+            fun = utils.nth_order_polynomial_fit(n, peak_freqs, zetas)
+            freq = np.linspace(peak_freqs[0], peak_freqs[-1], 100)
+            plt.plot(freq, fun(freq), **plot_kwargs)
+            plt.grid('on')
+            plt.title('Frequency vs Damping Factor with Order ' + str(n))
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel(r'Inverse Damping $1/\zeta$')
+
+            if 'ticks' in kwargs and kwargs['ticks'] == 'bins':
+                labels = [label for label in self.SP.bins.__dict__ if label != 'name']
+                labels.append('brillance')
+                x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
+                x.append(11250)
+                x_formatter = matplotlib.ticker.FixedFormatter(labels)
+                x_locator = matplotlib.ticker.FixedLocator(x)
+                ax = plt.gca()
+                ax.xaxis.set_major_locator(x_locator)
+                ax.xaxis.set_major_formatter(x_formatter)
+                ax.tick_params(axis="x", labelrotation=90)
+
+        elif kind == 'time damping':
+            # Get the envelop data
+            envelop_time = self.normalize().envelop_time()
+            envelop = self.normalize().envelop()
+
+            # First point is the maximum because e^-kt is stricly decreasing
+            first_index = np.argmax(envelop)
+
+            # The second point is the first point where the signal crosses the lower_threshold line
+            second_point_thresh = self.SP.damping.lower_threshold.value
+
+            try:
+                second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
+            except IndexError:
+                second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh * 2)[0]
+
+            # Function to compute the residual for the exponential curve fit
+            def residual_function(zeta_w, t, s):
+                return np.exp(zeta_w[0] * t) - s
+            zeta_guess = [-0.5]
+
+            result = scipy.optimize.least_squares(residual_function, zeta_guess,
+                                                  args=(envelop_time[first_index:second_index],
+                                                        envelop[first_index:second_index]))
+            # Get the zeta*omega constant
+            zeta_omega = result.x[0]
+
+            # Compute the fundamental frequency in radiants of the signal
+            wd = 2 * np.pi * self.fundamental()
+
+            plt.scatter(envelop_time[first_index], envelop[first_index], color='r')
+            plt.scatter(envelop_time[second_index], envelop[second_index], color='r')
+            plt.plot(envelop_time[first_index:second_index], np.exp(zeta_omega*envelop_time[first_index:second_index]),
+                     c='b')
+            self.normalize().plot('envelop', c='k')
+            title = 'Zeta : ' + str(np.around(zeta_omega/wd,5)) + ' Fundamental ' + str(np.around(self.fundamental(),
+                                                                                                  0)) + 'Hz'
+            plt.title(title)
 
         elif kind == 'spectrogram':
             # Spectrogram display from Librosa
@@ -572,7 +636,7 @@ class Signal(object):
         if number_of_peaks > 0:
             average_len = int(max_index / number_of_peaks) * 3
         else:
-            average_len = int(max_index/3)
+            average_len = int(max_index / 3)
 
         if average_len % 2 == 0:
             average_len += 1
@@ -596,7 +660,45 @@ class Signal(object):
         elif result:
             return peak_indexes, res
         elif height and result:
-            return  peak_indexes, height, res
+            return peak_indexes, height, res
+
+    def time_damping(self):
+        # Get the envelop data
+        envelop_time = self.normalize().envelop_time()
+        envelop = self.normalize().envelop()
+
+        # First point is the maximum because e^-kt is stricly decreasing
+        first_index = np.argmax(envelop)
+
+        # The second point is the first point where the signal crosses the lower_threshold line
+        second_point_thresh = self.SP.damping.lower_threshold.value
+        try:
+            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
+        except IndexError:
+            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh*2)[0]
+
+        # Function to compute the residual for the exponential curve fit
+        def residual_function(zeta_w, t, s):
+            """
+            Function computing the residual to curve fit a negative exponential to the signal envelop
+            :param zeta_w: zeta*omega constant
+            :param t: time vector
+            :param s: signal
+            :return: residual
+            """
+            return np.exp(zeta_w[0] * t) - s
+
+        zeta_guess = [-0.5]
+
+        result = scipy.optimize.least_squares(residual_function, zeta_guess,
+                                              args=(envelop_time[first_index:second_index],
+                                                    envelop[first_index:second_index]))
+        # Get the zeta*omega constant
+        zeta_omega = result.x[0]
+
+        # Compute the fundamental frequency in radiants of the signal
+        wd = 2 * np.pi * self.fundamental()
+        return -zeta_omega / wd
 
     def peak_damping(self):
         zetas = []
@@ -673,7 +775,8 @@ class Signal(object):
 
         # Compute the envelop
         envelop = np.array(
-            [np.max(np.abs(self.signal[i:i + self.SP.envelop.frame_size.value])) for i in range(0, len(self.signal), hop_length)])
+            [np.max(np.abs(self.signal[i:i + self.SP.envelop.frame_size.value])) for i in
+             range(0, len(self.signal), hop_length)])
 
         envelop = np.insert(envelop, 0, 0)
         return envelop
