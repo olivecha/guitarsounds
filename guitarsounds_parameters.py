@@ -66,7 +66,6 @@ def sound_parameters():
     """
     Function returning the instance of the sound parameters
     """
-
     # General
     octave_fraction = Parameter('octave_fraction', 3, 'Fraction of the octave used for octave computations')
     fft_range = Parameter('fft_range', 2000, 'Maximum frequency in the Fourier transform plot')
