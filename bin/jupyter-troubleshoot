@@ -1,4 +1,5 @@
-#!/Users/Olivier/anaconda3/envs/guitarsounds/bin/python3.9
+#!/Users/Olivier/anaconda3/envs/guitarsounds/bin/python
+
 # -*- coding: utf-8 -*-
 import re
 import sys

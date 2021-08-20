@@ -1,4 +1,4 @@
-#!/Users/Olivier/anaconda3/envs/guitarsounds/bin/python
+#!/Users/Olivier/anaconda3/envs/pkg_guitarsounds/bin/python
 
 # -*- coding: utf-8 -*-
 import re

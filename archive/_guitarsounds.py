@@ -82,10 +82,8 @@ class SoundPack(object):
             self.sounds = sounds
             if names is None:
                 names = [str(n) for n in np.arange(1, len(sounds)+1)]
-            for sound, n in zip(self.sounds, names):
-                sound.name = n
-        #else:
-        #   print('invalid entry')
+                for sound, n in zip(self.sounds, names):
+                    sound.name = n
 
         if equalize_time:
             self.equalize_time()
@@ -1111,7 +1109,7 @@ class Signal(object):
         while increase <= 0.5:
             signal_min = np.min(np.abs(onset_signal.signal[i:i + window_index]))
             signal_max = np.max(np.abs(onset_signal.signal[i:i + window_index]))
-            if signal_max > 0.5:
+            if (signal_max > 0.5) and (signal_min != 0):
                 increase = signal_max / signal_min
             else:
                 increase = 0
@@ -1249,15 +1247,19 @@ class Sound(object):
         from the FFT (see `Signal.fundamental`).
         :param SoundParams: SoundParameters to use in the Sound instance
         """
-        # Load the soundfile using librosa
-        signal, sr = librosa.load(file)
-        self.file = file
-
-        # create a copy of the parameters
+        # create a reference of the parameters
         if SoundParams is None:
             self.SP = SP
         else:
             self.SP = SoundParams
+
+        if type(file) == str:
+            # Load the soundfile using librosa
+            signal, sr = librosa.load(file)
+            self.file = file
+
+        elif type(file) == tuple:
+            signal, sr = file
 
         # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr, self.SP)
