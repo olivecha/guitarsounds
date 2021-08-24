@@ -15,6 +15,7 @@ from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
 from tabulate import tabulate
+from timbral_models import timbral_extractor
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
@@ -160,7 +161,10 @@ class SoundPack(object):
             sound.signal.plot(kind, **kwargs)
 
         plt.title(kind + ' plot')
-        plt.legend()
+        if kind == 'timbre':
+            plt.legend(bbox_to_anchor=(1.1, .80))
+        else:
+            plt.legend()
 
     def compare_plot(self, kind, **kwargs):
         """
@@ -175,11 +179,21 @@ class SoundPack(object):
         """
         # if a dual SoundPack : only plot two big plots
         if self.kind == 'dual':
-            fig, axs = plt.subplots(1, 2, figsize=(12, 4))
-            for sound, ax in zip(self.sounds, axs):
-                plt.sca(ax)
-                sound.signal.plot(kind, **kwargs)
-                ax.set_title(kind + ' ' + sound.name)
+
+            if kind == 'timbre':
+                fig, axs = plt.subplots(1, 2, figsize=(8, 4), subplot_kw={'projection': 'polar'})
+                for sound, ax in zip(self.sounds, axs):
+                    plt.sca(ax)
+                    sound.signal.plot(kind, **kwargs)
+                    ax.set_title(kind + ' ' + sound.name)
+
+            else:
+                fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+                for sound, ax in zip(self.sounds, axs):
+                    plt.sca(ax)
+                    sound.signal.plot(kind, **kwargs)
+                    ax.set_title(kind + ' ' + sound.name)
+            plt.tight_layout()
 
         # If a multiple SoundPack : plot on a grid of axes
         elif self.kind == 'multiple':
@@ -573,7 +587,6 @@ class Signal(object):
         ipd.display(ipd.Audio(file))
         os.remove(file)
 
-    # noinspection PyUnresolvedReferences
     def plot(self, kind, **kwargs):
         """
         General plotting method for the Signal class, supported plots are:
@@ -624,7 +637,7 @@ class Signal(object):
             Shows the signal envelop with the fitted negative exponential curve used to determine the
             time damping ratio of the signal.
         """
-        illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize', 'inverse', 'peak_height']
+        illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize', 'inverse', 'peak_height', 'fill']
         plot_kwargs = {i: kwargs[i] for i in kwargs if i not in illegal_kwargs}
 
         if kind == 'signal':
@@ -672,8 +685,8 @@ class Signal(object):
                 labels.append('brillance')
                 x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
                 x.append(11250)
-                x_formatter = matplotlib.ticker.FixedFormatter(labels)
-                x_locator = matplotlib.ticker.FixedLocator(x)
+                x_formatter = ticker.FixedFormatter(labels)
+                x_locator = ticker.FixedLocator(x)
                 ax = plt.gca()
                 ax.xaxis.set_major_locator(x_locator)
                 ax.xaxis.set_major_formatter(x_formatter)
@@ -694,8 +707,8 @@ class Signal(object):
                 labels.append('brillance')
                 x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
                 x.append(11250)
-                x_formatter = matplotlib.ticker.FixedFormatter(labels)
-                x_locator = matplotlib.ticker.FixedLocator(x)
+                x_formatter = ticker.FixedFormatter(labels)
+                x_locator = ticker.FixedLocator(x)
                 ax = plt.gca()
                 ax.xaxis.set_major_locator(x_locator)
                 ax.xaxis.set_major_formatter(x_formatter)
@@ -719,7 +732,7 @@ class Signal(object):
                 plt.plot(fft_freqs[:max_index], height, color='r')
 
         elif kind == 'peak damping':
-            # Get the damping ration and peak frequencies
+            # Get the damping ratio and peak frequencies
             if 'inverse' in kwargs.keys() and kwargs['inverse'] is False:
                 zetas = np.array(self.peak_damping())
                 ylabel = r'Damping $\zeta$'
@@ -764,8 +777,8 @@ class Signal(object):
                 labels.append('brillance')
                 x = [param.value for param in self.SP.bins.__dict__.values() if param != 'bins']
                 x.append(11250)
-                x_formatter = matplotlib.ticker.FixedFormatter(labels)
-                x_locator = matplotlib.ticker.FixedLocator(x)
+                x_formatter = ticker.FixedFormatter(labels)
+                x_locator = ticker.FixedLocator(x)
                 ax = plt.gca()
                 ax.xaxis.set_major_locator(x_locator)
                 ax.xaxis.set_major_formatter(x_formatter)
@@ -820,6 +833,33 @@ class Signal(object):
             title = 'Zeta : ' + str(np.around(-zeta_omega/wd, 5)) + ' Fundamental ' + \
                     str(np.around(self.fundamental(), 0)) + 'Hz'
             plt.title(title)
+
+        elif kind == 'timbre':
+
+            fig = plt.gcf()
+            if not fig.axes:  # case when the figure is empty
+                ax = fig.add_subplot(projection='polar')
+
+            elif plt.gca().name == 'polar':  # if the current ax is polar
+                ax = plt.gca()
+
+            timbre = self.timbre()  # compute timbral attributes
+            categories = list(timbre.keys())  # get the timbral categories
+            values = list(timbre.values())  # get the timbral values
+            N = len(values)  # Number of values
+            values += values[:1]  # append the first value to the end to close the loop
+            angles = [n / float(N) * 2 * np.pi for n in range(N)]  # N equidistant angles
+            angles += angles[:1]  # append the first value at the end
+            ax.plot(angles, values, lw=2, **plot_kwargs)
+            if 'fill' in kwargs and kwargs['fill']:
+                ax.fill(angles, values)
+
+            ax.set_yticks([])
+            ax.set_yticklabels([])
+            ax.set_xticks(angles[:-1])
+            ax.set_xticklabels(categories)
+            ax.xaxis.set_tick_params(pad=18)
+            ax.set_theta_zero_location('S')
 
     def fft(self):
         """
@@ -1240,6 +1280,30 @@ class Signal(object):
                                freq_range=[bins['uppermid'].value, bins["presence"].value]),
             "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr, self.SP,
                                 freq_range=[bins["presence"].value, max(self.fft_frequencies())])}
+
+    def timbre(self):
+        """
+        A method computing the timbral attributes of the signal
+
+        This method returns timbral attributes "Brightness", "Depth", "Boominess", "Sharpness" and "Warmth".
+        They are obtained trough linear regression with a model trained with regular sounds.
+        More information :
+        Andy Pearce, Mark Plumbley, Saeid, S., Brookes, T., Mason, R., & Wang, W. (2019).
+        Release of timbral characterisation tools for semantically annotating non-musical content.pdf
+        (Rapport No. AC-WP5-SURREY-D5.8). AudioCommons. Repéré à :
+        https://www.audiocommons.org/assets/files/AC-WP5-SURREY-D5.8%20Release%20of%20timbral
+        %20characterisation%20tools%20for%20semantically%20annotating%20non-musical%20content.pdf
+        :return: A dictionary with timbral attributes and their values
+        """
+        # Save the signal in a temporary file
+        self.save_wav('temp')
+        # Compute the timbre dict from the temp file
+        timbre = timbral_extractor('temp.wav', verbose=False)
+        # remove reverb and roughness and hardness attributes
+        timbre = {key: timbre[key] for key in timbre if key not in ['reverb', 'roughness', 'hardness']}
+        # Remove the temp file
+        os.remove('temp.wav')
+        return timbre
 
     def save_wav(self, name, path=''):
         """

@@ -24,6 +24,8 @@ class guitarGUI(object):
     # analysis drop downs
     # Single analysis drop down
     options = [('', 1),
+               ('Listen Sound', Signal.listen),
+               ('Listen frequency bins', Sound.listen_freq_bins),
                ('Frequency bin plot', Sound.plot_freq_bins),
                ('Signal plot', (Signal.plot, 'signal')),
                ('Envelop plot', (Signal.plot, 'envelop')),
@@ -33,6 +35,7 @@ class guitarGUI(object):
                ('Peaks plot', (Signal.plot, 'peaks')),
                ('Peak damping plot', (Signal.plot, 'peak damping')),
                ('Time damping plot', (Signal.plot, 'time damping')),
+               ('Timbre attributes plot', (Signal.plot, 'timbre')),
                ('Frequency damping values', Sound.peak_damping)]
     style = {'description_width': '150px'}
     single_drop_down = widgets.Dropdown(options=options, value=1, style=style,
@@ -47,7 +50,7 @@ class guitarGUI(object):
                ('Stacked plot', SoundPack.plot),
                ('Compared plot', SoundPack.compare_plot),
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
-               ('Print Fundamentals', SoundPack.fundamentals), ]
+               ('Print Fundamentals', SoundPack.fundamentals),]
     style = {'description_width': '150px'}
     dual_drop_down = widgets.Dropdown(options=options, value=1, style=style,
                                       description='Choose an analysis : ')
@@ -89,7 +92,8 @@ class guitarGUI(object):
                ('Fourier Transform Histogram', 'fft hist'),
                ('Fourier Transform Peaks', 'peaks'),
                ('Peak Damping', 'peak damping'),
-               ('Time Damping', 'time damping')]
+               ('Time Damping', 'time damping'),
+               ('Timbre Attributes', 'timbre')]
     style = {'description_width': '150px'}
     plot_drop_down = widgets.Dropdown(options=options, value='signal', style=style,
                                       description='Choose a plot type: ')
@@ -297,7 +301,7 @@ class guitarGUI(object):
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
 
-                if drop_down_value == Sound.peak_damping:
+                elif drop_down_value in [Sound.peak_damping, Sound.listen_freq_bins, Signal.listen]:
                     self.analysis_tuple = [drop_down_value]  # store the method
                     self.state = 'display'  # ready to display
                     self.display = 'print'
@@ -314,7 +318,7 @@ class guitarGUI(object):
                     with output:
                         display(error)
 
-            else:  # Case when two sounds or multiple sounds are being analysed
+            elif self.analysis in ['Dual', 'Multiple']:  # Case when two sounds or multiple sounds are being analysed
                 # Special case for the frequency bin plot
                 if drop_down_value == SoundPack.freq_bin_plot:
                     self.analysis_tuple = [drop_down_value]  # Store the method
@@ -439,7 +443,7 @@ class guitarGUI(object):
                     plt.show()
 
             # Case for the Sound.peak_damping method (print only)
-            elif self.analysis_tuple[0] == Sound.peak_damping:
+            elif self.analysis_tuple[0] in [Sound.peak_damping, Sound.listen_freq_bins]:
                 with output:
                     self.analysis_tuple[0](self.Sons)  # add print to output
 
@@ -455,6 +459,18 @@ class guitarGUI(object):
                 # add to output
                 with output:
                     plt.show()
+
+            # Case for the Signal.listen method
+            elif self.analysis_tuple[0] == Signal.listen:
+                # add to output
+                with output:
+                    # Call the method according to normalization
+                    if not self.normalize:
+                        self.analysis_tuple[0](self.Sons.signal)
+                    elif self.normalize:
+                        self.analysis_tuple[0](self.Sons.signal.normalize())
+
+
 
         # Case for Dual and Multiple analyses
         elif self.analysis in ['Dual', 'Multiple']:
