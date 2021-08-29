@@ -1,5 +1,4 @@
 docutils~=0.17.1
-zlib~=1.2.11
 six~=1.16.0
 websocket-client~=0.57.0
 readline~=8.1
