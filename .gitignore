@@ -129,3 +129,6 @@ Nbooks/
 
 # macos
 .DS_Store
+/bin/
+/etc/
+/licensing/
