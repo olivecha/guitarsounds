@@ -12,7 +12,7 @@ The analysis tools also feature a "frequency bin separation" tool where the soun
 The `guitarsounds` package is installable trough `pip`:
 
 ```
-pip install timbral_models
+pip install guitarsounds
 ```
 
 ## Using the Jupyter Notebook GUI
