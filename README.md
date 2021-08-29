@@ -1,4 +1,4 @@
-## guitarsounds
+# guitarsounds
 
 A python package to analyse guitar sounds. Developed as an educational analysis tool with the [Bruand Lutherie School](https://bruand.com/). 
 The API documentation is available at [documentation](guitarsounds.readthedocs.io)
