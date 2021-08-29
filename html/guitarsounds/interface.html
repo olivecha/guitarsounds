@@ -1,0 +1,3111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>guitarsounds.interface API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>guitarsounds.interface</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from IPython.display import display, clear_output, HTML
+from IPython import get_ipython
+from guitarsounds.analysis import Plot, Signal, Sound, SoundPack
+import ipywidgets as widgets
+import matplotlib.pyplot as plt
+import io
+import wave
+import struct
+import numpy as np
+
+def generate_error_widget(text):
+    return widgets.HTML(&#39;&lt;p style=&#34;color:#CC4123;&#34;&gt;&#39; + text + &#39;&lt;/p&gt;&#39;)
+
+
+class guitarGUI(object):
+    # Output layout
+    out_layout = {&#39;border&#39;: &#39;1px solid black&#39;}
+
+    # Box Layout
+    box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;50%&#39;)
+
+    # Fundamental input style
+    fundamental_style = style = {&#39;description_width&#39;: &#39;initial&#39;}
+
+    # Attribute for output layout
+    output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+
+    # List of plot methods
+    plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
+                    Plot.time_damping, Plot.timbre, ]
+    bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
+
+    # Plot info dict
+    plot_info_dict = {&#39;signal&#39;: Plot.signal,
+                      &#39;envelop&#39;: Plot.envelop,
+                      &#39;log envelop&#39;: Plot.log_envelop,
+                      &#39;fft&#39;: Plot.fft,
+                      &#39;fft hist&#39;: Plot.fft_hist,
+                      &#39;peaks&#39;: Plot.peaks,
+                      &#39;peak damping&#39;: Plot.peak_damping,
+                      &#39;time damping&#39;: Plot.time_damping,
+                      &#39;timbre&#39;: Plot.timbre,
+                      &#39;integral&#39;: Plot.integral}
+
+    # analysis drop downs
+    # Single analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Listen Sound&#39;, Signal.listen),
+               (&#39;Listen frequency bins&#39;, Sound.listen_freq_bins),
+               (&#39;Frequency bin plot&#39;, Sound.plot_freq_bins),
+               (&#39;Frequency bin histogram&#39;, Sound.bin_hist),
+               (&#39;Signal plot&#39;, Plot.signal),
+               (&#39;Envelop plot&#39;, Plot.envelop),
+               (&#39;Log-envelop plot&#39;, Plot.log_envelop),
+               (&#39;Fourier transform plot&#39;, Plot.fft),
+               (&#39;Fourier transform histogram&#39;, Plot.fft_hist),
+               (&#39;Peaks plot&#39;, Plot.peaks),
+               (&#39;Peak damping plot&#39;, Plot.peak_damping),
+               (&#39;Time damping plot&#39;, Plot.time_damping),
+               (&#39;Timbre attributes plot&#39;, Plot.timbre),
+               (&#39;Frequency damping values&#39;, Sound.peak_damping), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    single_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                        description=&#39;Choose an analysis : &#39;)
+    single_drop_down.rank = &#39;first&#39;
+
+    unique_plot_methods = [SoundPack.compare_peaks, SoundPack.fft_mirror, SoundPack.fft_diff, SoundPack.plot,
+                           SoundPack.bin_power_hist, ]
+
+    # Dual analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Compare Peaks&#39;, SoundPack.compare_peaks),
+               (&#39;Mirror FFT&#39;, SoundPack.fft_mirror),
+               (&#39;FFT difference&#39;, SoundPack.fft_diff),
+               (&#39;Bin power comparison&#39;, SoundPack.integral_compare),
+               (&#39;Stacked plot&#39;, SoundPack.plot),
+               (&#39;Compared plot&#39;, SoundPack.compare_plot),
+               (&#39;Bin power plot&#39;, SoundPack.integral_plot),
+               (&#39;Bin power table&#39;, SoundPack.bin_power_table),
+               (&#39;Bin power histogram&#39;, SoundPack.bin_power_hist),
+               (&#39;Frequency Bin plot&#39;, SoundPack.freq_bin_plot),
+               (&#39;Print Fundamentals&#39;, SoundPack.fundamentals), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    dual_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                      description=&#39;Choose an analysis : &#39;)
+    dual_drop_down.rank = &#39;first&#39;
+
+    # Multiple analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Stacked plot&#39;, SoundPack.plot),
+               (&#39;Compared plot&#39;, SoundPack.compare_plot),
+               (&#39;Frequency Bin plot&#39;, SoundPack.freq_bin_plot),
+               (&#39;Combine Envelops&#39;, SoundPack.combine_envelop),
+               (&#39;Print Fundamentals&#39;, SoundPack.fundamentals),
+               (&#39;Bin power plot&#39;, SoundPack.integral_plot),
+               (&#39;Print bin powers&#39;, SoundPack.bin_power_table),
+               (&#39;Bin power histogram&#39;, SoundPack.bin_power_hist), ]
+
+    DM_bin_choice_methods = [SoundPack.freq_bin_plot, SoundPack.integral_plot, SoundPack.integral_compare]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    mult_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                      description=&#39;Choose an analysis : &#39;)
+    mult_drop_down.rank = &#39;first&#39;
+
+    # Frequency bin choice drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;all&#39;, &#39;all&#39;),
+               (&#39;bass&#39;, &#39;bass&#39;),
+               (&#39;mid&#39;, &#39;mid&#39;),
+               (&#39;highmid&#39;, &#39;highmid&#39;),
+               (&#39;uppermid&#39;, &#39;uppermid&#39;),
+               (&#39;presence&#39;, &#39;presence&#39;),
+               (&#39;brillance&#39;, &#39;brillance&#39;), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    bin_drop_down = widgets.Dropdown(options=options, value=&#39;all&#39;, style=style,
+                                     description=&#39;Choose a frequency bin: &#39;)
+    bin_drop_down.rank = &#39;second&#39;
+    bin_drop_down.name = &#39;bin&#39;
+
+    # Plot type choice drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Signal&#39;, &#39;signal&#39;),
+               (&#39;Envelop&#39;, &#39;envelop&#39;),
+               (&#39;Log Scale Envelop&#39;, &#39;log envelop&#39;),
+               (&#39;Fourier Transform&#39;, &#39;fft&#39;),
+               (&#39;Fourier Transform Histogram&#39;, &#39;fft hist&#39;),
+               (&#39;Fourier Transform Peaks&#39;, &#39;peaks&#39;),
+               (&#39;Peak Damping&#39;, &#39;peak damping&#39;),
+               (&#39;Time Damping&#39;, &#39;time damping&#39;),
+               (&#39;Timbre Attributes&#39;, &#39;timbre&#39;),
+               (&#39;Cumulative integral&#39;, &#39;integral&#39;), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    plot_drop_down = widgets.Dropdown(options=options, value=&#39;signal&#39;, style=style,
+                                      description=&#39;Choose a plot type: &#39;)
+    plot_drop_down.rank = &#39;second&#39;
+    plot_drop_down.name = &#39;plot&#39;
+
+    def __init__(self):
+        &#34;&#34;&#34;
+        Here We display the three file choosing buttons matched with the
+        three types of analyses when one is clicked the user is prompted
+        to choose files.
+
+        When files are chosen  the user press the &#39;Ok&#39; Button and the
+        Program advances to defining names see `.on_ok_button_clicked_1`.
+        &#34;&#34;&#34;
+
+        # __ Buttons __
+        # Number of sound choice buttons
+        self.button1 = widgets.Button(description=&#34;Single Sound&#34;)
+        self.button2 = widgets.Button(description=&#34;Dual Sounds&#34;)
+        self.button3 = widgets.Button(description=&#34;Multiple Sounds&#34;)
+
+        # Ok, Done and Go Buttons
+        self.ok_button = widgets.Button(description=&#34;Ok&#34;)
+        self.done_button = widgets.Button(description=&#34;Done&#34;)
+        self.go_button = widgets.Button(description=&#39;Go&#39;)
+
+        # Normalize toggle button
+        self.toggle_normalize_button = widgets.Button(description=&#39;Normalize&#39;)
+        # Associated attribute to normalize the Sounds for the method called
+        self.normalize = False
+
+        # Info button
+        self.info_button = widgets.Button(description=&#39;Info&#39;)
+
+        # Button box when the GUI starts
+        self.button_box = widgets.Box(children=[self.button1,
+                                                self.button2,
+                                                self.button3,
+                                                self.ok_button], layout=self.box_layout)
+
+        # Load bar when importing sounds
+        self.load_bar = widgets.IntProgress(value=5, min=0, max=10,
+                                            description=&#39;Importing sound files :&#39;,
+                                            style={&#39;bar_color&#39;: &#39;#6495ED&#39;,
+                                                   &#39;description_width&#39;: &#39;140px&#39;}, )
+
+        # File selectors for uploading files into the program
+        self.single_file_selector = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.dual_file_selector_1 = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.dual_file_selector_2 = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.mult_file_selector = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=True)
+
+        # Dict with drop down methods to display the drop down associated to
+        # the analysis
+        self.first_level_drop_down = {&#39;Single&#39;: self.single_drop_down,
+                                      &#39;Dual&#39;: self.dual_drop_down,
+                                      &#39;Multiple&#39;: self.mult_drop_down}
+
+        # Save analysis type
+        self.analysis = None
+
+        # Define the current state of the program
+        self.state = &#39;start&#39;
+
+        # Listen for clicks on the first button panel
+        self.button1.on_click(self.on_single_button_clicked)
+        self.button2.on_click(self.on_dual_button_clicked)
+        self.button3.on_click(self.on_multiple_button_clicked)
+        self.ok_button.on_click(self.on_ok_button_clicked_1)
+        self.disable_file_selection(False)
+
+        # display the buttons
+        display(self.button_box)
+
+    &#34;&#34;&#34;
+    File Choosing Interface Button Click Methods
+    &#34;&#34;&#34;
+
+    def on_single_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays the single file selector, allowing the user to choose
+        one file.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.single_file_selector)
+
+        self.analysis = &#39;Single&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def on_dual_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays two single file selectors, allowing the user
+        to choose two files.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.dual_file_selector_1)
+            display(self.dual_file_selector_2)
+
+        self.analysis = &#39;Dual&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def on_multiple_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays a multiple file selector allowing the user
+        to select multiple files
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.mult_file_selector)
+
+        self.analysis = &#39;Multiple&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def disable_file_selection(self, state):
+        self.button1.disabled = state
+        self.button2.disabled = state
+        self.button3.disabled = state
+
+    def on_ok_button_clicked_1(self, b):
+        &#34;&#34;&#34;
+        The user clicks this button when he is done choosing files and when
+        he is done defining names
+        &#34;&#34;&#34;
+        # Clear the output
+        clear_output(wait=True)
+
+        # Check if the user did good when choosing files
+        file_selectors = [self.single_file_selector,
+                          self.dual_file_selector_1,
+                          self.dual_file_selector_2,
+                          self.mult_file_selector]
+        files_where_chosen = False
+        for file_selector in file_selectors:
+            if file_selector.value != {}:
+                files_where_chosen = True
+
+        # If the file where chosen the user is taken to the define name interface
+        if files_where_chosen:
+            self.define_sound_names()
+
+        # if not we go back to file selection
+        else:
+            output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+            with output:
+                if self.analysis == &#39;Single&#39;:
+                    display(self.single_file_selector)
+                elif self.analysis == &#39;Dual&#39;:
+                    display(self.dual_file_selector_1)
+                    display(self.dual_file_selector_2)
+                elif self.analysis == &#39;Multiple&#39;:
+                    display(self.mult_file_selector)
+                else:
+                    error = generate_error_widget(&#39;Chose an analysis type&#39;)
+                    display(error)
+
+                # Display an error if a file selector was clicked but no file was chosen
+                if self.analysis in [&#39;Single&#39;, &#39;Dual&#39;, &#39;Multiple&#39;]:
+                    error = generate_error_widget(&#39;No sound was chosen&#39;)
+                    display(error)
+
+            display(self.button_box)
+            display(output)
+
+    &#34;&#34;&#34; 
+    Analysis interface button click methods
+    &#34;&#34;&#34;
+
+    def on_ok_button_clicked_2(self, b):
+        &#34;&#34;&#34;
+        Method to make the &#34;Ok&#34; button interact with the
+        analysis method choice.
+
+        __ when interface.state = &#39;method choice&#39; __
+        - The &#34;Ok&#34; and &#34;Go&#34; buttons appears after the loading bar is done
+        - The drop down corresponds to the methods associated to
+        the analysis
+
+        &#34;&#34;&#34;
+        # Clear the Output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+
+        # Save the drop down value
+        drop_down_value = self.current_drop_down.value
+        
+        # enable the info button when coming back from display
+        if self.state != &#39;display&#39;:
+            self.info_button.disabled = False
+            self.toggle_normalize_button.disabled = False
+
+        # Deactivate the info button if it was activated
+        if self.info_button.button_style == &#39;info&#39;:
+            self.info_button.button_style = &#39;&#39;
+
+        if self.state == &#39;method choice&#39;:  # State when the user is choosing the analysis method
+
+            # If we only analyse a single sound
+            if self.analysis == &#39;Single&#39;:
+
+                # Special case when the method is the frequency bin plot
+                if drop_down_value == Sound.plot_freq_bins:
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Change the drop down to frequency bin choice
+                    self.current_drop_down = self.bin_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Case for the methods without plotting
+                elif drop_down_value in [Sound.peak_damping, Sound.listen_freq_bins, Signal.listen]:
+                    self.analysis_tuple = [drop_down_value]  # store the method
+                    self.state = &#39;display&#39;  # ready to display
+                    self.display = &#39;print&#39;
+
+                # Signal.plot.method() methods
+                elif drop_down_value in [*self.plot_methods, Sound.bin_hist]:
+                    # store method and arg in a list
+                    self.analysis_tuple = [drop_down_value]
+                    self.state = &#39;display&#39;  # ready to display
+                    self.display = &#39;plot&#39;
+
+                # Error when no method is chosen
+                elif drop_down_value == 1:
+                    error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                    with output:
+                        display(error)
+
+            # Case when two sounds or multiple sounds are being analysed
+            elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+                # Special case for the frequency bin plot
+                if drop_down_value in self.DM_bin_choice_methods:
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Update the drop down to frequency bin choice
+                    self.current_drop_down = self.bin_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Case for plot methods
+                elif (drop_down_value == SoundPack.plot) or (drop_down_value == SoundPack.compare_plot):
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Update the drop down to the plot drop down
+                    self.current_drop_down = self.plot_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Error when no method is chosen
+                elif drop_down_value == 1:
+                    error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                    with output:
+                        display(error)
+
+                # Case for methods with no arguments
+                else:
+                    if drop_down_value == SoundPack.fundamentals:
+                        self.display = &#39;print&#39;
+                    else:
+                        self.display = &#39;plot&#39;
+                    self.analysis_tuple = [drop_down_value]  # store the method
+                    self.state = &#39;display&#39;
+
+        # Case when the method is chosen and an argument needs to be added &#39;method choice 2&#39;
+        elif self.state == &#39;method choice 2&#39;:
+
+            # add the arg part to the analysis tuple
+            self.analysis_tuple.append(self.current_drop_down.value)
+            self.state = &#39;display&#39;
+
+        # if we are coming back from the display the state is redefined and we restart
+        elif self.state == &#39;analysis displayed&#39;:
+            self.state = &#39;method choice&#39;
+
+        # If the button is pressed and the method is defined, the go button is enabled
+        if self.state == &#39;display&#39;:
+            self.go_button.disabled = False
+            self.ok_button.disabled = True
+            self.info_button.disabled = True
+            self.toggle_normalize_button.disabled = True
+
+        # Actualize the button box and display
+        children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+        self.button_box = widgets.Box(children=children, layout=self.box_layout)
+
+        # Put the updated drop down in the output
+        with output:
+            display(self.current_drop_down)
+
+        display(self.button_box, output)
+
+    def on_info_button_clicked(self, info):
+        &#34;&#34;&#34;
+        Method called when the info button is clicked
+        Displays the help string associated with the current drop down method
+        &#34;&#34;&#34;
+        if info.button_style == &#39;&#39;:
+            # change the style to make the button blue
+            info.button_style = &#39;info&#39;
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+
+            # Case when the user is selecting the first method
+            if self.state == &#39;method choice&#39;:
+
+                # if the method is a tuple with an argument
+                if type(self.current_drop_down.value) == tuple:
+                    with output:
+                        display(help(self.current_drop_down.value[0]))
+
+                # if no method was selected
+                elif type(self.current_drop_down.value) == int:
+                    error = generate_error_widget(&#39;No analysis was selected&#39;)
+                    with output:
+                        display(error)
+
+                # a method not in a tuple was selected
+                else:
+                    with output:
+                        display(help(self.current_drop_down.value))
+
+                # display every thing
+                display(self.button_box, output)
+
+            # case when the user is doing a secondary selection
+            elif self.state == &#39;method choice 2&#39;:
+
+                # case for the plot type drop down
+                if self.current_drop_down.name == &#39;plot&#39;:
+                    with output:
+                        display(help(self.plot_info_dict[self.current_drop_down.value]))
+
+                # case for bin type drop down (display the previous method)
+                elif self.current_drop_down.name == &#39;bin&#39;:
+                    with output:
+                        display(help(self.analysis_tuple[0]))
+
+                display(self.button_box, output)
+
+        elif info.button_style == &#39;info&#39;:
+            info.button_style = &#39;&#39;
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+            with output:
+                display(self.current_drop_down)
+
+            # display every thing
+            display(self.button_box, output)
+
+    def on_normalize_button_clicked(self, toggle):
+        &#34;&#34;&#34;
+        Method called when the normalize button is clicked
+        The normalized attribute is inversed according to the current value
+        &#34;&#34;&#34;
+        if toggle.button_style == &#39;&#39;:
+            toggle.button_style = &#39;success&#39;
+            toggle.icon = &#39;check&#39;
+            self.normalize = True
+
+        elif toggle.button_style == &#39;success&#39;:
+            toggle.button_style = &#39;&#39;
+            toggle.icon = &#39;&#39;
+            self.normalize = False
+
+    def on_done_button_clicked(self, b):
+        &#34;&#34;&#34;
+        When the done button is clicked after the user had
+        the option to define custom names this function is executed
+
+        A load bar is displayed while te files are loaded, when the
+        load bar is done the `.on_loaded_bar()` method is called.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        display(self.load_bar)
+        self.load_bar.observe(self.on_loaded_bar, names=&#34;value&#34;)
+
+        self.load_bar.value += 1
+        self.import_sound_files()
+
+    def on_go_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Go button to display the analysis when all choices are made
+
+        What happens :
+        ___________________________________
+        1. The output is cleared
+        2. A output widget to store the output is instanciated
+        3. The method in `self.analysis_tuple` is called
+        4. The display is added to the output
+        5. The &#39;Ok&#39; button is enabled and the &#39;Go&#39; button is disabled
+        6. The drop down is set back to its default value
+        7. The buttons and output are displayed
+        &#34;&#34;&#34;
+        # Always clear the output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)  # Create a output
+
+        # Change the GUI state
+        self.state = &#39;analysis displayed&#39;
+
+        # Set the matplotlib display method
+        get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+
+        # Case for a single sound
+        if self.analysis == &#39;Single&#39;:
+
+            # Case for Sound.plot_freq_bins method
+            if self.analysis_tuple[0] == Sound.plot_freq_bins:
+                # change interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # create a figure
+                plt.figure(figsize=(8, 6))
+                # Call the method
+                self.analysis_tuple[0](self.sounds, bins=[self.analysis_tuple[1]])
+
+                # Define the title according to the chosen bin
+                if self.analysis_tuple[1] == &#39;all&#39;:
+                    plt.title(&#39;Frequency bin plot for &#39; + self.sounds.name)
+                else:
+                    plt.title(self.analysis_tuple[1] + &#39; bin plot for &#39; + self.sounds.name)
+
+                    plt.show()
+
+            # Case for the Sound.peak_damping method (print only)
+            elif self.analysis_tuple[0] in [Sound.peak_damping, Sound.listen_freq_bins]:
+                with output:
+                    self.analysis_tuple[0](self.sounds)  # add print to output
+
+            # Case for the Signal.plot method
+            elif self.analysis_tuple[0] in self.plot_methods:
+                # change plot interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # create a figure
+                plt.figure(figsize=(8, 6))
+                # Add the fill argument if there is just one plot
+                if self.analysis_tuple[0] == Plot.timbre:
+                    kwargs = {&#39;fill&#39;: True}
+                else:
+                    kwargs = {}
+                # Call the method according to normalization
+                if not self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal.plot, **kwargs)
+                elif self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal.normalize().plot, **kwargs)
+
+                if self.analysis_tuple[0] == Plot.time_damping:
+                    zeta = np.around(self.sounds.signal.time_damping(), 5)
+                    plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name + &#39; Zeta = &#39; + str(zeta))
+                # Define a title from the signal.plot(kind)
+                else:
+                    plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+
+                # make the x-axis ticks the frequency bins if the axe is frequency
+                if self.analysis_tuple[0] in self.bin_ticks_methods:
+                    Plot.set_bin_ticks(self.sounds.signal.plot)
+                # add to output
+                with output:
+                    plt.show()
+
+            # Case for the Sound.bin_hist method
+            elif self.analysis_tuple[0] == Sound.bin_hist:
+                # change plot interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # call the method
+                self.analysis_tuple[0](self.sounds)
+                # set a title
+                plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+                # add to output
+                with output:
+                    plt.show()
+
+            # Case for the Signal.listen method
+            elif self.analysis_tuple[0] == Signal.listen:
+                # add to output
+                with output:
+                    # Call the method according to normalization
+                    if not self.normalize:
+                        self.analysis_tuple[0](self.sounds.signal)
+                    elif self.normalize:
+                        self.analysis_tuple[0](self.sounds.signal.normalize())
+
+        # Case for Dual and Multiple analyses
+        elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+            # normalize the sound_pack if self.normalize is True
+            if self.normalize:
+                sound_pack = self.Pack.normalize()
+            elif not self.normalize:
+                sound_pack = self.Pack
+
+            # if the analysis method is a unique plot, make matplotlib interactive
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+            if self.analysis_tuple[0] in self.unique_plot_methods:
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+
+            # Call with no arguments
+            if len(self.analysis_tuple) == 1:
+                # Case for a print output
+                if self.display == &#39;print&#39;:
+                    with output:
+                        self.analysis_tuple[0](sound_pack)  # add print to output
+
+                # special case to have bins ticks for the fft_diff method
+                elif self.analysis_tuple[0] == SoundPack.fft_diff:
+                    self.analysis_tuple[0](sound_pack, ticks=&#39;bins&#39;)
+                    with output:
+                        plt.show()  # display plot in output
+
+                # Case for a plot output
+                elif self.display == &#39;plot&#39;:
+                    self.analysis_tuple[0](sound_pack)
+                    with output:
+                        plt.show()  # display plot in output
+
+            # Call with arguments
+            elif len(self.analysis_tuple) == 2:
+                self.analysis_tuple[0](sound_pack, self.analysis_tuple[1])
+                with output:
+                    plt.show()
+
+        # Setup the drop down to go back to method choice
+        self.current_drop_down.value = 1
+        self.current_drop_down = self.first_level_drop_down[self.analysis]
+        self.current_drop_down.value = 1
+
+        # Set the Go and Ok buttons to default value
+        self.go_button.disabled = True
+        self.ok_button.disabled = False
+
+        # Set the normalization button to not normalized
+        self.toggle_normalize_button.button_style = &#39;&#39;
+        self.toggle_normalize_button.icon = &#39;&#39;
+        self.normalize = False
+
+
+        # display
+        display(self.button_box, output)
+        # Make the window larger
+        display(HTML(&#34;&lt;style&gt;div.output_scroll { height: 44em; }&lt;/style&gt;&#34;))
+
+    &#34;&#34;&#34;
+    Observe methods
+    &#34;&#34;&#34;
+
+    def on_loaded_bar(self, change):
+        &#34;&#34;&#34;
+        This method monitors the value of the load bar used
+        when loading files.
+
+        When the load bar is complete (value = 10), the
+        button box is displayed with the &#34;Ok&#34; and &#34;Go&#34; buttons
+        The &#34;Go&#34; button is disabled
+        The Drop down with the methods according to the
+        current analysis is displayed.
+        &#34;&#34;&#34;
+        # When the bar reaches the end
+        if change[&#34;new&#34;] &gt;= 10:
+            clear_output(wait=True)
+
+            # disable the go_button
+            self.state = &#39;method choice&#39;
+
+            # Actualize the button box and display
+            children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+            self.button_box = widgets.Box(children=children, layout=self.box_layout)
+            self.ok_button.on_click(self.on_ok_button_clicked_2)
+            self.go_button.on_click(self.on_go_button_clicked)
+            self.toggle_normalize_button.on_click(self.on_normalize_button_clicked)
+            self.info_button.on_click(self.on_info_button_clicked)
+            self.go_button.disabled = True
+            display(self.button_box)
+
+            # create the output
+            output = widgets.Output(layout=self.out_layout)
+
+            # display the drop down associated to the current analysis
+            self.current_drop_down = self.first_level_drop_down[self.analysis]
+            with output:
+                display(self.current_drop_down)
+
+            display(output)
+
+    &#34;&#34;&#34;
+    Back end functions
+    &#34;&#34;&#34;
+
+    def define_sound_names(self):
+        &#34;&#34;&#34;
+        A method to define sound names and fundamentals
+        &#34;&#34;&#34;
+
+        # Clear the output and define the new one
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+
+        # Style for the text inputs
+        style = {&#39;description_width&#39;: &#39;initial&#39;}
+
+        # Small string &#39;Hz&#39; to indicate units
+        HZ_string = widgets.HTML(&#39;&lt;p&gt;&#39; + &#39;Hz&#39; + &#39;&lt;/p&gt;&#39;)
+
+        # Define the button box
+        self.button_box = widgets.Box(children=[self.done_button], layout=self.box_layout)
+
+        # Define the output with the text inputs
+        with output:
+
+            # Case for a single sound analysis
+            if self.analysis == &#39;Single&#39;:
+
+                # get the filenames
+                self.file_names = [ky for ky in self.single_file_selector.value.keys()]
+
+                # make a sound name input widget
+                sound_name_input = widgets.Text(value=&#39;&#39;,
+                                                placeholder=&#39;sound name&#39;,
+                                                description=self.file_names[0],
+                                                layout=widgets.Layout(width=&#39;40%&#39;),
+                                                style=style,
+                                                )
+
+                # make a fundamental input widget
+                fundamental_input = widgets.FloatText(value=0,
+                                                      description=&#39;Fundamental :&#39;,
+                                                      style=style,
+                                                      layout=widgets.Layout(width=&#39;20%&#39;)
+                                                      )
+
+                # childrens that go in the name box
+                childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                # define a name box widget
+                name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+                name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                # display the box
+                display(name_box)
+
+                # store the input to refer them later
+                self.sound_name_inputs = [sound_name_input]
+                self.sound_fundamental_inputs = [fundamental_input]
+
+            # Case for dual sound analysis
+            elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+                if self.analysis == &#39;Dual&#39;:
+                    # get the file names
+                    name1 = [ky for ky in self.dual_file_selector_1.value.keys()][0]
+                    name2 = [ky for ky in self.dual_file_selector_2.value.keys()][0]
+                    self.file_names = [name1, name2]
+
+                elif self.analysis == &#39;Multiple&#39;:
+                    self.file_names = [ky for ky in self.mult_file_selector.value.keys()]
+
+                # create empty lists for the inputs
+                self.sound_name_inputs = []
+                self.sound_fundamental_inputs = []
+
+                for file in self.file_names:
+                    # make a text input widget
+                    sound_name_input = widgets.Text(value=&#39;&#39;,
+                                                    placeholder=&#39;sound name&#39;,
+                                                    description=file,
+                                                    layout=widgets.Layout(width=&#39;40%&#39;),
+                                                    style=style,
+                                                    )
+
+                    # make a fundamental input widget
+                    fundamental_input = widgets.FloatText(value=0,
+                                                          description=&#39;Fundamental :&#39;,
+                                                          layout=widgets.Layout(width=&#39;20%&#39;),
+                                                          style=style
+                                                          )
+
+                    # childrens that go in the name box
+                    childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                    # define a name box widget
+                    name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+                    name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                    # display the box
+                    display(name_box)
+
+                    # append the inputs
+                    self.sound_name_inputs.append(sound_name_input)
+                    self.sound_fundamental_inputs.append(fundamental_input)
+
+        self.done_button.on_click(self.on_done_button_clicked)
+
+        # display everything
+        display(self.button_box, output)
+
+    def import_sound_files(self):
+        &#34;&#34;&#34;
+        Method to import the soundfile vectors into the program
+        after the files and names where defined.
+        *Only works with .wav files*
+        &#34;&#34;&#34;
+
+        # Case for when only a single file is imported
+        if self.analysis == &#39;Single&#39;:
+            # Loading Bar Value = 0
+            # Get the filename values from the file selector
+            file_values = self.single_file_selector.value[self.file_names[0]]
+
+            # Get the signal audio bytes
+            bites = file_values[&#39;content&#39;]
+
+            # Convert to wav audio object
+            audio = wave.open(io.BytesIO(bites))
+
+            sr = audio.getframerate()  # save the frame rate
+
+            samples = []
+            self.load_bar.value += 1  # LoadBar value = 1
+            n = audio.getnframes()
+            milestones = [int(i) for i in np.linspace(0, n, 5)][1:]
+            for _ in range(audio.getnframes()):
+                frame = audio.readframes(1)
+                samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                if _ in milestones:
+                    self.load_bar.value += 1  # LoadBar value increases to 5 in loop
+
+            self.load_bar.value += 1  # LoadBar value = 7
+            signal = np.array(samples) / 32768
+            Sound_Input = (signal, sr)
+            self.load_bar.value += 1  # LoadBar value = 8
+
+            # Get the sound name
+            if self.sound_name_inputs[0].value == &#39;&#39;:
+                name = self.file_names[0].replace(&#39;.wav&#39;, &#39;&#39;)
+            else:
+                name = self.sound_name_inputs[0].value
+
+            # Get the sound fundamental
+            if self.sound_fundamental_inputs[0].value == 0:
+                fundamental = None
+            else:
+                fundamental = self.sound_fundamental_inputs[0].value
+
+            self.load_bar.value += 1  # LoadBar value = 9
+            # This takes a long time
+            sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+            self.sounds = sound.condition(return_self=True, verbose=False)
+            self.load_bar.value += 2  # Loadbar = 10
+
+        # Case for two files from two file selectors
+        elif self.analysis == &#39;Dual&#39;:
+            # LoadBar = 0
+            self.sounds = []
+            file_dicts = [self.dual_file_selector_1.value, self.dual_file_selector_2.value]
+            self.load_bar.value += 2  # LoadBar = 1
+
+            # zipped iterator
+            iterator = zip(self.file_names, file_dicts, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            #  Create a sound for every file
+            for file, dic, name_input, fundamental_input in iterator:
+
+                file_values = dic[file]
+                bites = file_values[&#39;content&#39;]
+                audio = wave.open(io.BytesIO(bites))
+                sr = audio.getframerate()
+                samples = []
+                self.load_bar.value += 1  # LoadBar +=2
+                for _ in range(audio.getnframes()):
+                    frame = audio.readframes(1)
+                    samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                self.load_bar.value += 1  # LoadBar +=2
+                signal = np.array(samples) / 32768
+                Sound_Input = (signal, sr)
+
+                # get the name value
+                if name_input.value == &#39;&#39;:
+                    name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+                else:
+                    name = name_input.value
+
+                # get the fundamental value
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
+                self.load_bar.value += 1  # LoadBar +=2
+            # Load Bar = 8
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+            self.load_bar.value += 2  # Load Bar = 10
+
+        # Case for multiple files
+        elif self.analysis == &#39;Multiple&#39;:
+            # LoadBar = 0
+            self.sounds = []
+            self.load_bar.value += 1  # LoadBar = 1
+
+            # zipped iterator
+            iterator = zip(self.file_names, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            for file, name_input, fundamental_input in iterator:
+                file_values = self.mult_file_selector.value[file]
+                bites = file_values[&#39;content&#39;]
+                audio = wave.open(io.BytesIO(bites))
+                sr = audio.getframerate()
+                samples = []
+                for _ in range(audio.getnframes()):
+                    frame = audio.readframes(1)
+                    samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                signal = np.array(samples) / 32768
+                Sound_Input = (signal, sr)
+
+                # get the sound names
+                if name_input.value == &#39;&#39;:
+                    name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+                else:
+                    name = name_input.value
+
+                # get the fundamental values
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
+                if self.load_bar.value &lt; 9:
+                    self.load_bar.value += 1
+
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+            while self.load_bar.value &lt; 10:
+                self.load_bar.value += 1  # LoadBar = 10</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="guitarsounds.interface.generate_error_widget"><code class="name flex">
+<span>def <span class="ident">generate_error_widget</span></span>(<span>text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_error_widget(text):
+    return widgets.HTML(&#39;&lt;p style=&#34;color:#CC4123;&#34;&gt;&#39; + text + &#39;&lt;/p&gt;&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="guitarsounds.interface.guitarGUI"><code class="flex name class">
+<span>class <span class="ident">guitarGUI</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Here We display the three file choosing buttons matched with the
+three types of analyses when one is clicked the user is prompted
+to choose files.</p>
+<p>When files are chosen
+the user press the 'Ok' Button and the
+Program advances to defining names see <code>.on_ok_button_clicked_1</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class guitarGUI(object):
+    # Output layout
+    out_layout = {&#39;border&#39;: &#39;1px solid black&#39;}
+
+    # Box Layout
+    box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;50%&#39;)
+
+    # Fundamental input style
+    fundamental_style = style = {&#39;description_width&#39;: &#39;initial&#39;}
+
+    # Attribute for output layout
+    output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+
+    # List of plot methods
+    plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
+                    Plot.time_damping, Plot.timbre, ]
+    bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
+
+    # Plot info dict
+    plot_info_dict = {&#39;signal&#39;: Plot.signal,
+                      &#39;envelop&#39;: Plot.envelop,
+                      &#39;log envelop&#39;: Plot.log_envelop,
+                      &#39;fft&#39;: Plot.fft,
+                      &#39;fft hist&#39;: Plot.fft_hist,
+                      &#39;peaks&#39;: Plot.peaks,
+                      &#39;peak damping&#39;: Plot.peak_damping,
+                      &#39;time damping&#39;: Plot.time_damping,
+                      &#39;timbre&#39;: Plot.timbre,
+                      &#39;integral&#39;: Plot.integral}
+
+    # analysis drop downs
+    # Single analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Listen Sound&#39;, Signal.listen),
+               (&#39;Listen frequency bins&#39;, Sound.listen_freq_bins),
+               (&#39;Frequency bin plot&#39;, Sound.plot_freq_bins),
+               (&#39;Frequency bin histogram&#39;, Sound.bin_hist),
+               (&#39;Signal plot&#39;, Plot.signal),
+               (&#39;Envelop plot&#39;, Plot.envelop),
+               (&#39;Log-envelop plot&#39;, Plot.log_envelop),
+               (&#39;Fourier transform plot&#39;, Plot.fft),
+               (&#39;Fourier transform histogram&#39;, Plot.fft_hist),
+               (&#39;Peaks plot&#39;, Plot.peaks),
+               (&#39;Peak damping plot&#39;, Plot.peak_damping),
+               (&#39;Time damping plot&#39;, Plot.time_damping),
+               (&#39;Timbre attributes plot&#39;, Plot.timbre),
+               (&#39;Frequency damping values&#39;, Sound.peak_damping), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    single_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                        description=&#39;Choose an analysis : &#39;)
+    single_drop_down.rank = &#39;first&#39;
+
+    unique_plot_methods = [SoundPack.compare_peaks, SoundPack.fft_mirror, SoundPack.fft_diff, SoundPack.plot,
+                           SoundPack.bin_power_hist, ]
+
+    # Dual analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Compare Peaks&#39;, SoundPack.compare_peaks),
+               (&#39;Mirror FFT&#39;, SoundPack.fft_mirror),
+               (&#39;FFT difference&#39;, SoundPack.fft_diff),
+               (&#39;Bin power comparison&#39;, SoundPack.integral_compare),
+               (&#39;Stacked plot&#39;, SoundPack.plot),
+               (&#39;Compared plot&#39;, SoundPack.compare_plot),
+               (&#39;Bin power plot&#39;, SoundPack.integral_plot),
+               (&#39;Bin power table&#39;, SoundPack.bin_power_table),
+               (&#39;Bin power histogram&#39;, SoundPack.bin_power_hist),
+               (&#39;Frequency Bin plot&#39;, SoundPack.freq_bin_plot),
+               (&#39;Print Fundamentals&#39;, SoundPack.fundamentals), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    dual_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                      description=&#39;Choose an analysis : &#39;)
+    dual_drop_down.rank = &#39;first&#39;
+
+    # Multiple analysis drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Stacked plot&#39;, SoundPack.plot),
+               (&#39;Compared plot&#39;, SoundPack.compare_plot),
+               (&#39;Frequency Bin plot&#39;, SoundPack.freq_bin_plot),
+               (&#39;Combine Envelops&#39;, SoundPack.combine_envelop),
+               (&#39;Print Fundamentals&#39;, SoundPack.fundamentals),
+               (&#39;Bin power plot&#39;, SoundPack.integral_plot),
+               (&#39;Print bin powers&#39;, SoundPack.bin_power_table),
+               (&#39;Bin power histogram&#39;, SoundPack.bin_power_hist), ]
+
+    DM_bin_choice_methods = [SoundPack.freq_bin_plot, SoundPack.integral_plot, SoundPack.integral_compare]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    mult_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+                                      description=&#39;Choose an analysis : &#39;)
+    mult_drop_down.rank = &#39;first&#39;
+
+    # Frequency bin choice drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;all&#39;, &#39;all&#39;),
+               (&#39;bass&#39;, &#39;bass&#39;),
+               (&#39;mid&#39;, &#39;mid&#39;),
+               (&#39;highmid&#39;, &#39;highmid&#39;),
+               (&#39;uppermid&#39;, &#39;uppermid&#39;),
+               (&#39;presence&#39;, &#39;presence&#39;),
+               (&#39;brillance&#39;, &#39;brillance&#39;), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    bin_drop_down = widgets.Dropdown(options=options, value=&#39;all&#39;, style=style,
+                                     description=&#39;Choose a frequency bin: &#39;)
+    bin_drop_down.rank = &#39;second&#39;
+    bin_drop_down.name = &#39;bin&#39;
+
+    # Plot type choice drop down
+    options = [(&#39;&#39;, 1),
+               (&#39;Signal&#39;, &#39;signal&#39;),
+               (&#39;Envelop&#39;, &#39;envelop&#39;),
+               (&#39;Log Scale Envelop&#39;, &#39;log envelop&#39;),
+               (&#39;Fourier Transform&#39;, &#39;fft&#39;),
+               (&#39;Fourier Transform Histogram&#39;, &#39;fft hist&#39;),
+               (&#39;Fourier Transform Peaks&#39;, &#39;peaks&#39;),
+               (&#39;Peak Damping&#39;, &#39;peak damping&#39;),
+               (&#39;Time Damping&#39;, &#39;time damping&#39;),
+               (&#39;Timbre Attributes&#39;, &#39;timbre&#39;),
+               (&#39;Cumulative integral&#39;, &#39;integral&#39;), ]
+
+    style = {&#39;description_width&#39;: &#39;150px&#39;}
+    plot_drop_down = widgets.Dropdown(options=options, value=&#39;signal&#39;, style=style,
+                                      description=&#39;Choose a plot type: &#39;)
+    plot_drop_down.rank = &#39;second&#39;
+    plot_drop_down.name = &#39;plot&#39;
+
+    def __init__(self):
+        &#34;&#34;&#34;
+        Here We display the three file choosing buttons matched with the
+        three types of analyses when one is clicked the user is prompted
+        to choose files.
+
+        When files are chosen  the user press the &#39;Ok&#39; Button and the
+        Program advances to defining names see `.on_ok_button_clicked_1`.
+        &#34;&#34;&#34;
+
+        # __ Buttons __
+        # Number of sound choice buttons
+        self.button1 = widgets.Button(description=&#34;Single Sound&#34;)
+        self.button2 = widgets.Button(description=&#34;Dual Sounds&#34;)
+        self.button3 = widgets.Button(description=&#34;Multiple Sounds&#34;)
+
+        # Ok, Done and Go Buttons
+        self.ok_button = widgets.Button(description=&#34;Ok&#34;)
+        self.done_button = widgets.Button(description=&#34;Done&#34;)
+        self.go_button = widgets.Button(description=&#39;Go&#39;)
+
+        # Normalize toggle button
+        self.toggle_normalize_button = widgets.Button(description=&#39;Normalize&#39;)
+        # Associated attribute to normalize the Sounds for the method called
+        self.normalize = False
+
+        # Info button
+        self.info_button = widgets.Button(description=&#39;Info&#39;)
+
+        # Button box when the GUI starts
+        self.button_box = widgets.Box(children=[self.button1,
+                                                self.button2,
+                                                self.button3,
+                                                self.ok_button], layout=self.box_layout)
+
+        # Load bar when importing sounds
+        self.load_bar = widgets.IntProgress(value=5, min=0, max=10,
+                                            description=&#39;Importing sound files :&#39;,
+                                            style={&#39;bar_color&#39;: &#39;#6495ED&#39;,
+                                                   &#39;description_width&#39;: &#39;140px&#39;}, )
+
+        # File selectors for uploading files into the program
+        self.single_file_selector = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.dual_file_selector_1 = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.dual_file_selector_2 = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=False)
+        self.mult_file_selector = widgets.FileUpload(accept=&#39;.wav&#39;, multiple=True)
+
+        # Dict with drop down methods to display the drop down associated to
+        # the analysis
+        self.first_level_drop_down = {&#39;Single&#39;: self.single_drop_down,
+                                      &#39;Dual&#39;: self.dual_drop_down,
+                                      &#39;Multiple&#39;: self.mult_drop_down}
+
+        # Save analysis type
+        self.analysis = None
+
+        # Define the current state of the program
+        self.state = &#39;start&#39;
+
+        # Listen for clicks on the first button panel
+        self.button1.on_click(self.on_single_button_clicked)
+        self.button2.on_click(self.on_dual_button_clicked)
+        self.button3.on_click(self.on_multiple_button_clicked)
+        self.ok_button.on_click(self.on_ok_button_clicked_1)
+        self.disable_file_selection(False)
+
+        # display the buttons
+        display(self.button_box)
+
+    &#34;&#34;&#34;
+    File Choosing Interface Button Click Methods
+    &#34;&#34;&#34;
+
+    def on_single_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays the single file selector, allowing the user to choose
+        one file.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.single_file_selector)
+
+        self.analysis = &#39;Single&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def on_dual_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays two single file selectors, allowing the user
+        to choose two files.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.dual_file_selector_1)
+            display(self.dual_file_selector_2)
+
+        self.analysis = &#39;Dual&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def on_multiple_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Displays a multiple file selector allowing the user
+        to select multiple files
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        self.disable_file_selection(True)
+        with output:
+            display(self.mult_file_selector)
+
+        self.analysis = &#39;Multiple&#39;
+        self.state = &#39;file entry&#39;
+
+        display(self.button_box)
+        display(output)
+
+    def disable_file_selection(self, state):
+        self.button1.disabled = state
+        self.button2.disabled = state
+        self.button3.disabled = state
+
+    def on_ok_button_clicked_1(self, b):
+        &#34;&#34;&#34;
+        The user clicks this button when he is done choosing files and when
+        he is done defining names
+        &#34;&#34;&#34;
+        # Clear the output
+        clear_output(wait=True)
+
+        # Check if the user did good when choosing files
+        file_selectors = [self.single_file_selector,
+                          self.dual_file_selector_1,
+                          self.dual_file_selector_2,
+                          self.mult_file_selector]
+        files_where_chosen = False
+        for file_selector in file_selectors:
+            if file_selector.value != {}:
+                files_where_chosen = True
+
+        # If the file where chosen the user is taken to the define name interface
+        if files_where_chosen:
+            self.define_sound_names()
+
+        # if not we go back to file selection
+        else:
+            output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+            with output:
+                if self.analysis == &#39;Single&#39;:
+                    display(self.single_file_selector)
+                elif self.analysis == &#39;Dual&#39;:
+                    display(self.dual_file_selector_1)
+                    display(self.dual_file_selector_2)
+                elif self.analysis == &#39;Multiple&#39;:
+                    display(self.mult_file_selector)
+                else:
+                    error = generate_error_widget(&#39;Chose an analysis type&#39;)
+                    display(error)
+
+                # Display an error if a file selector was clicked but no file was chosen
+                if self.analysis in [&#39;Single&#39;, &#39;Dual&#39;, &#39;Multiple&#39;]:
+                    error = generate_error_widget(&#39;No sound was chosen&#39;)
+                    display(error)
+
+            display(self.button_box)
+            display(output)
+
+    &#34;&#34;&#34; 
+    Analysis interface button click methods
+    &#34;&#34;&#34;
+
+    def on_ok_button_clicked_2(self, b):
+        &#34;&#34;&#34;
+        Method to make the &#34;Ok&#34; button interact with the
+        analysis method choice.
+
+        __ when interface.state = &#39;method choice&#39; __
+        - The &#34;Ok&#34; and &#34;Go&#34; buttons appears after the loading bar is done
+        - The drop down corresponds to the methods associated to
+        the analysis
+
+        &#34;&#34;&#34;
+        # Clear the Output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+
+        # Save the drop down value
+        drop_down_value = self.current_drop_down.value
+        
+        # enable the info button when coming back from display
+        if self.state != &#39;display&#39;:
+            self.info_button.disabled = False
+            self.toggle_normalize_button.disabled = False
+
+        # Deactivate the info button if it was activated
+        if self.info_button.button_style == &#39;info&#39;:
+            self.info_button.button_style = &#39;&#39;
+
+        if self.state == &#39;method choice&#39;:  # State when the user is choosing the analysis method
+
+            # If we only analyse a single sound
+            if self.analysis == &#39;Single&#39;:
+
+                # Special case when the method is the frequency bin plot
+                if drop_down_value == Sound.plot_freq_bins:
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Change the drop down to frequency bin choice
+                    self.current_drop_down = self.bin_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Case for the methods without plotting
+                elif drop_down_value in [Sound.peak_damping, Sound.listen_freq_bins, Signal.listen]:
+                    self.analysis_tuple = [drop_down_value]  # store the method
+                    self.state = &#39;display&#39;  # ready to display
+                    self.display = &#39;print&#39;
+
+                # Signal.plot.method() methods
+                elif drop_down_value in [*self.plot_methods, Sound.bin_hist]:
+                    # store method and arg in a list
+                    self.analysis_tuple = [drop_down_value]
+                    self.state = &#39;display&#39;  # ready to display
+                    self.display = &#39;plot&#39;
+
+                # Error when no method is chosen
+                elif drop_down_value == 1:
+                    error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                    with output:
+                        display(error)
+
+            # Case when two sounds or multiple sounds are being analysed
+            elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+                # Special case for the frequency bin plot
+                if drop_down_value in self.DM_bin_choice_methods:
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Update the drop down to frequency bin choice
+                    self.current_drop_down = self.bin_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Case for plot methods
+                elif (drop_down_value == SoundPack.plot) or (drop_down_value == SoundPack.compare_plot):
+                    self.analysis_tuple = [drop_down_value]  # Store the method
+                    # Update the drop down to the plot drop down
+                    self.current_drop_down = self.plot_drop_down
+                    self.state = &#39;method choice 2&#39;  # a second choice is needed
+                    self.display = &#39;plot&#39;
+
+                # Error when no method is chosen
+                elif drop_down_value == 1:
+                    error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                    with output:
+                        display(error)
+
+                # Case for methods with no arguments
+                else:
+                    if drop_down_value == SoundPack.fundamentals:
+                        self.display = &#39;print&#39;
+                    else:
+                        self.display = &#39;plot&#39;
+                    self.analysis_tuple = [drop_down_value]  # store the method
+                    self.state = &#39;display&#39;
+
+        # Case when the method is chosen and an argument needs to be added &#39;method choice 2&#39;
+        elif self.state == &#39;method choice 2&#39;:
+
+            # add the arg part to the analysis tuple
+            self.analysis_tuple.append(self.current_drop_down.value)
+            self.state = &#39;display&#39;
+
+        # if we are coming back from the display the state is redefined and we restart
+        elif self.state == &#39;analysis displayed&#39;:
+            self.state = &#39;method choice&#39;
+
+        # If the button is pressed and the method is defined, the go button is enabled
+        if self.state == &#39;display&#39;:
+            self.go_button.disabled = False
+            self.ok_button.disabled = True
+            self.info_button.disabled = True
+            self.toggle_normalize_button.disabled = True
+
+        # Actualize the button box and display
+        children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+        self.button_box = widgets.Box(children=children, layout=self.box_layout)
+
+        # Put the updated drop down in the output
+        with output:
+            display(self.current_drop_down)
+
+        display(self.button_box, output)
+
+    def on_info_button_clicked(self, info):
+        &#34;&#34;&#34;
+        Method called when the info button is clicked
+        Displays the help string associated with the current drop down method
+        &#34;&#34;&#34;
+        if info.button_style == &#39;&#39;:
+            # change the style to make the button blue
+            info.button_style = &#39;info&#39;
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+
+            # Case when the user is selecting the first method
+            if self.state == &#39;method choice&#39;:
+
+                # if the method is a tuple with an argument
+                if type(self.current_drop_down.value) == tuple:
+                    with output:
+                        display(help(self.current_drop_down.value[0]))
+
+                # if no method was selected
+                elif type(self.current_drop_down.value) == int:
+                    error = generate_error_widget(&#39;No analysis was selected&#39;)
+                    with output:
+                        display(error)
+
+                # a method not in a tuple was selected
+                else:
+                    with output:
+                        display(help(self.current_drop_down.value))
+
+                # display every thing
+                display(self.button_box, output)
+
+            # case when the user is doing a secondary selection
+            elif self.state == &#39;method choice 2&#39;:
+
+                # case for the plot type drop down
+                if self.current_drop_down.name == &#39;plot&#39;:
+                    with output:
+                        display(help(self.plot_info_dict[self.current_drop_down.value]))
+
+                # case for bin type drop down (display the previous method)
+                elif self.current_drop_down.name == &#39;bin&#39;:
+                    with output:
+                        display(help(self.analysis_tuple[0]))
+
+                display(self.button_box, output)
+
+        elif info.button_style == &#39;info&#39;:
+            info.button_style = &#39;&#39;
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+            with output:
+                display(self.current_drop_down)
+
+            # display every thing
+            display(self.button_box, output)
+
+    def on_normalize_button_clicked(self, toggle):
+        &#34;&#34;&#34;
+        Method called when the normalize button is clicked
+        The normalized attribute is inversed according to the current value
+        &#34;&#34;&#34;
+        if toggle.button_style == &#39;&#39;:
+            toggle.button_style = &#39;success&#39;
+            toggle.icon = &#39;check&#39;
+            self.normalize = True
+
+        elif toggle.button_style == &#39;success&#39;:
+            toggle.button_style = &#39;&#39;
+            toggle.icon = &#39;&#39;
+            self.normalize = False
+
+    def on_done_button_clicked(self, b):
+        &#34;&#34;&#34;
+        When the done button is clicked after the user had
+        the option to define custom names this function is executed
+
+        A load bar is displayed while te files are loaded, when the
+        load bar is done the `.on_loaded_bar()` method is called.
+        &#34;&#34;&#34;
+        clear_output(wait=True)
+
+        display(self.load_bar)
+        self.load_bar.observe(self.on_loaded_bar, names=&#34;value&#34;)
+
+        self.load_bar.value += 1
+        self.import_sound_files()
+
+    def on_go_button_clicked(self, b):
+        &#34;&#34;&#34;
+        Go button to display the analysis when all choices are made
+
+        What happens :
+        ___________________________________
+        1. The output is cleared
+        2. A output widget to store the output is instanciated
+        3. The method in `self.analysis_tuple` is called
+        4. The display is added to the output
+        5. The &#39;Ok&#39; button is enabled and the &#39;Go&#39; button is disabled
+        6. The drop down is set back to its default value
+        7. The buttons and output are displayed
+        &#34;&#34;&#34;
+        # Always clear the output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)  # Create a output
+
+        # Change the GUI state
+        self.state = &#39;analysis displayed&#39;
+
+        # Set the matplotlib display method
+        get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+
+        # Case for a single sound
+        if self.analysis == &#39;Single&#39;:
+
+            # Case for Sound.plot_freq_bins method
+            if self.analysis_tuple[0] == Sound.plot_freq_bins:
+                # change interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # create a figure
+                plt.figure(figsize=(8, 6))
+                # Call the method
+                self.analysis_tuple[0](self.sounds, bins=[self.analysis_tuple[1]])
+
+                # Define the title according to the chosen bin
+                if self.analysis_tuple[1] == &#39;all&#39;:
+                    plt.title(&#39;Frequency bin plot for &#39; + self.sounds.name)
+                else:
+                    plt.title(self.analysis_tuple[1] + &#39; bin plot for &#39; + self.sounds.name)
+
+                    plt.show()
+
+            # Case for the Sound.peak_damping method (print only)
+            elif self.analysis_tuple[0] in [Sound.peak_damping, Sound.listen_freq_bins]:
+                with output:
+                    self.analysis_tuple[0](self.sounds)  # add print to output
+
+            # Case for the Signal.plot method
+            elif self.analysis_tuple[0] in self.plot_methods:
+                # change plot interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # create a figure
+                plt.figure(figsize=(8, 6))
+                # Add the fill argument if there is just one plot
+                if self.analysis_tuple[0] == Plot.timbre:
+                    kwargs = {&#39;fill&#39;: True}
+                else:
+                    kwargs = {}
+                # Call the method according to normalization
+                if not self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal.plot, **kwargs)
+                elif self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal.normalize().plot, **kwargs)
+
+                if self.analysis_tuple[0] == Plot.time_damping:
+                    zeta = np.around(self.sounds.signal.time_damping(), 5)
+                    plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name + &#39; Zeta = &#39; + str(zeta))
+                # Define a title from the signal.plot(kind)
+                else:
+                    plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+
+                # make the x-axis ticks the frequency bins if the axe is frequency
+                if self.analysis_tuple[0] in self.bin_ticks_methods:
+                    Plot.set_bin_ticks(self.sounds.signal.plot)
+                # add to output
+                with output:
+                    plt.show()
+
+            # Case for the Sound.bin_hist method
+            elif self.analysis_tuple[0] == Sound.bin_hist:
+                # change plot interface
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+                # call the method
+                self.analysis_tuple[0](self.sounds)
+                # set a title
+                plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+                # add to output
+                with output:
+                    plt.show()
+
+            # Case for the Signal.listen method
+            elif self.analysis_tuple[0] == Signal.listen:
+                # add to output
+                with output:
+                    # Call the method according to normalization
+                    if not self.normalize:
+                        self.analysis_tuple[0](self.sounds.signal)
+                    elif self.normalize:
+                        self.analysis_tuple[0](self.sounds.signal.normalize())
+
+        # Case for Dual and Multiple analyses
+        elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+            # normalize the sound_pack if self.normalize is True
+            if self.normalize:
+                sound_pack = self.Pack.normalize()
+            elif not self.normalize:
+                sound_pack = self.Pack
+
+            # if the analysis method is a unique plot, make matplotlib interactive
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+            if self.analysis_tuple[0] in self.unique_plot_methods:
+                get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+
+            # Call with no arguments
+            if len(self.analysis_tuple) == 1:
+                # Case for a print output
+                if self.display == &#39;print&#39;:
+                    with output:
+                        self.analysis_tuple[0](sound_pack)  # add print to output
+
+                # special case to have bins ticks for the fft_diff method
+                elif self.analysis_tuple[0] == SoundPack.fft_diff:
+                    self.analysis_tuple[0](sound_pack, ticks=&#39;bins&#39;)
+                    with output:
+                        plt.show()  # display plot in output
+
+                # Case for a plot output
+                elif self.display == &#39;plot&#39;:
+                    self.analysis_tuple[0](sound_pack)
+                    with output:
+                        plt.show()  # display plot in output
+
+            # Call with arguments
+            elif len(self.analysis_tuple) == 2:
+                self.analysis_tuple[0](sound_pack, self.analysis_tuple[1])
+                with output:
+                    plt.show()
+
+        # Setup the drop down to go back to method choice
+        self.current_drop_down.value = 1
+        self.current_drop_down = self.first_level_drop_down[self.analysis]
+        self.current_drop_down.value = 1
+
+        # Set the Go and Ok buttons to default value
+        self.go_button.disabled = True
+        self.ok_button.disabled = False
+
+        # Set the normalization button to not normalized
+        self.toggle_normalize_button.button_style = &#39;&#39;
+        self.toggle_normalize_button.icon = &#39;&#39;
+        self.normalize = False
+
+
+        # display
+        display(self.button_box, output)
+        # Make the window larger
+        display(HTML(&#34;&lt;style&gt;div.output_scroll { height: 44em; }&lt;/style&gt;&#34;))
+
+    &#34;&#34;&#34;
+    Observe methods
+    &#34;&#34;&#34;
+
+    def on_loaded_bar(self, change):
+        &#34;&#34;&#34;
+        This method monitors the value of the load bar used
+        when loading files.
+
+        When the load bar is complete (value = 10), the
+        button box is displayed with the &#34;Ok&#34; and &#34;Go&#34; buttons
+        The &#34;Go&#34; button is disabled
+        The Drop down with the methods according to the
+        current analysis is displayed.
+        &#34;&#34;&#34;
+        # When the bar reaches the end
+        if change[&#34;new&#34;] &gt;= 10:
+            clear_output(wait=True)
+
+            # disable the go_button
+            self.state = &#39;method choice&#39;
+
+            # Actualize the button box and display
+            children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+            self.button_box = widgets.Box(children=children, layout=self.box_layout)
+            self.ok_button.on_click(self.on_ok_button_clicked_2)
+            self.go_button.on_click(self.on_go_button_clicked)
+            self.toggle_normalize_button.on_click(self.on_normalize_button_clicked)
+            self.info_button.on_click(self.on_info_button_clicked)
+            self.go_button.disabled = True
+            display(self.button_box)
+
+            # create the output
+            output = widgets.Output(layout=self.out_layout)
+
+            # display the drop down associated to the current analysis
+            self.current_drop_down = self.first_level_drop_down[self.analysis]
+            with output:
+                display(self.current_drop_down)
+
+            display(output)
+
+    &#34;&#34;&#34;
+    Back end functions
+    &#34;&#34;&#34;
+
+    def define_sound_names(self):
+        &#34;&#34;&#34;
+        A method to define sound names and fundamentals
+        &#34;&#34;&#34;
+
+        # Clear the output and define the new one
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+
+        # Style for the text inputs
+        style = {&#39;description_width&#39;: &#39;initial&#39;}
+
+        # Small string &#39;Hz&#39; to indicate units
+        HZ_string = widgets.HTML(&#39;&lt;p&gt;&#39; + &#39;Hz&#39; + &#39;&lt;/p&gt;&#39;)
+
+        # Define the button box
+        self.button_box = widgets.Box(children=[self.done_button], layout=self.box_layout)
+
+        # Define the output with the text inputs
+        with output:
+
+            # Case for a single sound analysis
+            if self.analysis == &#39;Single&#39;:
+
+                # get the filenames
+                self.file_names = [ky for ky in self.single_file_selector.value.keys()]
+
+                # make a sound name input widget
+                sound_name_input = widgets.Text(value=&#39;&#39;,
+                                                placeholder=&#39;sound name&#39;,
+                                                description=self.file_names[0],
+                                                layout=widgets.Layout(width=&#39;40%&#39;),
+                                                style=style,
+                                                )
+
+                # make a fundamental input widget
+                fundamental_input = widgets.FloatText(value=0,
+                                                      description=&#39;Fundamental :&#39;,
+                                                      style=style,
+                                                      layout=widgets.Layout(width=&#39;20%&#39;)
+                                                      )
+
+                # childrens that go in the name box
+                childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                # define a name box widget
+                name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+                name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                # display the box
+                display(name_box)
+
+                # store the input to refer them later
+                self.sound_name_inputs = [sound_name_input]
+                self.sound_fundamental_inputs = [fundamental_input]
+
+            # Case for dual sound analysis
+            elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+                if self.analysis == &#39;Dual&#39;:
+                    # get the file names
+                    name1 = [ky for ky in self.dual_file_selector_1.value.keys()][0]
+                    name2 = [ky for ky in self.dual_file_selector_2.value.keys()][0]
+                    self.file_names = [name1, name2]
+
+                elif self.analysis == &#39;Multiple&#39;:
+                    self.file_names = [ky for ky in self.mult_file_selector.value.keys()]
+
+                # create empty lists for the inputs
+                self.sound_name_inputs = []
+                self.sound_fundamental_inputs = []
+
+                for file in self.file_names:
+                    # make a text input widget
+                    sound_name_input = widgets.Text(value=&#39;&#39;,
+                                                    placeholder=&#39;sound name&#39;,
+                                                    description=file,
+                                                    layout=widgets.Layout(width=&#39;40%&#39;),
+                                                    style=style,
+                                                    )
+
+                    # make a fundamental input widget
+                    fundamental_input = widgets.FloatText(value=0,
+                                                          description=&#39;Fundamental :&#39;,
+                                                          layout=widgets.Layout(width=&#39;20%&#39;),
+                                                          style=style
+                                                          )
+
+                    # childrens that go in the name box
+                    childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                    # define a name box widget
+                    name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+                    name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                    # display the box
+                    display(name_box)
+
+                    # append the inputs
+                    self.sound_name_inputs.append(sound_name_input)
+                    self.sound_fundamental_inputs.append(fundamental_input)
+
+        self.done_button.on_click(self.on_done_button_clicked)
+
+        # display everything
+        display(self.button_box, output)
+
+    def import_sound_files(self):
+        &#34;&#34;&#34;
+        Method to import the soundfile vectors into the program
+        after the files and names where defined.
+        *Only works with .wav files*
+        &#34;&#34;&#34;
+
+        # Case for when only a single file is imported
+        if self.analysis == &#39;Single&#39;:
+            # Loading Bar Value = 0
+            # Get the filename values from the file selector
+            file_values = self.single_file_selector.value[self.file_names[0]]
+
+            # Get the signal audio bytes
+            bites = file_values[&#39;content&#39;]
+
+            # Convert to wav audio object
+            audio = wave.open(io.BytesIO(bites))
+
+            sr = audio.getframerate()  # save the frame rate
+
+            samples = []
+            self.load_bar.value += 1  # LoadBar value = 1
+            n = audio.getnframes()
+            milestones = [int(i) for i in np.linspace(0, n, 5)][1:]
+            for _ in range(audio.getnframes()):
+                frame = audio.readframes(1)
+                samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                if _ in milestones:
+                    self.load_bar.value += 1  # LoadBar value increases to 5 in loop
+
+            self.load_bar.value += 1  # LoadBar value = 7
+            signal = np.array(samples) / 32768
+            Sound_Input = (signal, sr)
+            self.load_bar.value += 1  # LoadBar value = 8
+
+            # Get the sound name
+            if self.sound_name_inputs[0].value == &#39;&#39;:
+                name = self.file_names[0].replace(&#39;.wav&#39;, &#39;&#39;)
+            else:
+                name = self.sound_name_inputs[0].value
+
+            # Get the sound fundamental
+            if self.sound_fundamental_inputs[0].value == 0:
+                fundamental = None
+            else:
+                fundamental = self.sound_fundamental_inputs[0].value
+
+            self.load_bar.value += 1  # LoadBar value = 9
+            # This takes a long time
+            sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+            self.sounds = sound.condition(return_self=True, verbose=False)
+            self.load_bar.value += 2  # Loadbar = 10
+
+        # Case for two files from two file selectors
+        elif self.analysis == &#39;Dual&#39;:
+            # LoadBar = 0
+            self.sounds = []
+            file_dicts = [self.dual_file_selector_1.value, self.dual_file_selector_2.value]
+            self.load_bar.value += 2  # LoadBar = 1
+
+            # zipped iterator
+            iterator = zip(self.file_names, file_dicts, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            #  Create a sound for every file
+            for file, dic, name_input, fundamental_input in iterator:
+
+                file_values = dic[file]
+                bites = file_values[&#39;content&#39;]
+                audio = wave.open(io.BytesIO(bites))
+                sr = audio.getframerate()
+                samples = []
+                self.load_bar.value += 1  # LoadBar +=2
+                for _ in range(audio.getnframes()):
+                    frame = audio.readframes(1)
+                    samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                self.load_bar.value += 1  # LoadBar +=2
+                signal = np.array(samples) / 32768
+                Sound_Input = (signal, sr)
+
+                # get the name value
+                if name_input.value == &#39;&#39;:
+                    name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+                else:
+                    name = name_input.value
+
+                # get the fundamental value
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
+                self.load_bar.value += 1  # LoadBar +=2
+            # Load Bar = 8
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+            self.load_bar.value += 2  # Load Bar = 10
+
+        # Case for multiple files
+        elif self.analysis == &#39;Multiple&#39;:
+            # LoadBar = 0
+            self.sounds = []
+            self.load_bar.value += 1  # LoadBar = 1
+
+            # zipped iterator
+            iterator = zip(self.file_names, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            for file, name_input, fundamental_input in iterator:
+                file_values = self.mult_file_selector.value[file]
+                bites = file_values[&#39;content&#39;]
+                audio = wave.open(io.BytesIO(bites))
+                sr = audio.getframerate()
+                samples = []
+                for _ in range(audio.getnframes()):
+                    frame = audio.readframes(1)
+                    samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+                signal = np.array(samples) / 32768
+                Sound_Input = (signal, sr)
+
+                # get the sound names
+                if name_input.value == &#39;&#39;:
+                    name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+                else:
+                    name = name_input.value
+
+                # get the fundamental values
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
+                if self.load_bar.value &lt; 9:
+                    self.load_bar.value += 1
+
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+            while self.load_bar.value &lt; 10:
+                self.load_bar.value += 1  # LoadBar = 10</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="guitarsounds.interface.guitarGUI.DM_bin_choice_methods"><code class="name">var <span class="ident">DM_bin_choice_methods</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.bin_drop_down"><code class="name">var <span class="ident">bin_drop_down</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.bin_ticks_methods"><code class="name">var <span class="ident">bin_ticks_methods</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.box_layout"><code class="name">var <span class="ident">box_layout</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.dual_drop_down"><code class="name">var <span class="ident">dual_drop_down</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.fundamental_style"><code class="name">var <span class="ident">fundamental_style</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.mult_drop_down"><code class="name">var <span class="ident">mult_drop_down</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.options"><code class="name">var <span class="ident">options</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.out_layout"><code class="name">var <span class="ident">out_layout</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.output"><code class="name">var <span class="ident">output</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.plot_drop_down"><code class="name">var <span class="ident">plot_drop_down</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.plot_info_dict"><code class="name">var <span class="ident">plot_info_dict</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.plot_methods"><code class="name">var <span class="ident">plot_methods</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.single_drop_down"><code class="name">var <span class="ident">single_drop_down</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.style"><code class="name">var <span class="ident">style</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.unique_plot_methods"><code class="name">var <span class="ident">unique_plot_methods</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="guitarsounds.interface.guitarGUI.define_sound_names"><code class="name flex">
+<span>def <span class="ident">define_sound_names</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A method to define sound names and fundamentals</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def define_sound_names(self):
+    &#34;&#34;&#34;
+    A method to define sound names and fundamentals
+    &#34;&#34;&#34;
+
+    # Clear the output and define the new one
+    clear_output(wait=True)
+    output = widgets.Output(layout=self.out_layout)
+
+    # Style for the text inputs
+    style = {&#39;description_width&#39;: &#39;initial&#39;}
+
+    # Small string &#39;Hz&#39; to indicate units
+    HZ_string = widgets.HTML(&#39;&lt;p&gt;&#39; + &#39;Hz&#39; + &#39;&lt;/p&gt;&#39;)
+
+    # Define the button box
+    self.button_box = widgets.Box(children=[self.done_button], layout=self.box_layout)
+
+    # Define the output with the text inputs
+    with output:
+
+        # Case for a single sound analysis
+        if self.analysis == &#39;Single&#39;:
+
+            # get the filenames
+            self.file_names = [ky for ky in self.single_file_selector.value.keys()]
+
+            # make a sound name input widget
+            sound_name_input = widgets.Text(value=&#39;&#39;,
+                                            placeholder=&#39;sound name&#39;,
+                                            description=self.file_names[0],
+                                            layout=widgets.Layout(width=&#39;40%&#39;),
+                                            style=style,
+                                            )
+
+            # make a fundamental input widget
+            fundamental_input = widgets.FloatText(value=0,
+                                                  description=&#39;Fundamental :&#39;,
+                                                  style=style,
+                                                  layout=widgets.Layout(width=&#39;20%&#39;)
+                                                  )
+
+            # childrens that go in the name box
+            childrens = [sound_name_input, fundamental_input, HZ_string]
+
+            # define a name box widget
+            name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+            name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+            # display the box
+            display(name_box)
+
+            # store the input to refer them later
+            self.sound_name_inputs = [sound_name_input]
+            self.sound_fundamental_inputs = [fundamental_input]
+
+        # Case for dual sound analysis
+        elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+            if self.analysis == &#39;Dual&#39;:
+                # get the file names
+                name1 = [ky for ky in self.dual_file_selector_1.value.keys()][0]
+                name2 = [ky for ky in self.dual_file_selector_2.value.keys()][0]
+                self.file_names = [name1, name2]
+
+            elif self.analysis == &#39;Multiple&#39;:
+                self.file_names = [ky for ky in self.mult_file_selector.value.keys()]
+
+            # create empty lists for the inputs
+            self.sound_name_inputs = []
+            self.sound_fundamental_inputs = []
+
+            for file in self.file_names:
+                # make a text input widget
+                sound_name_input = widgets.Text(value=&#39;&#39;,
+                                                placeholder=&#39;sound name&#39;,
+                                                description=file,
+                                                layout=widgets.Layout(width=&#39;40%&#39;),
+                                                style=style,
+                                                )
+
+                # make a fundamental input widget
+                fundamental_input = widgets.FloatText(value=0,
+                                                      description=&#39;Fundamental :&#39;,
+                                                      layout=widgets.Layout(width=&#39;20%&#39;),
+                                                      style=style
+                                                      )
+
+                # childrens that go in the name box
+                childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                # define a name box widget
+                name_box_layout = widgets.Layout(align_items=&#39;stretch&#39;, flex_flow=&#39;line&#39;, width=&#39;75%&#39;)
+                name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                # display the box
+                display(name_box)
+
+                # append the inputs
+                self.sound_name_inputs.append(sound_name_input)
+                self.sound_fundamental_inputs.append(fundamental_input)
+
+    self.done_button.on_click(self.on_done_button_clicked)
+
+    # display everything
+    display(self.button_box, output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.disable_file_selection"><code class="name flex">
+<span>def <span class="ident">disable_file_selection</span></span>(<span>self, state)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disable_file_selection(self, state):
+    self.button1.disabled = state
+    self.button2.disabled = state
+    self.button3.disabled = state</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.import_sound_files"><code class="name flex">
+<span>def <span class="ident">import_sound_files</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Method to import the soundfile vectors into the program
+after the files and names where defined.
+<em>Only works with .wav files</em></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_sound_files(self):
+    &#34;&#34;&#34;
+    Method to import the soundfile vectors into the program
+    after the files and names where defined.
+    *Only works with .wav files*
+    &#34;&#34;&#34;
+
+    # Case for when only a single file is imported
+    if self.analysis == &#39;Single&#39;:
+        # Loading Bar Value = 0
+        # Get the filename values from the file selector
+        file_values = self.single_file_selector.value[self.file_names[0]]
+
+        # Get the signal audio bytes
+        bites = file_values[&#39;content&#39;]
+
+        # Convert to wav audio object
+        audio = wave.open(io.BytesIO(bites))
+
+        sr = audio.getframerate()  # save the frame rate
+
+        samples = []
+        self.load_bar.value += 1  # LoadBar value = 1
+        n = audio.getnframes()
+        milestones = [int(i) for i in np.linspace(0, n, 5)][1:]
+        for _ in range(audio.getnframes()):
+            frame = audio.readframes(1)
+            samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+            if _ in milestones:
+                self.load_bar.value += 1  # LoadBar value increases to 5 in loop
+
+        self.load_bar.value += 1  # LoadBar value = 7
+        signal = np.array(samples) / 32768
+        Sound_Input = (signal, sr)
+        self.load_bar.value += 1  # LoadBar value = 8
+
+        # Get the sound name
+        if self.sound_name_inputs[0].value == &#39;&#39;:
+            name = self.file_names[0].replace(&#39;.wav&#39;, &#39;&#39;)
+        else:
+            name = self.sound_name_inputs[0].value
+
+        # Get the sound fundamental
+        if self.sound_fundamental_inputs[0].value == 0:
+            fundamental = None
+        else:
+            fundamental = self.sound_fundamental_inputs[0].value
+
+        self.load_bar.value += 1  # LoadBar value = 9
+        # This takes a long time
+        sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+        self.sounds = sound.condition(return_self=True, verbose=False)
+        self.load_bar.value += 2  # Loadbar = 10
+
+    # Case for two files from two file selectors
+    elif self.analysis == &#39;Dual&#39;:
+        # LoadBar = 0
+        self.sounds = []
+        file_dicts = [self.dual_file_selector_1.value, self.dual_file_selector_2.value]
+        self.load_bar.value += 2  # LoadBar = 1
+
+        # zipped iterator
+        iterator = zip(self.file_names, file_dicts, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+        #  Create a sound for every file
+        for file, dic, name_input, fundamental_input in iterator:
+
+            file_values = dic[file]
+            bites = file_values[&#39;content&#39;]
+            audio = wave.open(io.BytesIO(bites))
+            sr = audio.getframerate()
+            samples = []
+            self.load_bar.value += 1  # LoadBar +=2
+            for _ in range(audio.getnframes()):
+                frame = audio.readframes(1)
+                samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+            self.load_bar.value += 1  # LoadBar +=2
+            signal = np.array(samples) / 32768
+            Sound_Input = (signal, sr)
+
+            # get the name value
+            if name_input.value == &#39;&#39;:
+                name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+            else:
+                name = name_input.value
+
+            # get the fundamental value
+            if fundamental_input.value == 0:
+                fundamental = None
+            else:
+                fundamental = fundamental_input.value
+
+            sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+            sound.condition(verbose=False)
+            self.sounds.append(sound)
+            self.load_bar.value += 1  # LoadBar +=2
+        # Load Bar = 8
+        self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+        self.load_bar.value += 2  # Load Bar = 10
+
+    # Case for multiple files
+    elif self.analysis == &#39;Multiple&#39;:
+        # LoadBar = 0
+        self.sounds = []
+        self.load_bar.value += 1  # LoadBar = 1
+
+        # zipped iterator
+        iterator = zip(self.file_names, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+        for file, name_input, fundamental_input in iterator:
+            file_values = self.mult_file_selector.value[file]
+            bites = file_values[&#39;content&#39;]
+            audio = wave.open(io.BytesIO(bites))
+            sr = audio.getframerate()
+            samples = []
+            for _ in range(audio.getnframes()):
+                frame = audio.readframes(1)
+                samples.append(struct.unpack(&#34;h&#34;, frame)[0])
+            signal = np.array(samples) / 32768
+            Sound_Input = (signal, sr)
+
+            # get the sound names
+            if name_input.value == &#39;&#39;:
+                name = file.replace(&#39;.wav&#39;, &#39;&#39;)
+            else:
+                name = name_input.value
+
+            # get the fundamental values
+            if fundamental_input.value == 0:
+                fundamental = None
+            else:
+                fundamental = fundamental_input.value
+
+            sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+            sound.condition(verbose=False)
+            self.sounds.append(sound)
+            if self.load_bar.value &lt; 9:
+                self.load_bar.value += 1
+
+        self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
+        while self.load_bar.value &lt; 10:
+            self.load_bar.value += 1  # LoadBar = 10</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_done_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_done_button_clicked</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>When the done button is clicked after the user had
+the option to define custom names this function is executed</p>
+<p>A load bar is displayed while te files are loaded, when the
+load bar is done the <code>.on_loaded_bar()</code> method is called.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_done_button_clicked(self, b):
+    &#34;&#34;&#34;
+    When the done button is clicked after the user had
+    the option to define custom names this function is executed
+
+    A load bar is displayed while te files are loaded, when the
+    load bar is done the `.on_loaded_bar()` method is called.
+    &#34;&#34;&#34;
+    clear_output(wait=True)
+
+    display(self.load_bar)
+    self.load_bar.observe(self.on_loaded_bar, names=&#34;value&#34;)
+
+    self.load_bar.value += 1
+    self.import_sound_files()</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_dual_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_dual_button_clicked</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays two single file selectors, allowing the user
+to choose two files.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_dual_button_clicked(self, b):
+    &#34;&#34;&#34;
+    Displays two single file selectors, allowing the user
+    to choose two files.
+    &#34;&#34;&#34;
+    clear_output(wait=True)
+
+    output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+    self.disable_file_selection(True)
+    with output:
+        display(self.dual_file_selector_1)
+        display(self.dual_file_selector_2)
+
+    self.analysis = &#39;Dual&#39;
+    self.state = &#39;file entry&#39;
+
+    display(self.button_box)
+    display(output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_go_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_go_button_clicked</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Go button to display the analysis when all choices are made</p>
+<p>What happens :</p>
+<hr>
+<ol>
+<li>The output is cleared</li>
+<li>A output widget to store the output is instanciated</li>
+<li>The method in <code>self.analysis_tuple</code> is called</li>
+<li>The display is added to the output</li>
+<li>The 'Ok' button is enabled and the 'Go' button is disabled</li>
+<li>The drop down is set back to its default value</li>
+<li>The buttons and output are displayed</li>
+</ol></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_go_button_clicked(self, b):
+    &#34;&#34;&#34;
+    Go button to display the analysis when all choices are made
+
+    What happens :
+    ___________________________________
+    1. The output is cleared
+    2. A output widget to store the output is instanciated
+    3. The method in `self.analysis_tuple` is called
+    4. The display is added to the output
+    5. The &#39;Ok&#39; button is enabled and the &#39;Go&#39; button is disabled
+    6. The drop down is set back to its default value
+    7. The buttons and output are displayed
+    &#34;&#34;&#34;
+    # Always clear the output
+    clear_output(wait=True)
+    output = widgets.Output(layout=self.out_layout)  # Create a output
+
+    # Change the GUI state
+    self.state = &#39;analysis displayed&#39;
+
+    # Set the matplotlib display method
+    get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+
+    # Case for a single sound
+    if self.analysis == &#39;Single&#39;:
+
+        # Case for Sound.plot_freq_bins method
+        if self.analysis_tuple[0] == Sound.plot_freq_bins:
+            # change interface
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+            # create a figure
+            plt.figure(figsize=(8, 6))
+            # Call the method
+            self.analysis_tuple[0](self.sounds, bins=[self.analysis_tuple[1]])
+
+            # Define the title according to the chosen bin
+            if self.analysis_tuple[1] == &#39;all&#39;:
+                plt.title(&#39;Frequency bin plot for &#39; + self.sounds.name)
+            else:
+                plt.title(self.analysis_tuple[1] + &#39; bin plot for &#39; + self.sounds.name)
+
+                plt.show()
+
+        # Case for the Sound.peak_damping method (print only)
+        elif self.analysis_tuple[0] in [Sound.peak_damping, Sound.listen_freq_bins]:
+            with output:
+                self.analysis_tuple[0](self.sounds)  # add print to output
+
+        # Case for the Signal.plot method
+        elif self.analysis_tuple[0] in self.plot_methods:
+            # change plot interface
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+            # create a figure
+            plt.figure(figsize=(8, 6))
+            # Add the fill argument if there is just one plot
+            if self.analysis_tuple[0] == Plot.timbre:
+                kwargs = {&#39;fill&#39;: True}
+            else:
+                kwargs = {}
+            # Call the method according to normalization
+            if not self.normalize:
+                self.analysis_tuple[0](self.sounds.signal.plot, **kwargs)
+            elif self.normalize:
+                self.analysis_tuple[0](self.sounds.signal.normalize().plot, **kwargs)
+
+            if self.analysis_tuple[0] == Plot.time_damping:
+                zeta = np.around(self.sounds.signal.time_damping(), 5)
+                plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name + &#39; Zeta = &#39; + str(zeta))
+            # Define a title from the signal.plot(kind)
+            else:
+                plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+
+            # make the x-axis ticks the frequency bins if the axe is frequency
+            if self.analysis_tuple[0] in self.bin_ticks_methods:
+                Plot.set_bin_ticks(self.sounds.signal.plot)
+            # add to output
+            with output:
+                plt.show()
+
+        # Case for the Sound.bin_hist method
+        elif self.analysis_tuple[0] == Sound.bin_hist:
+            # change plot interface
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+            # call the method
+            self.analysis_tuple[0](self.sounds)
+            # set a title
+            plt.title(self.current_drop_down.label + &#39; for &#39; + self.sounds.name)
+            # add to output
+            with output:
+                plt.show()
+
+        # Case for the Signal.listen method
+        elif self.analysis_tuple[0] == Signal.listen:
+            # add to output
+            with output:
+                # Call the method according to normalization
+                if not self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal)
+                elif self.normalize:
+                    self.analysis_tuple[0](self.sounds.signal.normalize())
+
+    # Case for Dual and Multiple analyses
+    elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+        # normalize the sound_pack if self.normalize is True
+        if self.normalize:
+            sound_pack = self.Pack.normalize()
+        elif not self.normalize:
+            sound_pack = self.Pack
+
+        # if the analysis method is a unique plot, make matplotlib interactive
+        get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;inline&#39;)
+        if self.analysis_tuple[0] in self.unique_plot_methods:
+            get_ipython().run_line_magic(&#39;matplotlib&#39;, &#39;notebook&#39;)
+
+        # Call with no arguments
+        if len(self.analysis_tuple) == 1:
+            # Case for a print output
+            if self.display == &#39;print&#39;:
+                with output:
+                    self.analysis_tuple[0](sound_pack)  # add print to output
+
+            # special case to have bins ticks for the fft_diff method
+            elif self.analysis_tuple[0] == SoundPack.fft_diff:
+                self.analysis_tuple[0](sound_pack, ticks=&#39;bins&#39;)
+                with output:
+                    plt.show()  # display plot in output
+
+            # Case for a plot output
+            elif self.display == &#39;plot&#39;:
+                self.analysis_tuple[0](sound_pack)
+                with output:
+                    plt.show()  # display plot in output
+
+        # Call with arguments
+        elif len(self.analysis_tuple) == 2:
+            self.analysis_tuple[0](sound_pack, self.analysis_tuple[1])
+            with output:
+                plt.show()
+
+    # Setup the drop down to go back to method choice
+    self.current_drop_down.value = 1
+    self.current_drop_down = self.first_level_drop_down[self.analysis]
+    self.current_drop_down.value = 1
+
+    # Set the Go and Ok buttons to default value
+    self.go_button.disabled = True
+    self.ok_button.disabled = False
+
+    # Set the normalization button to not normalized
+    self.toggle_normalize_button.button_style = &#39;&#39;
+    self.toggle_normalize_button.icon = &#39;&#39;
+    self.normalize = False
+
+
+    # display
+    display(self.button_box, output)
+    # Make the window larger
+    display(HTML(&#34;&lt;style&gt;div.output_scroll { height: 44em; }&lt;/style&gt;&#34;))</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_info_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_info_button_clicked</span></span>(<span>self, info)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Method called when the info button is clicked
+Displays the help string associated with the current drop down method</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_info_button_clicked(self, info):
+    &#34;&#34;&#34;
+    Method called when the info button is clicked
+    Displays the help string associated with the current drop down method
+    &#34;&#34;&#34;
+    if info.button_style == &#39;&#39;:
+        # change the style to make the button blue
+        info.button_style = &#39;info&#39;
+
+        # Clear the Output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+
+        # Case when the user is selecting the first method
+        if self.state == &#39;method choice&#39;:
+
+            # if the method is a tuple with an argument
+            if type(self.current_drop_down.value) == tuple:
+                with output:
+                    display(help(self.current_drop_down.value[0]))
+
+            # if no method was selected
+            elif type(self.current_drop_down.value) == int:
+                error = generate_error_widget(&#39;No analysis was selected&#39;)
+                with output:
+                    display(error)
+
+            # a method not in a tuple was selected
+            else:
+                with output:
+                    display(help(self.current_drop_down.value))
+
+            # display every thing
+            display(self.button_box, output)
+
+        # case when the user is doing a secondary selection
+        elif self.state == &#39;method choice 2&#39;:
+
+            # case for the plot type drop down
+            if self.current_drop_down.name == &#39;plot&#39;:
+                with output:
+                    display(help(self.plot_info_dict[self.current_drop_down.value]))
+
+            # case for bin type drop down (display the previous method)
+            elif self.current_drop_down.name == &#39;bin&#39;:
+                with output:
+                    display(help(self.analysis_tuple[0]))
+
+            display(self.button_box, output)
+
+    elif info.button_style == &#39;info&#39;:
+        info.button_style = &#39;&#39;
+
+        # Clear the Output
+        clear_output(wait=True)
+        output = widgets.Output(layout=self.out_layout)
+        with output:
+            display(self.current_drop_down)
+
+        # display every thing
+        display(self.button_box, output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_loaded_bar"><code class="name flex">
+<span>def <span class="ident">on_loaded_bar</span></span>(<span>self, change)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This method monitors the value of the load bar used
+when loading files.</p>
+<p>When the load bar is complete (value = 10), the
+button box is displayed with the "Ok" and "Go" buttons
+The "Go" button is disabled
+The Drop down with the methods according to the
+current analysis is displayed.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_loaded_bar(self, change):
+    &#34;&#34;&#34;
+    This method monitors the value of the load bar used
+    when loading files.
+
+    When the load bar is complete (value = 10), the
+    button box is displayed with the &#34;Ok&#34; and &#34;Go&#34; buttons
+    The &#34;Go&#34; button is disabled
+    The Drop down with the methods according to the
+    current analysis is displayed.
+    &#34;&#34;&#34;
+    # When the bar reaches the end
+    if change[&#34;new&#34;] &gt;= 10:
+        clear_output(wait=True)
+
+        # disable the go_button
+        self.state = &#39;method choice&#39;
+
+        # Actualize the button box and display
+        children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+        self.button_box = widgets.Box(children=children, layout=self.box_layout)
+        self.ok_button.on_click(self.on_ok_button_clicked_2)
+        self.go_button.on_click(self.on_go_button_clicked)
+        self.toggle_normalize_button.on_click(self.on_normalize_button_clicked)
+        self.info_button.on_click(self.on_info_button_clicked)
+        self.go_button.disabled = True
+        display(self.button_box)
+
+        # create the output
+        output = widgets.Output(layout=self.out_layout)
+
+        # display the drop down associated to the current analysis
+        self.current_drop_down = self.first_level_drop_down[self.analysis]
+        with output:
+            display(self.current_drop_down)
+
+        display(output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_multiple_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_multiple_button_clicked</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays a multiple file selector allowing the user
+to select multiple files</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_multiple_button_clicked(self, b):
+    &#34;&#34;&#34;
+    Displays a multiple file selector allowing the user
+    to select multiple files
+    &#34;&#34;&#34;
+    clear_output(wait=True)
+
+    output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+    self.disable_file_selection(True)
+    with output:
+        display(self.mult_file_selector)
+
+    self.analysis = &#39;Multiple&#39;
+    self.state = &#39;file entry&#39;
+
+    display(self.button_box)
+    display(output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_normalize_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_normalize_button_clicked</span></span>(<span>self, toggle)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Method called when the normalize button is clicked
+The normalized attribute is inversed according to the current value</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_normalize_button_clicked(self, toggle):
+    &#34;&#34;&#34;
+    Method called when the normalize button is clicked
+    The normalized attribute is inversed according to the current value
+    &#34;&#34;&#34;
+    if toggle.button_style == &#39;&#39;:
+        toggle.button_style = &#39;success&#39;
+        toggle.icon = &#39;check&#39;
+        self.normalize = True
+
+    elif toggle.button_style == &#39;success&#39;:
+        toggle.button_style = &#39;&#39;
+        toggle.icon = &#39;&#39;
+        self.normalize = False</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_ok_button_clicked_1"><code class="name flex">
+<span>def <span class="ident">on_ok_button_clicked_1</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The user clicks this button when he is done choosing files and when
+he is done defining names</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_ok_button_clicked_1(self, b):
+    &#34;&#34;&#34;
+    The user clicks this button when he is done choosing files and when
+    he is done defining names
+    &#34;&#34;&#34;
+    # Clear the output
+    clear_output(wait=True)
+
+    # Check if the user did good when choosing files
+    file_selectors = [self.single_file_selector,
+                      self.dual_file_selector_1,
+                      self.dual_file_selector_2,
+                      self.mult_file_selector]
+    files_where_chosen = False
+    for file_selector in file_selectors:
+        if file_selector.value != {}:
+            files_where_chosen = True
+
+    # If the file where chosen the user is taken to the define name interface
+    if files_where_chosen:
+        self.define_sound_names()
+
+    # if not we go back to file selection
+    else:
+        output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+        with output:
+            if self.analysis == &#39;Single&#39;:
+                display(self.single_file_selector)
+            elif self.analysis == &#39;Dual&#39;:
+                display(self.dual_file_selector_1)
+                display(self.dual_file_selector_2)
+            elif self.analysis == &#39;Multiple&#39;:
+                display(self.mult_file_selector)
+            else:
+                error = generate_error_widget(&#39;Chose an analysis type&#39;)
+                display(error)
+
+            # Display an error if a file selector was clicked but no file was chosen
+            if self.analysis in [&#39;Single&#39;, &#39;Dual&#39;, &#39;Multiple&#39;]:
+                error = generate_error_widget(&#39;No sound was chosen&#39;)
+                display(error)
+
+        display(self.button_box)
+        display(output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_ok_button_clicked_2"><code class="name flex">
+<span>def <span class="ident">on_ok_button_clicked_2</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Method to make the "Ok" button interact with the
+analysis method choice.</p>
+<p><strong> when interface.state = 'method choice' </strong>
+- The "Ok" and "Go" buttons appears after the loading bar is done
+- The drop down corresponds to the methods associated to
+the analysis</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_ok_button_clicked_2(self, b):
+    &#34;&#34;&#34;
+    Method to make the &#34;Ok&#34; button interact with the
+    analysis method choice.
+
+    __ when interface.state = &#39;method choice&#39; __
+    - The &#34;Ok&#34; and &#34;Go&#34; buttons appears after the loading bar is done
+    - The drop down corresponds to the methods associated to
+    the analysis
+
+    &#34;&#34;&#34;
+    # Clear the Output
+    clear_output(wait=True)
+    output = widgets.Output(layout=self.out_layout)
+
+    # Save the drop down value
+    drop_down_value = self.current_drop_down.value
+    
+    # enable the info button when coming back from display
+    if self.state != &#39;display&#39;:
+        self.info_button.disabled = False
+        self.toggle_normalize_button.disabled = False
+
+    # Deactivate the info button if it was activated
+    if self.info_button.button_style == &#39;info&#39;:
+        self.info_button.button_style = &#39;&#39;
+
+    if self.state == &#39;method choice&#39;:  # State when the user is choosing the analysis method
+
+        # If we only analyse a single sound
+        if self.analysis == &#39;Single&#39;:
+
+            # Special case when the method is the frequency bin plot
+            if drop_down_value == Sound.plot_freq_bins:
+                self.analysis_tuple = [drop_down_value]  # Store the method
+                # Change the drop down to frequency bin choice
+                self.current_drop_down = self.bin_drop_down
+                self.state = &#39;method choice 2&#39;  # a second choice is needed
+                self.display = &#39;plot&#39;
+
+            # Case for the methods without plotting
+            elif drop_down_value in [Sound.peak_damping, Sound.listen_freq_bins, Signal.listen]:
+                self.analysis_tuple = [drop_down_value]  # store the method
+                self.state = &#39;display&#39;  # ready to display
+                self.display = &#39;print&#39;
+
+            # Signal.plot.method() methods
+            elif drop_down_value in [*self.plot_methods, Sound.bin_hist]:
+                # store method and arg in a list
+                self.analysis_tuple = [drop_down_value]
+                self.state = &#39;display&#39;  # ready to display
+                self.display = &#39;plot&#39;
+
+            # Error when no method is chosen
+            elif drop_down_value == 1:
+                error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                with output:
+                    display(error)
+
+        # Case when two sounds or multiple sounds are being analysed
+        elif self.analysis in [&#39;Dual&#39;, &#39;Multiple&#39;]:
+
+            # Special case for the frequency bin plot
+            if drop_down_value in self.DM_bin_choice_methods:
+                self.analysis_tuple = [drop_down_value]  # Store the method
+                # Update the drop down to frequency bin choice
+                self.current_drop_down = self.bin_drop_down
+                self.state = &#39;method choice 2&#39;  # a second choice is needed
+                self.display = &#39;plot&#39;
+
+            # Case for plot methods
+            elif (drop_down_value == SoundPack.plot) or (drop_down_value == SoundPack.compare_plot):
+                self.analysis_tuple = [drop_down_value]  # Store the method
+                # Update the drop down to the plot drop down
+                self.current_drop_down = self.plot_drop_down
+                self.state = &#39;method choice 2&#39;  # a second choice is needed
+                self.display = &#39;plot&#39;
+
+            # Error when no method is chosen
+            elif drop_down_value == 1:
+                error = generate_error_widget(&#39;No analysis method was chosen&#39;)
+                with output:
+                    display(error)
+
+            # Case for methods with no arguments
+            else:
+                if drop_down_value == SoundPack.fundamentals:
+                    self.display = &#39;print&#39;
+                else:
+                    self.display = &#39;plot&#39;
+                self.analysis_tuple = [drop_down_value]  # store the method
+                self.state = &#39;display&#39;
+
+    # Case when the method is chosen and an argument needs to be added &#39;method choice 2&#39;
+    elif self.state == &#39;method choice 2&#39;:
+
+        # add the arg part to the analysis tuple
+        self.analysis_tuple.append(self.current_drop_down.value)
+        self.state = &#39;display&#39;
+
+    # if we are coming back from the display the state is redefined and we restart
+    elif self.state == &#39;analysis displayed&#39;:
+        self.state = &#39;method choice&#39;
+
+    # If the button is pressed and the method is defined, the go button is enabled
+    if self.state == &#39;display&#39;:
+        self.go_button.disabled = False
+        self.ok_button.disabled = True
+        self.info_button.disabled = True
+        self.toggle_normalize_button.disabled = True
+
+    # Actualize the button box and display
+    children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
+    self.button_box = widgets.Box(children=children, layout=self.box_layout)
+
+    # Put the updated drop down in the output
+    with output:
+        display(self.current_drop_down)
+
+    display(self.button_box, output)</code></pre>
+</details>
+</dd>
+<dt id="guitarsounds.interface.guitarGUI.on_single_button_clicked"><code class="name flex">
+<span>def <span class="ident">on_single_button_clicked</span></span>(<span>self, b)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays the single file selector, allowing the user to choose
+one file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_single_button_clicked(self, b):
+    &#34;&#34;&#34;
+    Displays the single file selector, allowing the user to choose
+    one file.
+    &#34;&#34;&#34;
+    clear_output(wait=True)
+
+    output = widgets.Output(layout={&#39;border&#39;: &#39;1px solid black&#39;})
+    self.disable_file_selection(True)
+    with output:
+        display(self.single_file_selector)
+
+    self.analysis = &#39;Single&#39;
+    self.state = &#39;file entry&#39;
+
+    display(self.button_box)
+    display(output)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="guitarsounds" href="index.html">guitarsounds</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="guitarsounds.interface.generate_error_widget" href="#guitarsounds.interface.generate_error_widget">generate_error_widget</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="guitarsounds.interface.guitarGUI" href="#guitarsounds.interface.guitarGUI">guitarGUI</a></code></h4>
+<ul class="">
+<li><code><a title="guitarsounds.interface.guitarGUI.DM_bin_choice_methods" href="#guitarsounds.interface.guitarGUI.DM_bin_choice_methods">DM_bin_choice_methods</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.bin_drop_down" href="#guitarsounds.interface.guitarGUI.bin_drop_down">bin_drop_down</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.bin_ticks_methods" href="#guitarsounds.interface.guitarGUI.bin_ticks_methods">bin_ticks_methods</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.box_layout" href="#guitarsounds.interface.guitarGUI.box_layout">box_layout</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.define_sound_names" href="#guitarsounds.interface.guitarGUI.define_sound_names">define_sound_names</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.disable_file_selection" href="#guitarsounds.interface.guitarGUI.disable_file_selection">disable_file_selection</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.dual_drop_down" href="#guitarsounds.interface.guitarGUI.dual_drop_down">dual_drop_down</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.fundamental_style" href="#guitarsounds.interface.guitarGUI.fundamental_style">fundamental_style</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.import_sound_files" href="#guitarsounds.interface.guitarGUI.import_sound_files">import_sound_files</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.mult_drop_down" href="#guitarsounds.interface.guitarGUI.mult_drop_down">mult_drop_down</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_done_button_clicked" href="#guitarsounds.interface.guitarGUI.on_done_button_clicked">on_done_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_dual_button_clicked" href="#guitarsounds.interface.guitarGUI.on_dual_button_clicked">on_dual_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_go_button_clicked" href="#guitarsounds.interface.guitarGUI.on_go_button_clicked">on_go_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_info_button_clicked" href="#guitarsounds.interface.guitarGUI.on_info_button_clicked">on_info_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_loaded_bar" href="#guitarsounds.interface.guitarGUI.on_loaded_bar">on_loaded_bar</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_multiple_button_clicked" href="#guitarsounds.interface.guitarGUI.on_multiple_button_clicked">on_multiple_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_normalize_button_clicked" href="#guitarsounds.interface.guitarGUI.on_normalize_button_clicked">on_normalize_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_ok_button_clicked_1" href="#guitarsounds.interface.guitarGUI.on_ok_button_clicked_1">on_ok_button_clicked_1</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_ok_button_clicked_2" href="#guitarsounds.interface.guitarGUI.on_ok_button_clicked_2">on_ok_button_clicked_2</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.on_single_button_clicked" href="#guitarsounds.interface.guitarGUI.on_single_button_clicked">on_single_button_clicked</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.options" href="#guitarsounds.interface.guitarGUI.options">options</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.out_layout" href="#guitarsounds.interface.guitarGUI.out_layout">out_layout</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.output" href="#guitarsounds.interface.guitarGUI.output">output</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.plot_drop_down" href="#guitarsounds.interface.guitarGUI.plot_drop_down">plot_drop_down</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.plot_info_dict" href="#guitarsounds.interface.guitarGUI.plot_info_dict">plot_info_dict</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.plot_methods" href="#guitarsounds.interface.guitarGUI.plot_methods">plot_methods</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.single_drop_down" href="#guitarsounds.interface.guitarGUI.single_drop_down">single_drop_down</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.style" href="#guitarsounds.interface.guitarGUI.style">style</a></code></li>
+<li><code><a title="guitarsounds.interface.guitarGUI.unique_plot_methods" href="#guitarsounds.interface.guitarGUI.unique_plot_methods">unique_plot_methods</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,1 +1,13 @@
-recursive-include soundfiles/*.wav
+
+# Include the README
+include *.md
+
+# Include the license file
+include LICENSE.txt
+
+# Include setup.py
+include setup.py
+
+# include the example sounds
+recursive-include example_sounds *
+

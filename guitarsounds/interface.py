@@ -1,5 +1,6 @@
 from IPython.display import display, clear_output, HTML
-from guitarsounds.analysis import Signal, Sound, SoundPack
+from IPython import get_ipython
+from guitarsounds.analysis import Plot, Signal, Sound, SoundPack
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import io
@@ -18,8 +19,28 @@ class guitarGUI(object):
     # Box Layout
     box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='50%')
 
+    # Fundamental input style
+    fundamental_style = style = {'description_width': 'initial'}
+
     # Attribute for output layout
     output = widgets.Output(layout={'border': '1px solid black'})
+
+    # List of plot methods
+    plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
+                    Plot.time_damping, Plot.timbre, ]
+    bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
+
+    # Plot info dict
+    plot_info_dict = {'signal': Plot.signal,
+                      'envelop': Plot.envelop,
+                      'log envelop': Plot.log_envelop,
+                      'fft': Plot.fft,
+                      'fft hist': Plot.fft_hist,
+                      'peaks': Plot.peaks,
+                      'peak damping': Plot.peak_damping,
+                      'time damping': Plot.time_damping,
+                      'timbre': Plot.timbre,
+                      'integral': Plot.integral}
 
     # analysis drop downs
     # Single analysis drop down
@@ -27,30 +48,40 @@ class guitarGUI(object):
                ('Listen Sound', Signal.listen),
                ('Listen frequency bins', Sound.listen_freq_bins),
                ('Frequency bin plot', Sound.plot_freq_bins),
-               ('Signal plot', (Signal.plot, 'signal')),
-               ('Envelop plot', (Signal.plot, 'envelop')),
-               ('Log-envelop plot', (Signal.plot, 'log envelop')),
-               ('Fourier transform plot', (Signal.plot, 'fft')),
-               ('Fourier transform histogram', (Signal.plot, 'fft hist')),
-               ('Peaks plot', (Signal.plot, 'peaks')),
-               ('Peak damping plot', (Signal.plot, 'peak damping')),
-               ('Time damping plot', (Signal.plot, 'time damping')),
-               ('Timbre attributes plot', (Signal.plot, 'timbre')),
-               ('Frequency damping values', Sound.peak_damping)]
+               ('Frequency bin histogram', Sound.bin_hist),
+               ('Signal plot', Plot.signal),
+               ('Envelop plot', Plot.envelop),
+               ('Log-envelop plot', Plot.log_envelop),
+               ('Fourier transform plot', Plot.fft),
+               ('Fourier transform histogram', Plot.fft_hist),
+               ('Peaks plot', Plot.peaks),
+               ('Peak damping plot', Plot.peak_damping),
+               ('Time damping plot', Plot.time_damping),
+               ('Timbre attributes plot', Plot.timbre),
+               ('Frequency damping values', Sound.peak_damping), ]
+
     style = {'description_width': '150px'}
     single_drop_down = widgets.Dropdown(options=options, value=1, style=style,
                                         description='Choose an analysis : ')
     single_drop_down.rank = 'first'
+
+    unique_plot_methods = [SoundPack.compare_peaks, SoundPack.fft_mirror, SoundPack.fft_diff, SoundPack.plot,
+                           SoundPack.bin_power_hist, ]
 
     # Dual analysis drop down
     options = [('', 1),
                ('Compare Peaks', SoundPack.compare_peaks),
                ('Mirror FFT', SoundPack.fft_mirror),
                ('FFT difference', SoundPack.fft_diff),
+               ('Bin power comparison', SoundPack.integral_compare),
                ('Stacked plot', SoundPack.plot),
                ('Compared plot', SoundPack.compare_plot),
+               ('Bin power plot', SoundPack.integral_plot),
+               ('Bin power table', SoundPack.bin_power_table),
+               ('Bin power histogram', SoundPack.bin_power_hist),
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
-               ('Print Fundamentals', SoundPack.fundamentals),]
+               ('Print Fundamentals', SoundPack.fundamentals), ]
+
     style = {'description_width': '150px'}
     dual_drop_down = widgets.Dropdown(options=options, value=1, style=style,
                                       description='Choose an analysis : ')
@@ -62,7 +93,13 @@ class guitarGUI(object):
                ('Compared plot', SoundPack.compare_plot),
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
                ('Combine Envelops', SoundPack.combine_envelop),
-               ('Print Fundamentals', SoundPack.fundamentals)]
+               ('Print Fundamentals', SoundPack.fundamentals),
+               ('Bin power plot', SoundPack.integral_plot),
+               ('Print bin powers', SoundPack.bin_power_table),
+               ('Bin power histogram', SoundPack.bin_power_hist), ]
+
+    DM_bin_choice_methods = [SoundPack.freq_bin_plot, SoundPack.integral_plot, SoundPack.integral_compare]
+
     style = {'description_width': '150px'}
     mult_drop_down = widgets.Dropdown(options=options, value=1, style=style,
                                       description='Choose an analysis : ')
@@ -76,7 +113,8 @@ class guitarGUI(object):
                ('highmid', 'highmid'),
                ('uppermid', 'uppermid'),
                ('presence', 'presence'),
-               ('brillance', 'brillance')]
+               ('brillance', 'brillance'), ]
+
     style = {'description_width': '150px'}
     bin_drop_down = widgets.Dropdown(options=options, value='all', style=style,
                                      description='Choose a frequency bin: ')
@@ -93,7 +131,9 @@ class guitarGUI(object):
                ('Fourier Transform Peaks', 'peaks'),
                ('Peak Damping', 'peak damping'),
                ('Time Damping', 'time damping'),
-               ('Timbre Attributes', 'timbre')]
+               ('Timbre Attributes', 'timbre'),
+               ('Cumulative integral', 'integral'), ]
+
     style = {'description_width': '150px'}
     plot_drop_down = widgets.Dropdown(options=options, value='signal', style=style,
                                       description='Choose a plot type: ')
@@ -125,6 +165,9 @@ class guitarGUI(object):
         self.toggle_normalize_button = widgets.Button(description='Normalize')
         # Associated attribute to normalize the Sounds for the method called
         self.normalize = False
+
+        # Info button
+        self.info_button = widgets.Button(description='Info')
 
         # Button box when the GUI starts
         self.button_box = widgets.Box(children=[self.button1,
@@ -232,7 +275,8 @@ class guitarGUI(object):
 
     def on_ok_button_clicked_1(self, b):
         """
-        The user clicks this button when he is done choosing files
+        The user clicks this button when he is done choosing files and when
+        he is done defining names
         """
         # Clear the output
         clear_output(wait=True)
@@ -247,10 +291,11 @@ class guitarGUI(object):
             if file_selector.value != {}:
                 files_where_chosen = True
 
-        # If the
+        # If the file where chosen the user is taken to the define name interface
         if files_where_chosen:
             self.define_sound_names()
 
+        # if not we go back to file selection
         else:
             output = widgets.Output(layout={'border': '1px solid black'})
             with output:
@@ -264,12 +309,18 @@ class guitarGUI(object):
                 else:
                     error = generate_error_widget('Chose an analysis type')
                     display(error)
+
+                # Display an error if a file selector was clicked but no file was chosen
                 if self.analysis in ['Single', 'Dual', 'Multiple']:
                     error = generate_error_widget('No sound was chosen')
                     display(error)
 
             display(self.button_box)
             display(output)
+
+    """ 
+    Analysis interface button click methods
+    """
 
     def on_ok_button_clicked_2(self, b):
         """
@@ -288,8 +339,18 @@ class guitarGUI(object):
 
         # Save the drop down value
         drop_down_value = self.current_drop_down.value
+        
+        # enable the info button when coming back from display
+        if self.state != 'display':
+            self.info_button.disabled = False
+            self.toggle_normalize_button.disabled = False
 
-        if self.state == 'method choice':
+        # Deactivate the info button if it was activated
+        if self.info_button.button_style == 'info':
+            self.info_button.button_style = ''
+
+        if self.state == 'method choice':  # State when the user is choosing the analysis method
+
             # If we only analyse a single sound
             if self.analysis == 'Single':
 
@@ -301,26 +362,30 @@ class guitarGUI(object):
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
 
+                # Case for the methods without plotting
                 elif drop_down_value in [Sound.peak_damping, Sound.listen_freq_bins, Signal.listen]:
                     self.analysis_tuple = [drop_down_value]  # store the method
                     self.state = 'display'  # ready to display
                     self.display = 'print'
 
-                # all other methods are tuples (fun, arg) -> fun(arg)
-                elif type(drop_down_value) == tuple:
+                # Signal.plot.method() methods
+                elif drop_down_value in [*self.plot_methods, Sound.bin_hist]:
                     # store method and arg in a list
-                    self.analysis_tuple = [*drop_down_value]
+                    self.analysis_tuple = [drop_down_value]
                     self.state = 'display'  # ready to display
                     self.display = 'plot'
 
+                # Error when no method is chosen
                 elif drop_down_value == 1:
                     error = generate_error_widget('No analysis method was chosen')
                     with output:
                         display(error)
 
-            elif self.analysis in ['Dual', 'Multiple']:  # Case when two sounds or multiple sounds are being analysed
+            # Case when two sounds or multiple sounds are being analysed
+            elif self.analysis in ['Dual', 'Multiple']:
+
                 # Special case for the frequency bin plot
-                if drop_down_value == SoundPack.freq_bin_plot:
+                if drop_down_value in self.DM_bin_choice_methods:
                     self.analysis_tuple = [drop_down_value]  # Store the method
                     # Update the drop down to frequency bin choice
                     self.current_drop_down = self.bin_drop_down
@@ -335,6 +400,7 @@ class guitarGUI(object):
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
 
+                # Error when no method is chosen
                 elif drop_down_value == 1:
                     error = generate_error_widget('No analysis method was chosen')
                     with output:
@@ -346,7 +412,6 @@ class guitarGUI(object):
                         self.display = 'print'
                     else:
                         self.display = 'plot'
-
                     self.analysis_tuple = [drop_down_value]  # store the method
                     self.state = 'display'
 
@@ -357,7 +422,7 @@ class guitarGUI(object):
             self.analysis_tuple.append(self.current_drop_down.value)
             self.state = 'display'
 
-        # Coming back from the display the state is redefined and we restart
+        # if we are coming back from the display the state is redefined and we restart
         elif self.state == 'analysis displayed':
             self.state = 'method choice'
 
@@ -365,9 +430,11 @@ class guitarGUI(object):
         if self.state == 'display':
             self.go_button.disabled = False
             self.ok_button.disabled = True
+            self.info_button.disabled = True
+            self.toggle_normalize_button.disabled = True
 
         # Actualize the button box and display
-        children = [self.ok_button, self.go_button, self.toggle_normalize_button]
+        children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
         self.button_box = widgets.Box(children=children, layout=self.box_layout)
 
         # Put the updated drop down in the output
@@ -376,7 +443,73 @@ class guitarGUI(object):
 
         display(self.button_box, output)
 
+    def on_info_button_clicked(self, info):
+        """
+        Method called when the info button is clicked
+        Displays the help string associated with the current drop down method
+        """
+        if info.button_style == '':
+            # change the style to make the button blue
+            info.button_style = 'info'
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+
+            # Case when the user is selecting the first method
+            if self.state == 'method choice':
+
+                # if the method is a tuple with an argument
+                if type(self.current_drop_down.value) == tuple:
+                    with output:
+                        display(help(self.current_drop_down.value[0]))
+
+                # if no method was selected
+                elif type(self.current_drop_down.value) == int:
+                    error = generate_error_widget('No analysis was selected')
+                    with output:
+                        display(error)
+
+                # a method not in a tuple was selected
+                else:
+                    with output:
+                        display(help(self.current_drop_down.value))
+
+                # display every thing
+                display(self.button_box, output)
+
+            # case when the user is doing a secondary selection
+            elif self.state == 'method choice 2':
+
+                # case for the plot type drop down
+                if self.current_drop_down.name == 'plot':
+                    with output:
+                        display(help(self.plot_info_dict[self.current_drop_down.value]))
+
+                # case for bin type drop down (display the previous method)
+                elif self.current_drop_down.name == 'bin':
+                    with output:
+                        display(help(self.analysis_tuple[0]))
+
+                display(self.button_box, output)
+
+        elif info.button_style == 'info':
+            info.button_style = ''
+
+            # Clear the Output
+            clear_output(wait=True)
+            output = widgets.Output(layout=self.out_layout)
+            with output:
+                display(self.current_drop_down)
+
+            # display every thing
+            display(self.button_box, output)
+
     def on_normalize_button_clicked(self, toggle):
+        """
+        Method called when the normalize button is clicked
+        The normalized attribute is inversed according to the current value
+        """
         if toggle.button_style == '':
             toggle.button_style = 'success'
             toggle.icon = 'check'
@@ -405,8 +538,7 @@ class guitarGUI(object):
 
     def on_go_button_clicked(self, b):
         """
-        Go button to display the analysis when all choices
-        are made
+        Go button to display the analysis when all choices are made
 
         What happens :
         ___________________________________
@@ -425,37 +557,73 @@ class guitarGUI(object):
         # Change the GUI state
         self.state = 'analysis displayed'
 
+        # Set the matplotlib display method
+        get_ipython().run_line_magic('matplotlib', 'inline')
+
         # Case for a single sound
         if self.analysis == 'Single':
 
             # Case for Sound.plot_freq_bins method
             if self.analysis_tuple[0] == Sound.plot_freq_bins:
+                # change interface
+                get_ipython().run_line_magic('matplotlib', 'notebook')
+                # create a figure
+                plt.figure(figsize=(8, 6))
                 # Call the method
-                self.analysis_tuple[0](self.Sons, bins=[self.analysis_tuple[1]])
+                self.analysis_tuple[0](self.sounds, bins=[self.analysis_tuple[1]])
 
                 # Define the title according to the chosen bin
                 if self.analysis_tuple[1] == 'all':
-                    plt.title('Frequency bin plot for ' + self.Sons.name)
+                    plt.title('Frequency bin plot for ' + self.sounds.name)
                 else:
-                    plt.title(self.analysis_tuple[1] + ' bin plot for ' + self.Sons.name)
-                # Add to output
-                with output:
+                    plt.title(self.analysis_tuple[1] + ' bin plot for ' + self.sounds.name)
+
                     plt.show()
 
             # Case for the Sound.peak_damping method (print only)
             elif self.analysis_tuple[0] in [Sound.peak_damping, Sound.listen_freq_bins]:
                 with output:
-                    self.analysis_tuple[0](self.Sons)  # add print to output
+                    self.analysis_tuple[0](self.sounds)  # add print to output
 
             # Case for the Signal.plot method
-            elif self.analysis_tuple[0] == Signal.plot:
+            elif self.analysis_tuple[0] in self.plot_methods:
+                # change plot interface
+                get_ipython().run_line_magic('matplotlib', 'notebook')
+                # create a figure
+                plt.figure(figsize=(8, 6))
+                # Add the fill argument if there is just one plot
+                if self.analysis_tuple[0] == Plot.timbre:
+                    kwargs = {'fill': True}
+                else:
+                    kwargs = {}
                 # Call the method according to normalization
                 if not self.normalize:
-                    self.analysis_tuple[0](self.Sons.signal, self.analysis_tuple[1])
+                    self.analysis_tuple[0](self.sounds.signal.plot, **kwargs)
                 elif self.normalize:
-                    self.analysis_tuple[0](self.Sons.signal.normalize(), self.analysis_tuple[1])
+                    self.analysis_tuple[0](self.sounds.signal.normalize().plot, **kwargs)
+
+                if self.analysis_tuple[0] == Plot.time_damping:
+                    zeta = np.around(self.sounds.signal.time_damping(), 5)
+                    plt.title(self.current_drop_down.label + ' for ' + self.sounds.name + ' Zeta = ' + str(zeta))
                 # Define a title from the signal.plot(kind)
-                plt.title(self.current_drop_down.label + ' for ' + self.Sons.name)
+                else:
+                    plt.title(self.current_drop_down.label + ' for ' + self.sounds.name)
+
+                # make the x-axis ticks the frequency bins if the axe is frequency
+                if self.analysis_tuple[0] in self.bin_ticks_methods:
+                    Plot.set_bin_ticks(self.sounds.signal.plot)
+                # add to output
+                with output:
+                    plt.show()
+
+            # Case for the Sound.bin_hist method
+            elif self.analysis_tuple[0] == Sound.bin_hist:
+                # change plot interface
+                get_ipython().run_line_magic('matplotlib', 'notebook')
+                # call the method
+                self.analysis_tuple[0](self.sounds)
+                # set a title
+                plt.title(self.current_drop_down.label + ' for ' + self.sounds.name)
                 # add to output
                 with output:
                     plt.show()
@@ -466,11 +634,9 @@ class guitarGUI(object):
                 with output:
                     # Call the method according to normalization
                     if not self.normalize:
-                        self.analysis_tuple[0](self.Sons.signal)
+                        self.analysis_tuple[0](self.sounds.signal)
                     elif self.normalize:
-                        self.analysis_tuple[0](self.Sons.signal.normalize())
-
-
+                        self.analysis_tuple[0](self.sounds.signal.normalize())
 
         # Case for Dual and Multiple analyses
         elif self.analysis in ['Dual', 'Multiple']:
@@ -481,12 +647,23 @@ class guitarGUI(object):
             elif not self.normalize:
                 sound_pack = self.Pack
 
+            # if the analysis method is a unique plot, make matplotlib interactive
+            get_ipython().run_line_magic('matplotlib', 'inline')
+            if self.analysis_tuple[0] in self.unique_plot_methods:
+                get_ipython().run_line_magic('matplotlib', 'notebook')
+
             # Call with no arguments
             if len(self.analysis_tuple) == 1:
                 # Case for a print output
                 if self.display == 'print':
                     with output:
                         self.analysis_tuple[0](sound_pack)  # add print to output
+
+                # special case to have bins ticks for the fft_diff method
+                elif self.analysis_tuple[0] == SoundPack.fft_diff:
+                    self.analysis_tuple[0](sound_pack, ticks='bins')
+                    with output:
+                        plt.show()  # display plot in output
 
                 # Case for a plot output
                 elif self.display == 'plot':
@@ -513,6 +690,7 @@ class guitarGUI(object):
         self.toggle_normalize_button.button_style = ''
         self.toggle_normalize_button.icon = ''
         self.normalize = False
+
 
         # display
         display(self.button_box, output)
@@ -542,11 +720,12 @@ class guitarGUI(object):
             self.state = 'method choice'
 
             # Actualize the button box and display
-            children = [self.ok_button, self.go_button, self.toggle_normalize_button]
+            children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
             self.button_box = widgets.Box(children=children, layout=self.box_layout)
             self.ok_button.on_click(self.on_ok_button_clicked_2)
             self.go_button.on_click(self.on_go_button_clicked)
             self.toggle_normalize_button.on_click(self.on_normalize_button_clicked)
+            self.info_button.on_click(self.on_info_button_clicked)
             self.go_button.disabled = True
             display(self.button_box)
 
@@ -565,58 +744,111 @@ class guitarGUI(object):
     """
 
     def define_sound_names(self):
+        """
+        A method to define sound names and fundamentals
+        """
 
+        # Clear the output and define the new one
         clear_output(wait=True)
-
-        style = {'description_width': 'initial'}
-        layout = widgets.Layout(width='40%')
-
-        self.button_box = widgets.Box(children=[self.done_button], layout=self.box_layout)
         output = widgets.Output(layout=self.out_layout)
-        display(self.button_box)
 
+        # Style for the text inputs
+        style = {'description_width': 'initial'}
+
+        # Small string 'Hz' to indicate units
+        HZ_string = widgets.HTML('<p>' + 'Hz' + '</p>')
+
+        # Define the button box
+        self.button_box = widgets.Box(children=[self.done_button], layout=self.box_layout)
+
+        # Define the output with the text inputs
         with output:
+
+            # Case for a single sound analysis
             if self.analysis == 'Single':
+
+                # get the filenames
                 self.file_names = [ky for ky in self.single_file_selector.value.keys()]
+
+                # make a sound name input widget
                 sound_name_input = widgets.Text(value='',
                                                 placeholder='sound name',
                                                 description=self.file_names[0],
-                                                layout=layout,
+                                                layout=widgets.Layout(width='40%'),
                                                 style=style,
                                                 )
-                display(sound_name_input)
+
+                # make a fundamental input widget
+                fundamental_input = widgets.FloatText(value=0,
+                                                      description='Fundamental :',
+                                                      style=style,
+                                                      layout=widgets.Layout(width='20%')
+                                                      )
+
+                # childrens that go in the name box
+                childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                # define a name box widget
+                name_box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='75%')
+                name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                # display the box
+                display(name_box)
+
+                # store the input to refer them later
                 self.sound_name_inputs = [sound_name_input]
+                self.sound_fundamental_inputs = [fundamental_input]
 
-            elif self.analysis == 'Dual':
-                name1 = [ky for ky in self.dual_file_selector_1.value.keys()][0]
-                name2 = [ky for ky in self.dual_file_selector_2.value.keys()][0]
-                self.file_names = [name1, name2]
+            # Case for dual sound analysis
+            elif self.analysis in ['Dual', 'Multiple']:
+
+                if self.analysis == 'Dual':
+                    # get the file names
+                    name1 = [ky for ky in self.dual_file_selector_1.value.keys()][0]
+                    name2 = [ky for ky in self.dual_file_selector_2.value.keys()][0]
+                    self.file_names = [name1, name2]
+
+                elif self.analysis == 'Multiple':
+                    self.file_names = [ky for ky in self.mult_file_selector.value.keys()]
+
+                # create empty lists for the inputs
                 self.sound_name_inputs = []
+                self.sound_fundamental_inputs = []
+
                 for file in self.file_names:
+                    # make a text input widget
                     sound_name_input = widgets.Text(value='',
                                                     placeholder='sound name',
                                                     description=file,
-                                                    layout=layout,
+                                                    layout=widgets.Layout(width='40%'),
                                                     style=style,
                                                     )
-                    display(sound_name_input)
-                    self.sound_name_inputs.append(sound_name_input)
 
-            elif self.analysis == 'Multiple':
-                self.file_names = [ky for ky in self.mult_file_selector.value.keys()]
-                self.sound_name_inputs = []
-                for file in self.file_names:
-                    sound_name_input = widgets.Text(value='',
-                                                    placeholder='sound name',
-                                                    description=file,
-                                                    layout=layout,
-                                                    style=style,
-                                                    )
-                    display(sound_name_input)
+                    # make a fundamental input widget
+                    fundamental_input = widgets.FloatText(value=0,
+                                                          description='Fundamental :',
+                                                          layout=widgets.Layout(width='20%'),
+                                                          style=style
+                                                          )
+
+                    # childrens that go in the name box
+                    childrens = [sound_name_input, fundamental_input, HZ_string]
+
+                    # define a name box widget
+                    name_box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='75%')
+                    name_box = widgets.Box(children=childrens, layout=name_box_layout)
+
+                    # display the box
+                    display(name_box)
+
+                    # append the inputs
                     self.sound_name_inputs.append(sound_name_input)
+                    self.sound_fundamental_inputs.append(fundamental_input)
 
         self.done_button.on_click(self.on_done_button_clicked)
-        display(output)
+
+        # display everything
+        display(self.button_box, output)
 
     def import_sound_files(self):
         """
@@ -653,22 +885,37 @@ class guitarGUI(object):
             signal = np.array(samples) / 32768
             Sound_Input = (signal, sr)
             self.load_bar.value += 1  # LoadBar value = 8
+
+            # Get the sound name
             if self.sound_name_inputs[0].value == '':
                 name = self.file_names[0].replace('.wav', '')
             else:
                 name = self.sound_name_inputs[0].value
+
+            # Get the sound fundamental
+            if self.sound_fundamental_inputs[0].value == 0:
+                fundamental = None
+            else:
+                fundamental = self.sound_fundamental_inputs[0].value
+
             self.load_bar.value += 1  # LoadBar value = 9
             # This takes a long time
-            self.Sons = Sound(Sound_Input, name=name).condition(return_self=True)
+            sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+            self.sounds = sound.condition(return_self=True, verbose=False)
             self.load_bar.value += 2  # Loadbar = 10
 
         # Case for two files from two file selectors
         elif self.analysis == 'Dual':
             # LoadBar = 0
-            self.Sons = []
+            self.sounds = []
             file_dicts = [self.dual_file_selector_1.value, self.dual_file_selector_2.value]
             self.load_bar.value += 2  # LoadBar = 1
-            for file, dic, name_input in zip(self.file_names, file_dicts, self.sound_name_inputs):
+
+            # zipped iterator
+            iterator = zip(self.file_names, file_dicts, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            #  Create a sound for every file
+            for file, dic, name_input, fundamental_input in iterator:
 
                 file_values = dic[file]
                 bites = file_values['content']
@@ -682,24 +929,37 @@ class guitarGUI(object):
                 self.load_bar.value += 1  # LoadBar +=2
                 signal = np.array(samples) / 32768
                 Sound_Input = (signal, sr)
+
+                # get the name value
                 if name_input.value == '':
                     name = file.replace('.wav', '')
                 else:
                     name = name_input.value
-                self.Sons.append(Sound(Sound_Input, name=name).condition(return_self=True))
+
+                # get the fundamental value
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
                 self.load_bar.value += 1  # LoadBar +=2
             # Load Bar = 8
-            self.Pack = SoundPack(self.Sons, names=True)
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
             self.load_bar.value += 2  # Load Bar = 10
 
         # Case for multiple files
-        # TODO : Better load bar using float
         elif self.analysis == 'Multiple':
             # LoadBar = 0
-            self.Sons = []
+            self.sounds = []
             self.load_bar.value += 1  # LoadBar = 1
 
-            for file, name_input in zip(self.file_names, self.sound_name_inputs):
+            # zipped iterator
+            iterator = zip(self.file_names, self.sound_name_inputs, self.sound_fundamental_inputs)
+
+            for file, name_input, fundamental_input in iterator:
                 file_values = self.mult_file_selector.value[file]
                 bites = file_values['content']
                 audio = wave.open(io.BytesIO(bites))
@@ -710,14 +970,25 @@ class guitarGUI(object):
                     samples.append(struct.unpack("h", frame)[0])
                 signal = np.array(samples) / 32768
                 Sound_Input = (signal, sr)
+
+                # get the sound names
                 if name_input.value == '':
                     name = file.replace('.wav', '')
                 else:
                     name = name_input.value
-                self.Sons.append(Sound(Sound_Input, name=name).condition(return_self=True, verbose=False))
+
+                # get the fundamental values
+                if fundamental_input.value == 0:
+                    fundamental = None
+                else:
+                    fundamental = fundamental_input.value
+
+                sound = Sound(Sound_Input, name=name, fundamental=fundamental)
+                sound.condition(verbose=False)
+                self.sounds.append(sound)
                 if self.load_bar.value < 9:
                     self.load_bar.value += 1
 
-            self.Pack = SoundPack(self.Sons, names=True)
+            self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
             while self.load_bar.value < 10:
                 self.load_bar.value += 1  # LoadBar = 10

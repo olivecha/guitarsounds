@@ -1,8 +1,8 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
-HERE = pathlib.Path(__file__).parent
+HERE = pathlib.Path(__file__).parent.resolve()
 
 # The text of the README file
 README = (HERE / "README.md").read_text()
@@ -11,7 +11,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="guitarsounds",
     version="1.0.0",
-    description="Analyze and visualize harmonic sounds",
+    description="A python package to analyze and visualize harmonic sounds",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/olivecha/guitarsounds",
@@ -25,11 +25,8 @@ setup(
     ],
     packages=["guitarsounds"],
     include_package_data=True,
-    install_requires=["librosa", "soundfile", "IPython",
+    install_requires=["soundfile", "IPython",
                       "matplotlib", "numpy", "noisereduce",
                       "scipy", "tabulate", "ipywidgets"],
-    entry_points={
-        "console_scripts": [
-            "realpython=reader.__main__:main", ]
-    },
+
 )
