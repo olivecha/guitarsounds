@@ -8,6 +8,7 @@ HERE = pathlib.Path(__file__).parent.resolve()
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
+# parsing the requirements.txt
 thelibFolder = os.path.dirname(os.path.realpath(__file__))
 requirementPath = thelibFolder + '/requirements.txt'
 install_requires = []
@@ -19,10 +20,14 @@ if os.path.isfile(requirementPath):
 setup(
     name="guitarsounds",
     version="1.0.0",
+    python_requires='>=3',
     description="A python package to analyze and visualize harmonic sounds",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/olivecha/guitarsounds",
+    project_urls={
+        'Documentation': 'https://olivecha.github.io/guitarsounds/',
+    },
     author="Olivier Chabot",
     author_email="olivier.chabot.2@ens.etsmtl.ca",
     license="MIT",
