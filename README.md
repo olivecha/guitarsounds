@@ -1,6 +1,9 @@
-# Structure du programme
+# guitarsounds
 
-## Une classe pour faire des opérations sur un signal audio : `class Signal(signal, sr)`
+A python package to analyse guitar sounds
+
+## Documentation
+
 
 `Signal(signal, sr)`  : retourne une instance de la classe Signal à partir d'un vecteur d'échantillons audios `signal`et une fréquence d'échantillonage `sr`
 
