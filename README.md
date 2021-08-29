@@ -17,7 +17,12 @@ pip install timbral_models
 
 ## Using the Jupyter Notebook GUI
 
+1. Open the jupyter notebook console in your current environement. 
+2. Create a new notebook
+3. Type the following code in the first cell
 
-## Using the API
+<img width="1088" alt="Capture d’écran, le 2021-08-29 à 19 01 28" src="https://user-images.githubusercontent.com/78630053/131268136-75835d93-5247-4193-bfc0-e23230adfe79.png">
 
+4. Press shift + enter
 
+To go further, you may learn the guitarsounds API, see the API Tutorial notebook and the API documentation.
