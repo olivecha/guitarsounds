@@ -1,7 +1,7 @@
 # guitarsounds
 
 A python package to analyse guitar sounds. Developed as an educational analysis tool with the [Bruand Lutherie School](https://bruand.com/). 
-The API documentation is available at [documentation](https://olivecha.github.io/guitarsounds/)
+The API documentation is available at [documentation](https://olivecha.github.io/guitarsounds/).
 
 The current release contains usual signal processing tools applied to guitar sounds with automated figure generation trough `matplotlib` usable with a jupyter notebook GUI.
 
