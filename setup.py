@@ -1,4 +1,5 @@
 import pathlib
+import os
 from setuptools import setup, find_packages
 
 # The directory containing this file
@@ -6,6 +7,13 @@ HERE = pathlib.Path(__file__).parent.resolve()
 
 # The text of the README file
 README = (HERE / "README.md").read_text()
+
+thelibFolder = os.path.dirname(os.path.realpath(__file__))
+requirementPath = thelibFolder + '/requirements.txt'
+install_requires = []
+if os.path.isfile(requirementPath):
+    with open(requirementPath) as f:
+        install_requires = f.read().splitlines()
 
 # This call to setup() does all the work
 setup(
@@ -25,8 +33,6 @@ setup(
     ],
     packages=["guitarsounds"],
     include_package_data=True,
-    install_requires=["soundfile", "IPython",
-                      "matplotlib", "numpy", "noisereduce",
-                      "scipy", "tabulate", "ipywidgets"],
+    install_requires=install_requires
 
 )

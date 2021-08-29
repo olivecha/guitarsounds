@@ -11,3 +11,8 @@ include setup.py
 # include the example sounds
 recursive-include example_sounds *
 
+# include the requirements
+include requirements.txt
+
+# include the docs
+recursive-include docs *
