@@ -81,16 +81,25 @@ class SoundPack(object):
 
         else:
             self.sounds = sounds
-            # Assign a default value to names
-            if names is None:
-                names = [str(n) for n in np.arange(1, len(sounds) + 1)]
+
+            # sound name defined in constructor
+            if names and (len(names) == len(self.sounds)):
                 for sound, n in zip(self.sounds, names):
                     sound.name = n
 
-            # sound name defined in constructor
-            elif names and (len(names) == len(self.sounds)):
-                for sound, n in zip(self.sounds, names):
-                    sound.name = n
+            else:
+                # names obtained from the supplied sounds
+                names = [sound.name for sound in self.sounds if sound.name]
+
+                # all sounds have a name
+                if len(names) == len(sounds):
+                    self.names = names
+
+                # Assign a default value to names
+                else:
+                    names = [str(n) for n in np.arange(1, len(sounds) + 1)]
+                    for sound, n in zip(self.sounds, names):
+                        sound.name = n
 
         if equalize_time:
             self.equalize_time()
