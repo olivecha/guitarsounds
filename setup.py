@@ -19,7 +19,7 @@ if os.path.isfile(requirementPath):
 # This call to setup() does all the work
 setup(
     name="guitarsounds",
-    version="0.0.2",
+    version="1.0.0",
     python_requires='>=3',
     description="A python package to analyze and visualize harmonic sounds",
     long_description=README,

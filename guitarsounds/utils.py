@@ -1,9 +1,7 @@
+
 import numpy as np
 import scipy.optimize
 import scipy.integrate
-import os
-import ipywidgets as ui
-
 
 def nth_order_polynomial_residual(A, n, x, y):
     """

@@ -1,3 +1,4 @@
+
 class Parameter(object):
     """
     A class to store the individual sound parameters
