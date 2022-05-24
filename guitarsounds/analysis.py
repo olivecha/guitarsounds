@@ -26,6 +26,7 @@ SP = sound_parameters()
 Classes
 """
 
+
 class SoundPack(object):
     """
     A class to store and analyse multiple sounds
@@ -1009,6 +1010,7 @@ class Signal(object):
 
         Calls the function corresponding to Plot.kind()
         See help(guitarsounds.analysis.Plot) for info on the different plots
+        (not tested)
         """
 
         self.plot.method_dict[kind](**kwargs)
@@ -1167,10 +1169,7 @@ class Signal(object):
         first_index = np.where(self.fft_frequencies() >= 80)[0][0]
         second_index = np.where(self.fft_frequencies() >= 110)[0][0]
         cavity_peak = np.argmax(self.fft()[first_index:second_index]) + first_index
-        if self.fundamental() == self.fft_frequencies()[cavity_peak]:
-            print('Cavity peak is obscured by the fundamental')
-        else:
-            return cavity_peak
+        return cavity_peak
 
     def cavity_frequency(self):
         """
@@ -1179,9 +1178,7 @@ class Signal(object):
         is printed and None is returned.
         :return: If successful, the cavity peak frequency
         """
-        first_index = np.where(self.fft_frequencies() >= 80)[0][0]
-        second_index = np.where(self.fft_frequencies() >= 110)[0][0]
-        cavity_peak = np.argmax(self.fft()[first_index:second_index]) + first_index
+        cavity_peak = self.cavity_peak()
         if self.fundamental() == self.fft_frequencies()[cavity_peak]:
             print('Cavity peak is obscured by the fundamental')
             return 0
@@ -1218,7 +1215,7 @@ class Signal(object):
 
     def envelop(self):
         """
-        Method calculating the amplitude envelope of a signal as a
+        Method calculating the amplitude envelop of a signal as a
         maximum of the absolute value of the signal.
         :return: Amplitude envelop of the signal
         """
@@ -1390,7 +1387,7 @@ class Signal(object):
     def normalize(self):
         """
         Normalizes the signal to [-1, 1] and returns the normalised instance.
-        :return : A normalized signal
+        return : A normalized signal
         """
         factor = np.max(np.abs(self.signal))
         normalised_signal = Signal((self.signal / factor), self.sr, self.SP)
