@@ -124,7 +124,7 @@ class MyTestCase(unittest.TestCase):
     def test_Signal_find_onset(self):
         """  test the method finding the onset of the signal"""
         sig = get_rnd_test_Signal()
-        self.assertNotAlmostEqual(sig.signal[sig.find_onset()], np.max(sig.signal))
+        self.assertTrue(sig.find_onset() < len(sig.time()))
 
     def test_Signal_trim_onset(self):
         """ Test the method trimming the signal at its onset"""
