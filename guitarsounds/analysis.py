@@ -15,7 +15,7 @@ from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
 from tabulate import tabulate
-from timbral_models import timbral_extractor
+#from timbral_models import timbral_extractor
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
