@@ -1,5 +1,9 @@
 # guitarsounds
 
+![example workflow](https://github.com/guitarsounds/.github/workflows/python-app.yml/badge.svg)
+
+
+
 A python package to analyse guitar sounds. Developed as an educational analysis tool with the [Bruand Lutherie School](https://bruand.com/). 
 The guitarsound python package documentation is available at [documentation](https://olivecha.github.io/guitarsounds/).
 
