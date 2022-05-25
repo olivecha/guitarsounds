@@ -25,10 +25,9 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
+        sudo apt-get install libsndfile1-dev
         python -m pip install --upgrade pip
         pip install flake8 pytest
-        pip install SoundFile
-        conda install -c conda-forge librosa
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
