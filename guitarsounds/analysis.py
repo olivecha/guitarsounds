@@ -15,7 +15,7 @@ from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
 from tabulate import tabulate
-#from timbral_models import timbral_extractor
+from timbral_models import timbral_extractor
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
@@ -1448,6 +1448,7 @@ class Signal(object):
         self.save_wav('temp')
         # Compute the timbre dict from the temp file
         timbre = timbral_extractor('temp.wav', verbose=False)
+        #timbre = {}
         # remove reverb and roughness and hardness attributes
         timbre = {key: timbre[key] for key in timbre if key not in ['reverb', 'roughness', 'hardness']}
         # Remove the temp file
