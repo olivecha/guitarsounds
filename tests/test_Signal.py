@@ -1,7 +1,6 @@
 import unittest
-
 from guitarsounds import Signal
-from helpers import get_rnd_test_Signal, get_ref_test_Signal
+from guitarsounds.helpers_tests import get_rnd_test_Signal, get_ref_test_Signal
 import numpy as np
 import os
 from contextlib import redirect_stdout

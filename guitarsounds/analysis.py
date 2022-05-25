@@ -1495,17 +1495,13 @@ class Plot(object):
     def sanitize_kwargs(self, kwargs):
         """
         Remove illegal key words to supply the key word arguments to matplotlib
-        :param kwargs:
+        :param kwargs: a dictionnary of key word arguments
         :return: sanitized kwargs
         """
         return {i: kwargs[i] for i in kwargs if i not in self.illegal_kwargs}
 
     def set_bin_ticks(self):
-        """
-        Applies the frequency bin ticks to the current plot
-        :param kwargs:
-        :return:
-        """
+        """ Applies the frequency bin ticks to the current plot """
         labels = [label for label in self.parent.SP.bins.__dict__ if label != 'name']
         labels.append('brillance')
         x = [param.value for param in self.parent.SP.bins.__dict__.values() if param != 'bins']
@@ -1518,9 +1514,7 @@ class Plot(object):
         ax.tick_params(axis="x", labelrotation=90)
 
     def signal(self, **kwargs):
-        """
-            Plots the time varying real signal as amplitude vs time.
-            """
+        """ Plots the time varying real signal as amplitude vs time. """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         plt.plot(self.parent.time(), self.parent.signal, alpha=0.6, **plot_kwargs)
         plt.xlabel('time (s)')
