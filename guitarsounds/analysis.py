@@ -790,11 +790,11 @@ class Sound(object):
     A class to store audio signals obtained from a sound and compare them
     """
 
-    def __init__(self, file, name='', fundamental=None, SoundParams=None):
+    def __init__(self, data, name='', fundamental=None, SoundParams=None):
         """
         Creates a Sound instance from a .wav file, name as a string and fundamental frequency
         value can be user specified.
-        :param file: file path to the .wav file
+        :param data: data path to the .wav data
         :param name: Sound instance name to use in plot legend and titles
         :param fundamental: Fundamental frequency value if None the value is estimated
         from the FFT (see `Signal.fundamental`).
@@ -806,32 +806,50 @@ class Sound(object):
         else:
             self.SP = SoundParams
 
-        if type(file) == str:
-            # Load the soundfile using librosa
-            signal, sr = librosa.load(file)
-            self.file = file
+        if type(data) == str:
+            # Load the sound data using librosa
+            signal, sr = librosa.load(data)
+            self.data = data
 
-        elif type(file) == tuple:
-            signal, sr = file
+        elif type(data) == tuple:
+            signal, sr = data
+
+        else:
+            raise TypeError
 
         # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr, self.SP)
-
+        # create an empty plot attribute
+        self.plot = None
         # Allow user specified fundamental
         self.fundamental = fundamental
         self.name = name
+        # create an empty signal attribute
+        self.signal = None
+        self.trimmed_signal = None
+        self.bins = None
+        self.bass = None
+        self.mid = None
+        self.highmid = None
+        self.uppermid = None
+        self.presence = None
+        self.brillance = None
 
-    def condition(self, verbose=True, return_self=False):
+    def condition(self, verbose=True, return_self=False, filter_noise=False):
         """
         A method conditioning the Sound instance.
         - Trimming to just before the onset
         - Filtering the noise
         :param verbose: if True problem with trimming and filtering are reported
         :param return_self: If True the method returns the conditioned Sound instance
+        :param filter_noise: If True the Sound is filtered using a noise reducing algorithm
         :return: a conditioned Sound instance if `return_self = True`
         """
         self.trim_signal(verbose=verbose)
-        self.filter_noise(verbose=verbose)
+        if filter_noise:
+            self.filter_noise(verbose=verbose)
+        else:
+            self.signal = self.trimmed_signal
         self.bin_divide()
         if self.fundamental is None:
             self.fundamental = self.signal.fundamental()
@@ -839,17 +857,21 @@ class Sound(object):
         if return_self:
             return self
 
-    def use_raw_signal(self, normalized=False):
+    def use_raw_signal(self, normalized=False, return_self=False):
         """
         Assigns the raw signal to the `signal` attribute of the Sound instance to
         analyze it
         :param normalized: if True, the raw signal is first normalized
-        :return: None
+        :param return_self: if True the Sound instance is return after the signal attribute is defined
+        :return: None, self if return_self is True
         """
         if normalized:
             self.signal = self.raw_signal.normalize()
         else:
             self.signal = self.raw_signal
+        self.bin_divide()
+        if return_self:
+            return self
 
     def bin_divide(self):
         """
@@ -897,7 +919,7 @@ class Sound(object):
             print(key)
             self.bins[key].normalize().listen()
 
-    def plot_freq_bins(self, bins=None):
+    def plot_freq_bins(self, bins='all'):
         """
         Method to plot all the frequency bins logarithmic envelops of a sound
 
@@ -907,16 +929,15 @@ class Sound(object):
         'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
 
         Example :
-        `Sound.plot_freq_bins(bins=['all])` plots all the frequency bins
+        `Sound.plot_freq_bins(bins='all')` plots all the frequency bins
         `Sound.plot_freq_bins(bins=['bass', 'mid'])` plots the bass and mid bins
         """
-        try:
-            value = bins[0]
-            if value == 'all':
+
+        if type(bins) == str:
+            if bins == 'all':
                 bins = self.bins.keys()
-        except TypeError:
-            if bins is None:
-                bins = self.bins.keys()
+            elif bins in self.bins.keys:
+                bins = [bins]
 
         for key in bins:
             lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'

@@ -5,7 +5,7 @@ import os
 from random import randint
 
 
-def get_rnd_signal_file():
+def get_rnd_audio_file():
     """ Get a random soundfile for the included example sounds"""
     wood_root = os.path.join('..', 'example_sounds', 'Wood_Guitar')
     carbon_root = os.path.join('..', 'example_sounds', 'Carbon_Guitar')
@@ -18,7 +18,7 @@ def get_rnd_signal_file():
 
 def get_rnd_test_Signal():
     """Get a random guitarsounds.Signal instance from the example sounds"""
-    random_signal_file = get_rnd_signal_file()
+    random_signal_file = get_rnd_audio_file()
     signal_data, sample_rate = load(random_signal_file)
     signal = Signal(signal_data, sample_rate, sound_parameters())
     return signal
