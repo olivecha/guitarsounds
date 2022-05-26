@@ -228,6 +228,7 @@ class SoundPack(object):
 
             # find the n, m values for the subplots line and columns
             n = len(self.sounds)
+            cols = 0
             if n // 4 >= 10:
                 # a lot of sounds
                 cols = 4
@@ -286,6 +287,7 @@ class SoundPack(object):
                     son.bins[key].normalize().old_plot('log envelop', label=son.name)
                 plt.xscale('log')
                 plt.legend()
+                son = self.sounds[-1]
                 title0 = ' ' + key + ' : ' + str(int(son.bins[key].range[0])) + ' - ' + str(
                         int(son.bins[key].range[1])) + ' Hz, '
                 title1 = 'Norm. Factors : '
@@ -301,6 +303,7 @@ class SoundPack(object):
                 son.bins[f_bin].normalize().old_plot('log envelop', label=(str(i + 1) + '. ' + son.name))
             plt.xscale('log')
             plt.legend()
+            son = self.sounds[-1]
             title0 = ' ' + f_bin + ' : ' + str(int(son.bins[f_bin].range[0])) + ' - ' + str(
                 int(son.bins[f_bin].range[1])) + ' Hz, '
             title1 = 'Norm. Factors : '
@@ -333,7 +336,7 @@ class SoundPack(object):
         elif kind in SP.bins.__dict__.keys():
             log_envelops = np.stack([s1.bins[kind].normalize().log_envelop()[0][:sample_number] for s1 in sounds])
         else:
-            print('Wrong kind')
+            raise ValueError
 
         average_log_envelop = np.mean(log_envelops, axis=0)
         means = np.tile(average_log_envelop, (len(sounds), 1))
@@ -433,6 +436,7 @@ class SoundPack(object):
                 for sound in self.sounds:
                     sound.bins[key].plot.integral(label=sound.name)
                 plt.legend()
+                sound = self.sounds[-1]
                 title0 = ' ' + key + ' : ' + str(int(sound.bins[key].range[0])) + ' - ' + str(
                     int(sound.bins[key].range[1])) + ' Hz, '
                 title1 = 'Norm. Factors : '
@@ -448,6 +452,7 @@ class SoundPack(object):
             for sound in self.sounds:
                 sound.bins[f_bin].plot.integral(label=sound.name)
             plt.legend()
+            sound = self.sounds[-1]
             title0 = ' ' + f_bin + ' : ' + str(int(sound.bins[f_bin].range[0])) + ' - ' + str(
                 int(sound.bins[f_bin].range[1])) + ' Hz, '
             title1 = 'Norm. Factors : '
@@ -726,7 +731,6 @@ class SoundPack(object):
                 time1 = log_time1[2:len(log_time1):1]
                 time2 = log_time2[2:len(log_time2):1]
 
-                int_index = np.min([integral1.shape[0], integral2.shape[0]])
                 ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
                 ax.fill_between(time2, -integral2, label=self.sounds[1].name, alpha=0.4)
                 ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
@@ -1469,7 +1473,7 @@ class Signal(object):
         self.save_wav('temp')
         # Compute the timbre dict from the temp file
         timbre = timbral_extractor('temp.wav', verbose=False)
-        #timbre = {}
+        # timbre = {}
         # remove reverb and roughness and hardness attributes
         timbre = {key: timbre[key] for key in timbre if key not in ['reverb', 'roughness', 'hardness']}
         # Remove the temp file
@@ -1696,7 +1700,7 @@ class Plot(object):
             plot2_kwargs['color'] = 'k'
 
         if 'normalize' in kwargs.keys() and kwargs['normalize']:
-            zetas = np.array(zetas) / np.array(zetas).max()
+            zetas = np.array(zetas) / np.array(zetas).max(initial=0)
 
         plt.scatter(peak_freqs, zetas, **plot_kwargs)
         fun = utils.nth_order_polynomial_fit(n, peak_freqs, zetas)
@@ -1782,6 +1786,9 @@ class Plot(object):
         elif plt.gca().name == 'polar':  # if the current ax is polar
             ax = plt.gca()
 
+        else:
+            raise ValueError('Figure axes could not be created')
+
         timbre = self.parent.timbre()  # compute timbral attributes
         categories = list(timbre.keys())  # get the timbral categories
         values = list(timbre.values())  # get the timbral values
@@ -1831,4 +1838,3 @@ class Plot(object):
         plt.ylabel('cummulative power')
         plt.xscale('log')
         plt.grid('on')
-
