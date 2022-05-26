@@ -1787,7 +1787,7 @@ class Plot(object):
             ax = plt.gca()
 
         else:
-            raise ValueError('Figure axes could not be created')
+            ax = plt.gca()
 
         timbre = self.parent.timbre()  # compute timbral attributes
         categories = list(timbre.keys())  # get the timbral categories
