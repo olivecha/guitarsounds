@@ -69,7 +69,7 @@ The amplitude-time data of the `Sound` instance is stored in a `Signal` class an
 
 Relevant time signal properties can then be rapidly extracted and visualized in the interactive Jupyter Notebook environment. For example, the time damping curve and the associated damping factor is a useful measure when measuring the effects of changes in the guitar design on the decay rate of different notes : 
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171778130-6892e1c2-b435-4ac4-a7ae-bae289d8fd02.png">
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/78630053/171778130-6892e1c2-b435-4ac4-a7ae-bae289d8fd02.png">
 
 Two different sounds can also be compared using the `SoundPack` class, such as a tangible effect of a design change can be measured. Here we compare the fourier transform peaks of two guitars built using different materials : 
 
