@@ -2,8 +2,6 @@ import unittest
 from guitarsounds import Plot
 from guitarsounds import helpers_tests
 import matplotlib.pyplot as plt
-import os
-import warnings
 
 class MyTestCase(unittest.TestCase):
     """ Test for the poltting class"""
@@ -88,36 +86,6 @@ class MyTestCase(unittest.TestCase):
         parent.plot.time_damping()
         ax = plt.gca()
         self.assertTrue(len(ax.lines) > 0)
-
-    def test_Plot_timbre(self):
-        """ Tests the timbre Plot method"""
-        parent = helpers_tests.get_rnd_test_Signal()
-        parent = parent.trim_time(0.33)
-        with warnings.catch_warnings():
-            warnings.filterwarnings('error')
-            try:
-                parent.plot.timbre()
-                ax = plt.gca()
-                self.assertTrue(len(ax.lines) > 0)
-
-            except FutureWarning:
-                try:
-                    os.remove('temp.wav')
-                except FileNotFoundError:
-                    pass
-
-            except DeprecationWarning:
-                try:
-                    os.remove('temp.wav')
-                except FileNotFoundError:
-                    pass
-
-            except NameError:
-                print('Timbre plotting has failed')
-                try:
-                    os.remove('temp.wav')
-                except FileNotFoundError:
-                    pass
 
     def test_Plot_integral(self):
         """ Test the integral Plot method """

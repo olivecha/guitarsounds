@@ -6,7 +6,6 @@ numpy
 noisereduce
 scipy
 tabulate
-timbral_models
 ipywidgets
 
 

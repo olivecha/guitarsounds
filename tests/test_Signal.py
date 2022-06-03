@@ -139,11 +139,12 @@ class MyTestCase(unittest.TestCase):
         sig = sig.trim_time(1.)
         self.assertAlmostEqual(sig.time()[-1], 1.)
 
-    # def test_Signal_filter_noise(self):
-    """ Possibly remove the filter noise method"""
-    #    sig = get_rnd_test_Signal()
-    #    sig = sig.trim_onset()
-    #    sig2 = sig.filter_noise()
+    def test_Signal_filter_noise(self):
+        """ Possibly remove the filter noise method"""
+        sig = get_rnd_test_Signal()
+        sig = sig.trim_onset()
+        sig2 = sig.filter_noise()
+        self.assertIsInstance(sig2, Signal)
 
     def test_Signal_normalize(self):
         """ Test the method normalizing the amplitude of a signal"""
@@ -158,15 +159,6 @@ class MyTestCase(unittest.TestCase):
         self.assertIsInstance(bins, dict)
         for k in bins:
             self.assertIsInstance(bins[k], Signal)
-
-    def test_Signal_timbre(self):
-        """ Test the Signal timbre analysis method"""
-        sig = get_rnd_test_Signal()
-        sig = sig.trim_time(0.5)
-        timbre = sig.timbre()
-        self.assertIsInstance(timbre, dict)
-        for k in timbre:
-            self.assertTrue(timbre[k] < 100.)
 
     def test_save_signal(self):
         """ Test the Signal saving method """

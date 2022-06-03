@@ -15,7 +15,6 @@ from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
 from tabulate import tabulate
-from timbral_models import timbral_extractor
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
@@ -103,6 +102,9 @@ class SoundPack(object):
                         sound.name = n
 
         if equalize_time:
+            for s in self.sounds:
+                if ~hasattr(s, 'signal'):
+                    s.condition()
             self.equalize_time()
 
         # Define bin strings
@@ -1454,31 +1456,6 @@ class Signal(object):
                                freq_range=[bins['uppermid'].value, bins["presence"].value]),
             "brillance": Signal(sig.sosfilt(bril_filter, self.signal), self.sr, self.SP,
                                 freq_range=[bins["presence"].value, max(self.fft_frequencies())])}
-
-    def timbre(self):
-        """
-        A method computing the timbral attributes of the signal
-
-        This method returns timbral attributes "Brightness", "Depth", "Boominess", "Sharpness" and "Warmth".
-        They are obtained trough linear regression with a model trained with regular sounds.
-        More information :
-        Andy Pearce, Mark Plumbley, Saeid, S., Brookes, T., Mason, R., & Wang, W. (2019).
-        Release of timbral characterisation tools for semantically annotating non-musical content.pdf
-        (Rapport No. AC-WP5-SURREY-D5.8). AudioCommons. Repéré à :
-        https://www.audiocommons.org/assets/files/AC-WP5-SURREY-D5.8%20Release%20of%20timbral
-        %20characterisation%20tools%20for%20semantically%20annotating%20non-musical%20content.pdf
-        :return: A dictionary with timbral attributes and their values
-        """
-        # Save the signal in a temporary file
-        self.save_wav('temp')
-        # Compute the timbre dict from the temp file
-        timbre = timbral_extractor('temp.wav', verbose=False)
-        # timbre = {}
-        # remove reverb and roughness and hardness attributes
-        timbre = {key: timbre[key] for key in timbre if key not in ['reverb', 'roughness', 'hardness']}
-        # Remove the temp file
-        os.remove('temp.wav')
-        return timbre
 
     def save_wav(self, name, path=''):
         """
