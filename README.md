@@ -45,10 +45,8 @@ import guitarsounds
 interface = guitarsounds.Interface()
 ```
 
-The user interface should then appear and allow to quickly analyse sounds
+Pressing shift+enter runs the code in the cell and launches the graphic user interface of guitarsounds :
 
 <img width="1088" alt="Capture d’écran, le 2021-08-29 à 19 01 28" src="https://user-images.githubusercontent.com/78630053/131268136-75835d93-5247-4193-bfc0-e23230adfe79.png">
-
-Pressing shift+enter runs the code in the cell and launches the graphic user interface of guitarsounds
 
 To go further, you may learn the guitarsounds API, see the API Tutorial notebook and the API [documentation](https://olivecha.github.io/guitarsounds/)
