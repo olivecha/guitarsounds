@@ -16,7 +16,7 @@ These steps can be followed to use guitarsound interactively with Jupyter Notebo
 
 - Download the Anaconda package management system [link](https://www.anaconda.com/products/distribution).
 
-<img width="1219" alt="Screen Shot 2022-05-22 at 9 18 26 PM" src="https://user-images.githubusercontent.com/78630053/169726111-d80cde25-3630-4cb6-87ac-f487bafa4898.png">
+<img width="1200" alt="Screen Shot 2022-05-22 at 9 18 26 PM" src="https://user-images.githubusercontent.com/78630053/169726111-d80cde25-3630-4cb6-87ac-f487bafa4898.png">
 
 - Install the Anaconda package management system ([Tutorial](https://docs.anaconda.com/anaconda/install/windows/)).
 
@@ -33,6 +33,10 @@ pip install guitarsounds
 Once the installation of guitarsounds is finished, the package can be used in the Anaconda Jupyter Notebook environnement. The Jupyter Notebook environnement can be launched from [Anaconda Navigator](https://docs.anaconda.com/anaconda/navigator/) which is included in the Anaconda package management system. 
 
 ![nav-defaults](https://user-images.githubusercontent.com/78630053/169730350-13be0b3e-6851-416c-843d-cbf564ef82b1.png)
+
+Then, navigate to the sub-directory where you want your work to be and create a Jupyter Notebook :
+
+<img width="1200" alt="Screen Shot 2022-06-02 at 9 12 01 PM" src="https://user-images.githubusercontent.com/78630053/171768085-c7b3b9e6-3ec9-4c71-b7da-27235a7b3a7a.png">
 
 The Graphic user interface can be launched by typing the following code in a cell of the notebook : 
 
