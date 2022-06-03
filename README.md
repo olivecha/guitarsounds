@@ -38,9 +38,9 @@ Then, navigate to the sub-directory where you want your work to be and create a 
 
 <img width="1200" alt="Screen Shot 2022-06-02 at 9 12 01 PM" src="https://user-images.githubusercontent.com/78630053/171768085-c7b3b9e6-3ec9-4c71-b7da-27235a7b3a7a.png">
 
-The Graphic user interface can be launched by typing the following code in a cell of the notebook : 
+The graphic user interface can be launched by typing the following code in a cell of the notebook : 
 
-```python
+```
 import guitarsounds
 interface = guitarsounds.Interface()
 ```
