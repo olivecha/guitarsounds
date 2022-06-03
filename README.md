@@ -12,7 +12,7 @@ To allow fast and easy analysis of sound files, a graphic user interface is avai
 
 ## Installation
 
-These steps can be followed to use guitarsound interactively with Jupyter Notebook : 
+The following steps can be followed to use guitarsound interactively with Jupyter Notebook. A french version of the installation guide is available [here](https://github.com/olivecha/guitarsounds/wiki/Guide-installation-fran%C3%A7ais).
 
 - Download the Anaconda package management system [link](https://www.anaconda.com/products/distribution).
 
