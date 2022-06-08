@@ -1361,7 +1361,9 @@ class Signal(object):
         onset = self.find_onset(verbose=verbose)  # find the onset
 
         if onset > delay_samples:  # To make sure the index is positive
-            trimmed_signal = Signal(self.signal[onset - delay_samples:], self.sr, self.SP)
+            new_signal = self.signal[onset - delay_samples:]
+            new_signal[:delay_samples//2] = new_signal[:delay_samples//2]*np.linspace(0, 1, delay_samples//2) 
+            trimmed_signal = Signal(new_signal, self.sr, self.SP)
             trimmed_signal.noise = self.signal[:onset - delay_samples]
             trimmed_signal.trimmed = True
             trimmed_signal.onset = np.argmax(trimmed_signal.signal)
@@ -1694,11 +1696,15 @@ class Plot(object):
 
         # The second point is the first point where the signal crosses the lower_threshold line
         second_point_thresh = self.parent.SP.damping.lower_threshold.value
-
-        try:
-            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
-        except IndexError:
-            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh * 2)[0]
+        count = 0        
+        while True:
+            try:
+                second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
+                break
+            except IndexError:
+                second_point_thresh *= 2
+                if second_point_thresh > 1:
+                    raise ValueError("invalid second point threshold encountered, something went wrong")
 
         # Function to compute the residual for the exponential curve fit
         def residual_function(zeta_w, t, s):

@@ -3,6 +3,7 @@ import guitarsounds
 from guitarsounds import SoundPack, helpers_tests
 import numpy as np
 import matplotlib.axes
+import matplotlib.pyplot as plt
 
 class MyTestCase(unittest.TestCase):
     """ Test class for the guitarsounds.Sound class"""
@@ -52,16 +53,18 @@ class MyTestCase(unittest.TestCase):
         for kind in plot_kinds:
             out = sp.plot(kind)
             self.assertIsInstance(out, matplotlib.axes.Axes)
+            plt.close(plt.gcf())
 
     def test_SoundPack_compare_plot_multiple(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
         sp = SoundPack(files)
         plot_kinds = ['signal', 'envelop', 'log envelop',
-                      'fft', 'fft hist', 'peaks',
+                       'fft', 'fft hist', 'peaks',
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
             out = sp.compare_plot(kind)
             self.assertIsInstance(out, matplotlib.axes.Axes)
+            plt.close(plt.gcf())
 
     def test_SoundPack_compare_plot_dual(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(2)]
@@ -72,3 +75,5 @@ class MyTestCase(unittest.TestCase):
         for kind in plot_kinds:
             out = sp.compare_plot(kind)
             self.assertIsInstance(out, matplotlib.axes.Axes)
+            plt.close(plt.gcf())            
+
