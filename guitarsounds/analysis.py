@@ -186,13 +186,11 @@ class SoundPack(object):
         for sound in self.sounds:
             kwargs['label'] = sound.name
             kwargs['color'] = None
-            sound.signal.old_plot(kind, **kwargs)
-
-        plt.title(kind + ' plot')
-        if kind == 'timbre':
-            plt.legend(bbox_to_anchor=(1.3, 0.9))
-        else:
-            plt.legend()
+            sound.signal.plot.method_dict[kind](**kwargs)
+        ax = plt.gca()
+        ax.set_title(kind + ' plot')
+        ax.legend()
+        return ax
 
     def compare_plot(self, kind, **kwargs):
         """
@@ -209,25 +207,15 @@ class SoundPack(object):
         """
         # if a dual SoundPack : only plot two big plots
         if self.kind == 'dual':
-
-            if kind == 'timbre':
-                fig, axs = plt.subplots(1, 2, figsize=(8, 4), subplot_kw={'projection': 'polar'})
-                for sound, ax in zip(self.sounds, axs):
-                    plt.sca(ax)
-                    sound.signal.old_plot(kind, **kwargs)
-                    ax.set_title(kind + ' ' + sound.name)
-
-            else:
-                fig, axs = plt.subplots(1, 2, figsize=(12, 4))
-                for sound, ax in zip(self.sounds, axs):
-                    plt.sca(ax)
-                    sound.signal.old_plot(kind, **kwargs)
-                    ax.set_title(kind + ' ' + sound.name)
+            fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+            for sound, ax in zip(self.sounds, axs):
+                plt.sca(ax)
+                sound.signal.plot.method_dict[kind](**kwargs)
+                ax.set_title(kind + ' ' + sound.name)
             plt.tight_layout()
 
         # If a multiple SoundPack : plot on a grid of axes
         elif self.kind == 'multiple':
-
             # find the n, m values for the subplots line and columns
             n = len(self.sounds)
             cols = 0
@@ -251,7 +239,7 @@ class SoundPack(object):
             axs = axs.reshape(-1)
             for sound, ax in zip(self.sounds, axs):
                 plt.sca(ax)
-                sound.signal.old_plot(kind, **kwargs)
+                sound.signal.plot.method_dict[kind](**kwargs)
                 title = ax.get_title()
                 title = sound.name + ' ' + title
                 ax.set_title(title)
@@ -259,8 +247,10 @@ class SoundPack(object):
             if remainder != 0:
                 for ax in axs[-(cols - remainder):]:
                     ax.set_axis_off()
-
             plt.tight_layout()
+        else:
+            raise Exception
+        return ax
 
     def freq_bin_plot(self, f_bin='all'):
         """
@@ -1472,8 +1462,7 @@ class Plot(object):
         Signal.plot.envelop()
 
         Supported plots are :
-        'signal', 'envelop', 'log envelop', 'fft', 'fft hist', 'peaks', 'peak damping', 'time damping',
-        'timbre', 'integral
+        'signal', 'envelop', 'log envelop', 'fft', 'fft hist', 'peaks', 'peak damping', 'time damping', 'integral'
     """
 
     # Illegal plot key word arguments
@@ -1492,7 +1481,6 @@ class Plot(object):
                             'peaks': self.peaks,
                             'peak damping': self.peak_damping,
                             'time damping': self.time_damping,
-                            'timbre': self.timbre,
                             'integral': self.integral, }
 
     def sanitize_kwargs(self, kwargs):
@@ -1746,43 +1734,6 @@ class Plot(object):
         title = 'Zeta : ' + str(np.around(-zeta_omega / wd, 5)) + ' Fundamental ' + \
                 str(np.around(self.parent.fundamental(), 0)) + 'Hz'
         plt.title(title)
-
-    def timbre(self, **kwargs):
-        """
-            A polar plot of the timbral attributes of the signal
-
-            See help(guitarsounds.analysis.Signal.timbre) for more info about the timbral attributes
-            """
-
-        plot_kwargs = self.sanitize_kwargs(kwargs)
-
-        fig = plt.gcf()
-        if not fig.axes:  # case when the figure is empty
-            ax = fig.add_subplot(projection='polar')
-
-        elif plt.gca().name == 'polar':  # if the current ax is polar
-            ax = plt.gca()
-
-        else:
-            ax = plt.gca()
-
-        timbre = self.parent.timbre()  # compute timbral attributes
-        categories = list(timbre.keys())  # get the timbral categories
-        values = list(timbre.values())  # get the timbral values
-        N = len(values)  # Number of values
-        values += values[:1]  # append the first value to the end to close the loop
-        angles = [n / float(N) * 2 * np.pi for n in range(N)]  # N equidistant angles
-        angles += angles[:1]  # append the first value at the end
-        ax.plot(angles, values, lw=2, **plot_kwargs)
-        if 'fill' in kwargs and kwargs['fill']:
-            ax.fill(angles, values)
-
-        ax.set_yticks([])
-        ax.set_yticklabels([])
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(categories)
-        ax.xaxis.set_tick_params(pad=18)
-        ax.set_theta_zero_location('S')
 
     def integral(self, **kwargs):
         """

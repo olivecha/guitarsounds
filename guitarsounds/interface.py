@@ -27,7 +27,7 @@ class guitarGUI(object):
 
     # List of plot methods
     plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
-                    Plot.time_damping, Plot.timbre, ]
+                    Plot.time_damping,  ]
     bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
 
     # Plot info dict
@@ -39,7 +39,6 @@ class guitarGUI(object):
                       'peaks': Plot.peaks,
                       'peak damping': Plot.peak_damping,
                       'time damping': Plot.time_damping,
-                      'timbre': Plot.timbre,
                       'integral': Plot.integral}
 
     # analysis drop downs
@@ -57,11 +56,10 @@ class guitarGUI(object):
                ('Peaks plot', Plot.peaks),
                ('Peak damping plot', Plot.peak_damping),
                ('Time damping plot', Plot.time_damping),
-               ('Timbre attributes plot', Plot.timbre),
                ('Frequency damping values', Sound.peak_damping), ]
 
-    style = {'description_width': '150px'}
-    single_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+    drop_down_style = {'description_width': '150px'}
+    single_drop_down = widgets.Dropdown(options=options, value=1, style=drop_down_style,
                                         description='Choose an analysis : ')
     single_drop_down.rank = 'first'
 
@@ -82,8 +80,7 @@ class guitarGUI(object):
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
                ('Print Fundamentals', SoundPack.fundamentals), ]
 
-    style = {'description_width': '150px'}
-    dual_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+    dual_drop_down = widgets.Dropdown(options=options, value=1, style=drop_down_style,
                                       description='Choose an analysis : ')
     dual_drop_down.rank = 'first'
 
@@ -100,8 +97,7 @@ class guitarGUI(object):
 
     DM_bin_choice_methods = [SoundPack.freq_bin_plot, SoundPack.integral_plot, SoundPack.integral_compare]
 
-    style = {'description_width': '150px'}
-    mult_drop_down = widgets.Dropdown(options=options, value=1, style=style,
+    mult_drop_down = widgets.Dropdown(options=options, value=1, style=drop_down_style,
                                       description='Choose an analysis : ')
     mult_drop_down.rank = 'first'
 
@@ -115,8 +111,7 @@ class guitarGUI(object):
                ('presence', 'presence'),
                ('brillance', 'brillance'), ]
 
-    style = {'description_width': '150px'}
-    bin_drop_down = widgets.Dropdown(options=options, value='all', style=style,
+    bin_drop_down = widgets.Dropdown(options=options, value='all', style=drop_down_style,
                                      description='Choose a frequency bin: ')
     bin_drop_down.rank = 'second'
     bin_drop_down.name = 'bin'
@@ -134,8 +129,7 @@ class guitarGUI(object):
                ('Timbre Attributes', 'timbre'),
                ('Cumulative integral', 'integral'), ]
 
-    style = {'description_width': '150px'}
-    plot_drop_down = widgets.Dropdown(options=options, value='signal', style=style,
+    plot_drop_down = widgets.Dropdown(options=options, value='signal', style=drop_down_style,
                                       description='Choose a plot type: ')
     plot_drop_down.rank = 'second'
     plot_drop_down.name = 'plot'
@@ -152,6 +146,7 @@ class guitarGUI(object):
 
         # __ Buttons __
         # Number of sound choice buttons
+        self.Pack = None
         self.button1 = widgets.Button(description="Single Sound")
         self.button2 = widgets.Button(description="Dual Sounds")
         self.button3 = widgets.Button(description="Multiple Sounds")
@@ -592,10 +587,7 @@ class guitarGUI(object):
                 # create a figure
                 plt.figure(figsize=(8, 6))
                 # Add the fill argument if there is just one plot
-                if self.analysis_tuple[0] == Plot.timbre:
-                    kwargs = {'fill': True}
-                else:
-                    kwargs = {}
+                kwargs = {}
                 # Call the method according to normalization
                 if not self.normalize:
                     self.analysis_tuple[0](self.sounds.signal.plot, **kwargs)
@@ -644,7 +636,7 @@ class guitarGUI(object):
             # normalize the sound_pack if self.normalize is True
             if self.normalize:
                 sound_pack = self.Pack.normalize()
-            elif not self.normalize:
+            else:
                 sound_pack = self.Pack
 
             # if the analysis method is a unique plot, make matplotlib interactive
