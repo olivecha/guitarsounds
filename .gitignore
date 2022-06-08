@@ -126,6 +126,7 @@ ssl/
 
 # User files
 Nbooks/
+DEV.ipynb
 
 # macos
 .DS_Store
