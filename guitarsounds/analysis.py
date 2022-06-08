@@ -1383,7 +1383,9 @@ class Signal(object):
         :return: A trimmed Signal
         """
         max_index = int(time_length * self.sr)
-        time_trimmed_signal = Signal(self.signal[:max_index], self.sr, self.SP)
+        new_signal = self.signal[:max_index]
+        new_signal[-50:] = new_signal[-50:]*np.linspace(1, 0, 50)
+        time_trimmed_signal = Signal(new_signal, self.sr, self.SP)
         time_trimmed_signal.time_length = time_length
         return time_trimmed_signal
 
