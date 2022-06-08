@@ -107,7 +107,16 @@ def sound_parameters():
     # Damping
     lower_threshold = Parameter('lower_threshold', 0.05, 'lower amplitude treshold for the time damping analysis')
     damping = ParameterSet('damping', lower_threshold)
+    
+    # Default signal trim times
+    E = Parameter('E2', 4.0, 'Default trim time for the E2 note')
+    A = Parameter('A2', 3.5, 'Default trim time for the A2 note') 
+    D = Parameter('D3', 3.5, 'Default trim time for the D3 note')
+    G = Parameter('G3', 3.0, 'Default trim time for the G3 note') 
+    B = Parameter('B3', 3.0, 'Default trim time for the B3 note')
+    e = Parameter('E4', 2.5, 'Default trim time for the E4 note')
+    trim_times = ParameterSet('trim', E, A, D, G, B, e)
 
-    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins, damping)
+    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins, damping, trim_times)
 
     return SoundParameters

@@ -831,7 +831,7 @@ class Sound(object):
         self.presence = None
         self.brillance = None
 
-    def condition(self, verbose=True, return_self=False, filter_noise=False):
+    def condition(self, verbose=True, return_self=False, filter_noise=False, auto_trim=False):
         """
         A method conditioning the Sound instance.
         - Trimming to just before the onset
@@ -846,10 +846,13 @@ class Sound(object):
             self.filter_noise(verbose=verbose)
         else:
             self.signal = self.trimmed_signal
-        self.bin_divide()
         if self.fundamental is None:
             self.fundamental = self.signal.fundamental()
+        if auto_trim:
+            time = utils.freq2trim(self.fundamental)
+            self.signal = self.signal.trim_time(time)
         self.plot = self.signal.plot
+        self.bin_divide()
         if return_self:
             return self
 

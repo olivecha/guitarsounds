@@ -1,7 +1,15 @@
-
 import numpy as np
 import scipy.optimize
 import scipy.integrate
+from scipy.interpolate import interp1d
+from guitarsounds.parameters import sound_parameters
+
+
+# instantiation of the trim time interpolator
+sp = sound_parameters()
+freq_dict = {'E2':82.41, 'A2':110.0, 'D3':146.83, 'G3':196.0, 'B3':246.94, 'E4':329.63}
+trim_dict = {'E2':sp.trim.E2.value, 'A2':sp.trim.A2.value, 'D3':sp.trim.D3.value, 'G3':sp.trim.G3.value, 'B3':sp.trim.B3.value, 'E4':sp.trim.E4.value}
+freq2trim = interp1d(list(freq_dict.values()), list(trim_dict.values()), fill_value='extrapolate')
 
 def nth_order_polynomial_residual(A, n, x, y):
     """
@@ -98,3 +106,12 @@ def power_split(y, x, x_max, n):
             i2 += 1
         indexes[i + 1] = i2
     return indexes
+
+def closest_trim_time(freq):
+    """
+    Return the interpolated trim time from the guitarsounds.parameters associated to a fundamental frequency
+    :param freq: fundamental frequency
+    :return: recommended trim time in seconds
+    """
+    time = freq2trim(freq)
+    return time

@@ -36,6 +36,11 @@ class MyTestCase(unittest.TestCase):
         sound3 = Sound(file)
         sound3.condition(filter_noise=True)
         self.assertTrue(sound3.signal is not None)
+        # test auto trim
+        file = helpers_tests.get_rnd_audio_file()
+        sound4 = Sound(file)
+        sound4.condition(auto_trim=True)
+        self.assertTrue(sound4.signal is not None)
 
     def test_Sound_use_raw_signal(self):
         """ Test for the use_raw_signal method of the Sound class"""
