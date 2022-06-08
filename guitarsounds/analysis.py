@@ -526,7 +526,14 @@ class SoundPack(object):
             else:
                 ax.bar(x, y, width=width, label=sound.name, color=color)
         plt.legend()
-
+    
+    def listen(self):
+        """
+        Listen to all the sounds in the SoundPack inside the Jupyter Notebook environment
+        """
+        for sound in self.sounds:
+            sound.signal.listen()
+        
     """
     Methods for dual SoundPacks
     """

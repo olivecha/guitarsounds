@@ -76,4 +76,10 @@ class MyTestCase(unittest.TestCase):
             out = sp.compare_plot(kind)
             self.assertIsInstance(out, matplotlib.axes.Axes)
             plt.close(plt.gcf())            
+    
+    def test_SoundPack_listen(self):
+        files = [helpers_tests.get_rnd_audio_file() for _ in range(4)]
+        sp = SoundPack(files)
+        sp.listen()
+        self.assertTrue(True)
 
