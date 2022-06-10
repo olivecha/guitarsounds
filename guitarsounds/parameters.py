@@ -63,6 +63,7 @@ class GlobalParameters(object):
                 if parameter.name == name:
                     parameter.value = value
 
+
 def sound_parameters():
     """
     Function returning the instance of the sound parameters
