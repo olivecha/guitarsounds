@@ -250,7 +250,7 @@ class SoundPack(object):
             plt.tight_layout()
         else:
             raise Exception
-        return ax
+        return axs
 
     def freq_bin_plot(self, f_bin='all'):
         """

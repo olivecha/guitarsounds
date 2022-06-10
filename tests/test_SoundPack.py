@@ -63,7 +63,8 @@ class MyTestCase(unittest.TestCase):
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
             out = sp.compare_plot(kind)
-            self.assertIsInstance(out, matplotlib.axes.Axes)
+            for ax in out:
+                self.assertIsInstance(ax, matplotlib.axes.Axes)
             plt.close(plt.gcf())
 
     def test_SoundPack_compare_plot_dual(self):
@@ -74,7 +75,8 @@ class MyTestCase(unittest.TestCase):
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
             out = sp.compare_plot(kind)
-            self.assertIsInstance(out, matplotlib.axes.Axes)
+            for ax in out:
+                self.assertIsInstance(ax, matplotlib.axes.Axes)
             plt.close(plt.gcf())            
     
     def test_SoundPack_listen(self):

@@ -1,8 +1,9 @@
 import unittest
-from guitarsounds import helpers_tests, Sound
+from guitarsounds import helpers_tests, Sound, utils
 import sys
 import io
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class MyTestCase(unittest.TestCase):
@@ -115,6 +116,20 @@ class MyTestCase(unittest.TestCase):
         ax = plt.gca()
         self.assertTrue(len(ax.patches) > 0)
 
+    def test_Sound_trim_sounds(self):
+        files = [helpers_tests.get_rnd_audio_file() for i in range(3)]
+        sounds = []
+        for f in files:
+            sound = Sound(f)
+            sound.condition()
+            sounds.append(sound)
+        min_len = np.min([s.signal.time()[-1] for s in sounds])
+        new_sounds1 = utils.trim_sounds(*sounds)
+        for S in new_sounds1:
+            self.assertTrue(np.abs(min_len - S.signal.time()[-1]) < 1e-3)
+        new_sounds2 = utils.trim_sounds(*sounds, length=1.0)
+        for S in new_sounds2:
+            self.assertTrue(np.abs(1.0 - S.signal.time()[-1]) < 1e-3)
 
 if __name__ == '__main__':
     unittest.main()

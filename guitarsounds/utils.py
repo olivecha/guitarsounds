@@ -2,8 +2,8 @@ import numpy as np
 import scipy.optimize
 import scipy.integrate
 from scipy.interpolate import interp1d
+import guitarsounds
 from guitarsounds.parameters import sound_parameters
-
 
 # instantiation of the trim time interpolator
 sp = sound_parameters()
@@ -107,6 +107,7 @@ def power_split(y, x, x_max, n):
         indexes[i + 1] = i2
     return indexes
 
+
 def closest_trim_time(freq):
     """
     Return the interpolated trim time from the guitarsounds.parameters associated to a fundamental frequency
@@ -115,3 +116,26 @@ def closest_trim_time(freq):
     """
     time = freq2trim(freq)
     return time
+
+
+def trim_sounds(*sounds, length=None):
+    """
+    Trim sounds to have the same length
+    :param *sounds: guitarsounds.Sound instances
+    :param length: trim length in seconds, if None the sounds a trimmed to the length of the shortest one
+    :return: the trimmed sounds
+    """
+    if length is None:
+        pack = guitarsounds.SoundPack(*sounds)
+        return pack.sounds
+    else:
+        new_sounds = []
+        for sound in sounds:
+            if length < sound.signal.time()[-1]:
+                sound.signal = sound.signal.trim_time(length)
+            else:
+                raise ValueError("Specify a shorter length")
+            sound.bin_divide()
+            new_sounds.append(sound)
+        return new_sounds
+
