@@ -811,8 +811,11 @@ class Sound(object):
 
         if type(data) == str:
             # Load the sound data using librosa
-            signal, sr = librosa.load(data)
-            self.data = data
+            if data[-3:] != 'wav':
+                raise ValueError('Only .wav are supported')
+            else:
+                signal, sr = librosa.load(data)
+                self.data = data
 
         elif type(data) == tuple:
             signal, sr = data
