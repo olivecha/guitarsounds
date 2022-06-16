@@ -152,7 +152,7 @@ class SoundPack(object):
 
     def normalize(self):
         """
-        Normalize all the signals in the SoundPack and returns a normaized
+        Normalize all the signals in the SoundPack and returns a normalized
         instance of itself
         :return: SoundPack with normalized signals
         """
@@ -1050,6 +1050,14 @@ class Signal(object):
         fft = np.fft.fft(self.signal)
         fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric of the absolute value
         return fft / np.max(fft)
+
+    def spectral_centroid(self):
+        """
+        Spectral centroid of the frequency content of the signal
+        :return: Spectral centroid of the signal (float)
+        """
+        SC = np.sum(self.fft() * self.fft_frequencies())/np.sum(self.fft())
+        return SC
 
     def peaks(self, max_freq=None, height=False, result=False):
         """

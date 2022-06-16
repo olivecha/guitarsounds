@@ -167,6 +167,10 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue('temp.wav' in os.listdir())
         os.remove('temp.wav')
 
+    def test_spectral_centoid(self):
+        """ Test the spectral centroid computation of a signal"""
+        sig = get_ref_test_Signal()
+        self.assertAlmostEqual(sig.spectral_centroid(), 1309.4894590721722)
 
 if __name__ == '__main__':
     unittest.main()
