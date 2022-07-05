@@ -38,8 +38,8 @@ class MyTestCase(unittest.TestCase):
         signal = get_ref_test_Signal()
         fft = signal.fft()
         fft_freq = signal.fft_frequencies()
-        self.assertAlmostEqual(fft[0], 0.00434514742092674)
-        self.assertAlmostEqual(fft[-1], 2.106108138485372e-06)
+        self.assertTrue(np.isclose(fft[0], 0.00434514742092674, 1e-4))
+        self.assertTrue(np.isclose(fft[-1], 2.106108138485372e-06, 1e-4))
         self.assertAlmostEqual(fft_freq[0], 0.)
         self.assertAlmostEqual(fft_freq[-1], 11024.904519000935)
 
