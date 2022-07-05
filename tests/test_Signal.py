@@ -118,7 +118,7 @@ class MyTestCase(unittest.TestCase):
         sig = get_rnd_test_Signal()
         log_env, log_time = sig.log_envelop()
         # zero removed from time
-        self.assertTrue(log_time[0] > 0)
+        self.assertTrue(log_time[0] == 0)
         self.assertTrue(log_env[-1] < np.max(log_env))
 
     def test_Signal_find_onset(self):

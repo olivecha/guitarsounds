@@ -1310,15 +1310,16 @@ class Signal(object):
         index = int(current_time * self.sr)  # Start at the specified time
         window = min_window  # number of samples per window
         overlap = window // 2
-        log_envelop = []
+        log_envelop = [0]
         log_envelop_time = [0]  # First value for comparison
 
         while index + window <= len(self.signal):
 
             while log_envelop_time[-1] < 10 ** (current_exponent + 1):
                 if (index + window) < len(self.signal):
-                    log_envelop.append(np.max(self.signal[index:index + window]))
-                    log_envelop_time.append(self.time()[index])
+                    log_envelop.append(np.max(np.abs(self.signal[index:index + window])))
+                    pt_idx = np.argmax(np.abs(self.signal[index:index + window]))
+                    log_envelop_time.append(self.time()[index + pt_idx])
                     index += overlap
                 else:
                     break
@@ -1327,14 +1328,10 @@ class Signal(object):
                 window = window * 10
             else:
                 window = self.SP.log_envelop.max_window.value
-
             overlap = window // 2
             current_exponent += 1
-
-        # remove the value where t=0 so the log scale does not break
-        log_envelop_time.remove(0)
-
-        return np.array(log_envelop), np.array(log_envelop_time)
+            time, idxs = np.unique(log_envelop_time, return_index=True)
+        return np.array(log_envelop)[idxs], time
 
     def find_onset(self, verbose=True):
         """
