@@ -7,9 +7,11 @@ from guitarsounds.parameters import sound_parameters
 
 # instantiation of the trim time interpolator
 sp = sound_parameters()
-freq_dict = {'E2':82.41, 'A2':110.0, 'D3':146.83, 'G3':196.0, 'B3':246.94, 'E4':329.63}
-trim_dict = {'E2':sp.trim.E2.value, 'A2':sp.trim.A2.value, 'D3':sp.trim.D3.value, 'G3':sp.trim.G3.value, 'B3':sp.trim.B3.value, 'E4':sp.trim.E4.value}
+freq_dict = {'E2': 82.41, 'A2': 110.0, 'D3': 146.83, 'G3': 196.0, 'B3': 246.94, 'E4': 329.63}
+trim_dict = {'E2': sp.trim.E2.value, 'A2': sp.trim.A2.value, 'D3': sp.trim.D3.value, 'G3': sp.trim.G3.value,
+             'B3': sp.trim.B3.value, 'E4': sp.trim.E4.value}
 freq2trim = interp1d(list(freq_dict.values()), list(trim_dict.values()), fill_value='extrapolate')
+
 
 def nth_order_polynomial_residual(A, n, x, y):
     """
@@ -37,11 +39,11 @@ def nth_order_polynomial_fit(n, x, y):
     result = scipy.optimize.least_squares(nth_order_polynomial_residual, guess, args=(n, x, y))
     A = result.x
 
-    def polynomial_function(x):
-        y = 0
+    def polynomial_function(x_value):
+        y_value = 0
         for i, a in enumerate(A):
-            y += a * np.array(x) ** i
-        return y
+            y_value += a * np.array(x_value) ** i
+        return y_value
 
     return polynomial_function
 
@@ -82,7 +84,8 @@ def octave_histogram(fraction, **kwargs):
         # Intersecting lower bounds
         hist_bins.append(f_o / 2 ** (1 / (2 * fraction)))
     # Last upper bound
-    hist_bins.append(f_o * 2 ** (1 / (2 * fraction)))
+    f_o_end = octave_bins[-1]
+    hist_bins.append(f_o_end * 2 ** (1 / (2 * fraction)))
     return np.array(hist_bins)
 
 
@@ -97,12 +100,12 @@ def power_split(y, x, x_max, n):
     """
     imax = np.nonzero(x > x_max)[0]
     A = scipy.integrate.trapezoid(y[:imax])
-    I = A / n
+    Integral_val = A / n
     indexes = [0] * n
     for i in range(n - 1):
         i1 = indexes[i]
         i2 = i1 + 1
-        while scipy.integrate.trapezoid(y[i1:i2]) < I:
+        while scipy.integrate.trapezoid(y[i1:i2]) < Integral_val:
             i2 += 1
         indexes[i + 1] = i2
     return indexes
@@ -121,7 +124,7 @@ def closest_trim_time(freq):
 def trim_sounds(*sounds, length=None):
     """
     Trim sounds to have the same length
-    :param *sounds: guitarsounds.Sound instances
+    :param sounds: guitarsounds.Sound instances
     :param length: trim length in seconds, if None the sounds a trimmed to the length of the shortest one
     :return: the trimmed sounds
     """
@@ -138,4 +141,3 @@ def trim_sounds(*sounds, length=None):
             sound.bin_divide()
             new_sounds.append(sound)
         return new_sounds
-

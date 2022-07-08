@@ -101,7 +101,7 @@ class MyTestCase(unittest.TestCase):
         self.assertAlmostEqual(fft_bins[-1], 6393.789621366959)
 
     def test_Signal_envelop(self):
-        """ Test the envelop computation of the Signal"""
+        """ Test the envelope computation of the Signal"""
         sig = get_rnd_test_Signal()
         self.assertAlmostEqual(0, sig.envelop()[0])
         sig = get_ref_test_Signal()
@@ -109,7 +109,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(np.isclose(0.012232225388288498, sig.envelop()[-1], 1e-3, 1e-3))
 
     def test_Signal_envelop_time(self):
-        """ Test the envelop time vector of the signal"""
+        """ Test the envelope time vector of the signal"""
         sig = get_rnd_test_Signal()
         self.assertTrue(sig.envelop_time()[0] == 0.)
         self.assertTrue(abs(sig.envelop_time()[-1] - sig.time()[-1]) < 2)
@@ -168,10 +168,13 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue('temp.wav' in os.listdir())
         os.remove('temp.wav')
 
-    def test_spectral_centoid(self):
+    def test_spectral_centroid(self):
         """ Test the spectral centroid computation of a signal"""
-        sig = get_ref_test_Signal()
-        self.assertAlmostEqual(sig.spectral_centroid(), 1309.4894590721722)
+        sig = get_rnd_test_Signal()
+        SC = sig.spectral_centroid()
+        self.assertTrue(SC > 0)
+        self.assertTrue(SC < sig.fft_frequencies()[-1])
+
 
 if __name__ == '__main__':
     unittest.main()

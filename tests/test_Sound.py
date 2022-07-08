@@ -117,7 +117,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(len(ax.patches) > 0)
 
     def test_Sound_trim_sounds(self):
-        files = [helpers_tests.get_rnd_audio_file() for i in range(3)]
+        files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
         sounds = []
         for f in files:
             sound = Sound(f)
@@ -130,6 +130,7 @@ class MyTestCase(unittest.TestCase):
         new_sounds2 = utils.trim_sounds(*sounds, length=1.0)
         for S in new_sounds2:
             self.assertTrue(np.abs(1.0 - S.signal.time()[-1]) < 1e-3)
+
 
 if __name__ == '__main__':
     unittest.main()

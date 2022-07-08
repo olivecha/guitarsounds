@@ -8,6 +8,7 @@ import wave
 import struct
 import numpy as np
 
+
 def generate_error_widget(text):
     return widgets.HTML('<p style="color:#CC4123;">' + text + '</p>')
 
@@ -27,7 +28,7 @@ class guitarGUI(object):
 
     # List of plot methods
     plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
-                    Plot.time_damping,  ]
+                    Plot.time_damping, ]
     bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
 
     # Plot info dict
@@ -41,7 +42,7 @@ class guitarGUI(object):
                       'time damping': Plot.time_damping,
                       'integral': Plot.integral}
 
-    # analysis drop downs
+    # analysis dropdowns
     # Single analysis drop down
     options = [('', 1),
                ('Listen Sound', Signal.listen),
@@ -146,7 +147,6 @@ class guitarGUI(object):
 
         # __ Buttons __
         # Number of sound choice buttons
-        self.Pack = None
         self.button1 = widgets.Button(description="Single Sound")
         self.button2 = widgets.Button(description="Dual Sounds")
         self.button3 = widgets.Button(description="Multiple Sounds")
@@ -182,14 +182,22 @@ class guitarGUI(object):
         self.dual_file_selector_2 = widgets.FileUpload(accept='.wav', multiple=False)
         self.mult_file_selector = widgets.FileUpload(accept='.wav', multiple=True)
 
-        # Dict with drop down methods to display the drop down associated to
+        # Dict with dropdown methods to display the menu associated to
         # the analysis
         self.first_level_drop_down = {'Single': self.single_drop_down,
                                       'Dual': self.dual_drop_down,
                                       'Multiple': self.mult_drop_down}
 
-        # Save analysis type
+        # Initiate name spaces
         self.analysis = None
+        self.display = None
+        self.current_drop_down = None
+        self.Pack = None
+        self.analysis_tuple = None
+        self.file_names = None
+        self.sound_name_inputs = None
+        self.sound_fundamental_inputs = None
+        self.sounds = None
 
         # Define the current state of the program
         self.state = 'start'
@@ -213,6 +221,8 @@ class guitarGUI(object):
         Displays the single file selector, allowing the user to choose
         one file.
         """
+        if b is not None:
+            pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
@@ -231,6 +241,8 @@ class guitarGUI(object):
         Displays two single file selectors, allowing the user
         to choose two files.
         """
+        if b is not None:
+            pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
@@ -250,6 +262,8 @@ class guitarGUI(object):
         Displays a multiple file selector allowing the user
         to select multiple files
         """
+        if b is not None:
+            pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
@@ -273,6 +287,8 @@ class guitarGUI(object):
         The user clicks this button when he is done choosing files and when
         he is done defining names
         """
+        if b is not None:
+            pass
         # Clear the output
         clear_output(wait=True)
 
@@ -286,7 +302,7 @@ class guitarGUI(object):
             if file_selector.value != {}:
                 files_where_chosen = True
 
-        # If the file where chosen the user is taken to the define name interface
+        # If the file were chosen the user is taken to the "define name" interface
         if files_where_chosen:
             self.define_sound_names()
 
@@ -324,15 +340,16 @@ class guitarGUI(object):
 
         __ when interface.state = 'method choice' __
         - The "Ok" and "Go" buttons appears after the loading bar is done
-        - The drop down corresponds to the methods associated to
+        - The dropdown corresponds to the methods associated to
         the analysis
-
         """
+        if b is not None:
+            pass
         # Clear the Output
         clear_output(wait=True)
         output = widgets.Output(layout=self.out_layout)
 
-        # Save the drop down value
+        # Save the dropdown value
         drop_down_value = self.current_drop_down.value
         
         # enable the info button when coming back from display
@@ -352,7 +369,7 @@ class guitarGUI(object):
                 # Special case when the method is the frequency bin plot
                 if drop_down_value == Sound.plot_freq_bins:
                     self.analysis_tuple = [drop_down_value]  # Store the method
-                    # Change the drop down to frequency bin choice
+                    # Change the dropdown to frequency bin choice
                     self.current_drop_down = self.bin_drop_down
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
@@ -382,7 +399,7 @@ class guitarGUI(object):
                 # Special case for the frequency bin plot
                 if drop_down_value in self.DM_bin_choice_methods:
                     self.analysis_tuple = [drop_down_value]  # Store the method
-                    # Update the drop down to frequency bin choice
+                    # Update the dropdown to frequency bin choice
                     self.current_drop_down = self.bin_drop_down
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
@@ -390,7 +407,7 @@ class guitarGUI(object):
                 # Case for plot methods
                 elif (drop_down_value == SoundPack.plot) or (drop_down_value == SoundPack.compare_plot):
                     self.analysis_tuple = [drop_down_value]  # Store the method
-                    # Update the drop down to the plot drop down
+                    # Update the dropdown to the plot dropdown
                     self.current_drop_down = self.plot_drop_down
                     self.state = 'method choice 2'  # a second choice is needed
                     self.display = 'plot'
@@ -417,7 +434,7 @@ class guitarGUI(object):
             self.analysis_tuple.append(self.current_drop_down.value)
             self.state = 'display'
 
-        # if we are coming back from the display the state is redefined and we restart
+        # if we are coming back from the display the state is redefined, and we restart
         elif self.state == 'analysis displayed':
             self.state = 'method choice'
 
@@ -432,7 +449,7 @@ class guitarGUI(object):
         children = [self.ok_button, self.go_button, self.toggle_normalize_button, self.info_button]
         self.button_box = widgets.Box(children=children, layout=self.box_layout)
 
-        # Put the updated drop down in the output
+        # Put the updated dropdown in the output
         with output:
             display(self.current_drop_down)
 
@@ -441,7 +458,7 @@ class guitarGUI(object):
     def on_info_button_clicked(self, info):
         """
         Method called when the info button is clicked
-        Displays the help string associated with the current drop down method
+        Displays the help string associated with the current dropdown method
         """
         if info.button_style == '':
             # change the style to make the button blue
@@ -476,12 +493,12 @@ class guitarGUI(object):
             # case when the user is doing a secondary selection
             elif self.state == 'method choice 2':
 
-                # case for the plot type drop down
+                # case for the plot type dropdown
                 if self.current_drop_down.name == 'plot':
                     with output:
                         display(help(self.plot_info_dict[self.current_drop_down.value]))
 
-                # case for bin type drop down (display the previous method)
+                # case for bin type dropdown (display the previous method)
                 elif self.current_drop_down.name == 'bin':
                     with output:
                         display(help(self.analysis_tuple[0]))
@@ -503,7 +520,7 @@ class guitarGUI(object):
     def on_normalize_button_clicked(self, toggle):
         """
         Method called when the normalize button is clicked
-        The normalized attribute is inversed according to the current value
+        The normalized attribute is inverted according to the current value
         """
         if toggle.button_style == '':
             toggle.button_style = 'success'
@@ -523,6 +540,8 @@ class guitarGUI(object):
         A load bar is displayed while te files are loaded, when the
         load bar is done the `.on_loaded_bar()` method is called.
         """
+        if b is not None:
+            pass
         clear_output(wait=True)
 
         display(self.load_bar)
@@ -538,13 +557,15 @@ class guitarGUI(object):
         What happens :
         ___________________________________
         1. The output is cleared
-        2. A output widget to store the output is instanciated
+        2. An output widget to store the output is instanced
         3. The method in `self.analysis_tuple` is called
         4. The display is added to the output
         5. The 'Ok' button is enabled and the 'Go' button is disabled
-        6. The drop down is set back to its default value
+        6. The dropdown is set back to its default value
         7. The buttons and output are displayed
         """
+        if b is not None:
+            pass
         # Always clear the output
         clear_output(wait=True)
         output = widgets.Output(layout=self.out_layout)  # Create a output
@@ -669,7 +690,7 @@ class guitarGUI(object):
                 with output:
                     plt.show()
 
-        # Setup the drop down to go back to method choice
+        # Set up the dropdown to go back to method choice
         self.current_drop_down.value = 1
         self.current_drop_down = self.first_level_drop_down[self.analysis]
         self.current_drop_down.value = 1
@@ -682,7 +703,6 @@ class guitarGUI(object):
         self.toggle_normalize_button.button_style = ''
         self.toggle_normalize_button.icon = ''
         self.normalize = False
-
 
         # display
         display(self.button_box, output)
@@ -701,7 +721,7 @@ class guitarGUI(object):
         When the load bar is complete (value = 10), the
         button box is displayed with the "Ok" and "Go" buttons
         The "Go" button is disabled
-        The Drop down with the methods according to the
+        The dropdown with the methods according to the
         current analysis is displayed.
         """
         # When the bar reaches the end
@@ -724,7 +744,7 @@ class guitarGUI(object):
             # create the output
             output = widgets.Output(layout=self.out_layout)
 
-            # display the drop down associated to the current analysis
+            # display the dropdown associated to the current analysis
             self.current_drop_down = self.first_level_drop_down[self.analysis]
             with output:
                 display(self.current_drop_down)
@@ -777,12 +797,12 @@ class guitarGUI(object):
                                                       layout=widgets.Layout(width='20%')
                                                       )
 
-                # childrens that go in the name box
-                childrens = [sound_name_input, fundamental_input, HZ_string]
+                # children that go in the name box
+                children = [sound_name_input, fundamental_input, HZ_string]
 
                 # define a name box widget
                 name_box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='75%')
-                name_box = widgets.Box(children=childrens, layout=name_box_layout)
+                name_box = widgets.Box(children=children, layout=name_box_layout)
 
                 # display the box
                 display(name_box)
@@ -823,12 +843,12 @@ class guitarGUI(object):
                                                           style=style
                                                           )
 
-                    # childrens that go in the name box
-                    childrens = [sound_name_input, fundamental_input, HZ_string]
+                    # children that go in the name box
+                    children = [sound_name_input, fundamental_input, HZ_string]
 
                     # define a name box widget
                     name_box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='75%')
-                    name_box = widgets.Box(children=childrens, layout=name_box_layout)
+                    name_box = widgets.Box(children=children, layout=name_box_layout)
 
                     # display the box
                     display(name_box)
@@ -894,7 +914,7 @@ class guitarGUI(object):
             # This takes a long time
             sound = Sound(Sound_Input, name=name, fundamental=fundamental)
             self.sounds = sound.condition(return_self=True, verbose=False)
-            self.load_bar.value += 2  # Loadbar = 10
+            self.load_bar.value += 2  # Load-bar = 10
 
         # Case for two files from two file selectors
         elif self.analysis == 'Dual':

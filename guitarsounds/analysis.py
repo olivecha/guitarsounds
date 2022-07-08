@@ -177,9 +177,8 @@ class SoundPack(object):
         Plots a specific signal.plot for all sounds on the same figure
         Ex : compare_plot('fft') plots the fft of all sounds on a single figure
         The color argument is set to none so that the plots have different colors
-
         :param kind: Attribute passed to the `signal.plot()` method
-        :param kwargs: key words arguments to pass to the `signal.plot()` method
+        :param kwargs: keywords arguments to pass to the `signal.plot()` method
         :return: None
         """
         plt.figure(figsize=(8, 6))
@@ -258,7 +257,7 @@ class SoundPack(object):
 
         __ Multiple SoundPack Method __
         A function to compare signals decomposed frequency wise in the time domain on a logarithm scale.
-        The methods plots all the sounds and plots their frequency bins according to the frequency bin argument f_bin.
+        The methods plot all the sounds and plots their frequency bins according to the frequency bin argument f_bin.
 
         Example : SoundPack.freq_bin_plot(f_bin='mid') will plot the log-scale envelop of the 'mid' signal of every
         sound in the SoundPack
@@ -308,16 +307,15 @@ class SoundPack(object):
     def combine_envelop(self, kind='signal', difference_factor=1, show_sounds=True, show_rejects=True, **kwargs):
         """
         __ Multiple SoundPack Method __
-        Combines the envelops of the Sounds contained in the SoundPack, Sounds having a too large difference factor
+        Combines the envelopes of the Sounds contained in the SoundPack, Sounds having a too large difference factor
         from the average are rejected.
-
-        :param kind: wich signal to use from :
+        :param kind: which signal to use from :
         'signal', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
-        :param difference_factor: threshold to reject a sound from the combinaison, can be adjusted to reject
+        :param difference_factor: threshold to reject a sound from the combination, can be adjusted to reject
         or include more sounds.
         :param show_sounds: If True all the included Sounds are shown on the plot
         :param show_rejects: If True all the rejected Sounds are shown on the plot
-        :param kwargs: Key word arguments to pass to the envelop plot.
+        :param kwargs: Key word arguments to pass to the envelope plot.
         :return: None
         """
         sounds = self.sounds
@@ -608,7 +606,7 @@ class SoundPack(object):
 
     def fft_mirror(self):
         """
-        Plot the Fourier Transforms of two sounds on opposed axis to compare the spectras
+        Plot the Fourier Transforms of two sounds on opposed axis to compare the spectral content
 
         __ Dual SoundPack Method __
         The fourier transforms are normalized between 0 and [-1, 1], the y scale is logarithmic
@@ -724,9 +722,10 @@ class SoundPack(object):
                 log_envelop1, log_time1 = signal1.normalize().log_envelop()
                 log_envelop2, log_time2 = signal2.normalize().log_envelop()
                 integ = scipy.integrate.trapezoid
-
-                integral1 = np.array([integ(log_envelop1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelop1), 1)])
-                integral2 = np.array([integ(log_envelop2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelop2), 1)])
+                env_range1 = np.arange(2, len(log_envelop1), 1)
+                env_range2 = np.arange(2, len(log_envelop2), 1)
+                integral1 = np.array([integ(log_envelop1[:i], log_time1[:i]) for i in env_range1])
+                integral2 = np.array([integ(log_envelop2[:i], log_time2[:i]) for i in env_range2])
                 time1 = log_time1[2:len(log_time1):1]
                 time2 = log_time2[2:len(log_time2):1]
 
@@ -735,7 +734,7 @@ class SoundPack(object):
                 ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
 
                 ax.set_xlabel('time (s)')
-                ax.set_ylabel('cummulative power')
+                ax.set_ylabel('cumulative power')
                 ax.set_xscale('log')
                 ax.set_title(bin_string)
                 ax.legend()
@@ -755,13 +754,13 @@ class SoundPack(object):
             time1 = log_time1[2:len(log_time1):1]
             time2 = log_time2[2:len(log_time2):1]
 
-            int_index = np.min([integral1.shape[0], integral2.shape[0]])
+            # int_index = np.min([integral1.shape[0], integral2.shape[0]])
             ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
             ax.fill_between(time2, -integral2, label=self.sounds[1].name, alpha=0.4)
             ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
 
             ax.set_xlabel('time (s)')
-            ax.set_ylabel('cummulative power')
+            ax.set_ylabel('cumulative power')
             ax.set_xscale('log')
             ax.set_title(f_bin)
             ax.legend(loc='upper left')
@@ -849,6 +848,7 @@ class Sound(object):
         :param verbose: if True problem with trimming and filtering are reported
         :param return_self: If True the method returns the conditioned Sound instance
         :param filter_noise: If True the Sound is filtered using a noise reducing algorithm
+        :param auto_trim: If True, the sound is trimmed to a fixed length according to its fundamental
         :return: a conditioned Sound instance if `return_self = True`
         """
         self.trim_signal(verbose=verbose)
@@ -961,7 +961,7 @@ class Sound(object):
         Prints a table with peak damping values and peak frequency values
 
         The peaks are found with the `signal.peaks()` function and the damping
-        values are computed with the half power bandwith method.
+        values are computed with the half power bandwidth method.
         """
         peak_indexes = self.signal.peaks()
         frequencies = self.signal.fft_frequencies()[peak_indexes]
@@ -1051,7 +1051,7 @@ class Signal(object):
         :return: Fast Fourier Transform amplitude values in a numpy array
         """
         fft = np.fft.fft(self.signal)
-        fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric of the absolute value
+        fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric part of the absolute value
         return fft / np.max(fft)
 
     def spectral_centroid(self):
@@ -1065,7 +1065,7 @@ class Signal(object):
     def peaks(self, max_freq=None, height=False, result=False):
         """
         Computes the harmonic peaks indexes from the FFT of the signal
-        :param max_freq: Supply a max frequency value overiding the one in guitarsounds_parameters
+        :param max_freq: Supply a max frequency value overriding the one in guitarsounds_parameters
         :param height: if True the height threshold is returned to be used in the 'peaks' plot
         :param result: if True the Scipy peak finding results dictionary is returned
         :return: peak indexes
@@ -1135,7 +1135,7 @@ class Signal(object):
         envelop_time = self.normalize().envelop_time()
         envelop = self.normalize().envelop()
 
-        # First point is the maximum because e^-kt is stricly decreasing
+        # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelop)
 
         # The second point is the first point where the signal crosses the lower_threshold line
@@ -1164,7 +1164,7 @@ class Signal(object):
         # Get the zeta*omega constant
         zeta_omega = result.x[0]
 
-        # Compute the fundamental frequency in radiants of the signal
+        # Compute the fundamental frequency in radians of the signal
         wd = 2 * np.pi * self.fundamental()
         return -zeta_omega / wd
 
@@ -1235,9 +1235,9 @@ class Signal(object):
     def fft_bins(self):
         """
         Transforms the Fourier Transform signal into a statistic distribution.
-        Occurences of each frequency varies from 0 to 100 according to their
+        Occurrences of each frequency varies from 0 to 100 according to their
         amplitude.
-        :return : a list containing the frequency occurences.
+        :return : a list containing the frequency occurrences.
         """
 
         # Make the FT values integers
@@ -1263,15 +1263,15 @@ class Signal(object):
             overlap = window // 2
         elif overlap >= window:
             raise ValueError('Overlap must be smaller than window')
-        sig = np.abs(self.signal)
+        signal_array = np.abs(self.signal)
         t = self.time()
         # Empty envelop and envelop time
         env = [0]
         env_time = [0]
         idx = 0
-        while idx + window < sig.shape[0]:
-            env.append(np.max(sig[idx:idx + window]))
-            pt_idx = np.argmax(sig[idx:idx + window]) + idx
+        while idx + window < signal_array.shape[0]:
+            env.append(np.max(signal_array[idx:idx + window]))
+            pt_idx = np.argmax(signal_array[idx:idx + window]) + idx
             env_time.append(t[pt_idx])
             idx += overlap
         _, unique_time_index = np.unique(env_time, return_index=True)
@@ -1288,15 +1288,15 @@ class Signal(object):
             overlap = window // 2
         elif overlap >= window:
             raise ValueError('Overlap must be smaller than window')
-        sig = np.abs(self.signal)
+        signal_array = np.abs(self.signal)
         t = self.time()
         # Empty envelop and envelop time
         env = [0]
         env_time = [0]
         idx = 0
-        while idx + window < sig.shape[0]:
-            env.append(np.max(sig[idx:idx + window]))
-            pt_idx = np.argmax(sig[idx:idx + window]) + idx
+        while idx + window < signal_array.shape[0]:
+            env.append(np.max(signal_array[idx:idx + window]))
+            pt_idx = np.argmax(signal_array[idx:idx + window]) + idx
             env_time.append(t[pt_idx])
             idx += overlap
         return np.unique(env_time)
@@ -1305,7 +1305,7 @@ class Signal(object):
         """
         Computes the logarithmic scale envelop of the signal.
         The width of the samples increases exponentially so that
-        the envelop appears having a constant window width on
+        the envelope appears having a constant window width on
         an X axis logarithmic scale.
         :return: The log envelop and the time vector associated in a tuple
         """
@@ -1353,7 +1353,7 @@ class Signal(object):
                 window = self.SP.log_envelop.max_window.value
             overlap = window // 2
             current_exponent += 1
-            time, idxs = np.unique(log_envelop_time, return_index=True)
+        time, idxs = np.unique(log_envelop_time, return_index=True)
         return np.array(log_envelop)[idxs], time
 
     def find_onset(self, verbose=True):
@@ -1448,7 +1448,7 @@ class Signal(object):
 
     def normalize(self):
         """
-        Normalizes the signal to [-1, 1] and returns the normalised instance.
+        Normalizes the signal to [-1, 1] and returns the normalized instance.
         return : A normalized signal
         """
         factor = np.max(np.abs(self.signal))
@@ -1517,7 +1517,7 @@ class Plot(object):
         # define the parent attribute
         self.parent = None
 
-        # dictonary with methods and key words
+        # dictionary with methods and keywords
         self.method_dict = {'signal': self.signal,
                             'envelop': self.envelop,
                             'log envelop': self.log_envelop,
@@ -1530,8 +1530,8 @@ class Plot(object):
 
     def sanitize_kwargs(self, kwargs):
         """
-        Remove illegal key words to supply the key word arguments to matplotlib
-        :param kwargs: a dictionnary of key word arguments
+        Remove illegal keywords to supply the key word arguments to matplotlib
+        :param kwargs: a dictionary of key word arguments
         :return: sanitized kwargs
         """
         return {i: kwargs[i] for i in kwargs if i not in self.illegal_kwargs}
@@ -1559,7 +1559,7 @@ class Plot(object):
 
     def envelop(self, **kwargs):
         """
-            Plots the envelop of the signal as amplitude vs time.
+            Plots the envelope of the signal as amplitude vs time.
             """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         plt.plot(self.parent.envelop_time(), self.parent.envelop(), **plot_kwargs)
@@ -1569,7 +1569,7 @@ class Plot(object):
 
     def log_envelop(self, **kwargs):
         """
-            Plots the signal envelop with logarithmic window widths on a logarithmic x axis scale.
+            Plots the signal envelop with logarithmic window widths on a logarithmic x-axis scale.
             """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         log_envelop, log_envelop_time = self.parent.log_envelop()
@@ -1622,7 +1622,7 @@ class Plot(object):
 
         plot_kwargs = self.sanitize_kwargs(kwargs)
 
-        # Histogram of frequency values occurences in octave bins
+        # Histogram of frequency values occurrences in octave bins
         plt.hist(self.parent.fft_bins(), utils.octave_histogram(self.parent.SP.general.octave_fraction.value),
                  alpha=0.7, **plot_kwargs)
         plt.xlabel('Fréquence (Hz)')
@@ -1677,7 +1677,7 @@ class Plot(object):
             `normalize=False` : Default value is False, if True the damping values are normalized
             from 0 to 1, to help analyze results and compare Sounds.
 
-            `ticks=None` : Default value is None, if `ticks='bins'` the x axis ticks are replaced with
+            `ticks=None` : Default value is None, if `ticks='bins'` the x-axis ticks are replaced with
             frequency bin values.
             """
         plot_kwargs = self.sanitize_kwargs(kwargs)
@@ -1734,12 +1734,11 @@ class Plot(object):
         envelop_time = self.parent.normalize().envelop_time()
         envelop = self.parent.normalize().envelop()
 
-        # First point is the maximum because e^-kt is stricly decreasing
+        # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelop)
 
         # The second point is the first point where the signal crosses the lower_threshold line
         second_point_thresh = self.parent.SP.damping.lower_threshold.value
-        count = 0        
         while True:
             try:
                 second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
@@ -1761,7 +1760,7 @@ class Plot(object):
         # Get the zeta*omega constant
         zeta_omega = result.x[0]
 
-        # Compute the fundamental frequency in radiants of the signal
+        # Compute the fundamental frequency in radians of the signal
         wd = 2 * np.pi * self.parent.fundamental()
 
         # Plot the two points used for the regression
@@ -1812,6 +1811,6 @@ class Plot(object):
 
         # Add labels and scale
         plt.xlabel('time (s)')
-        plt.ylabel('cummulative power')
+        plt.ylabel('cumulative power')
         plt.xscale('log')
         plt.grid('on')

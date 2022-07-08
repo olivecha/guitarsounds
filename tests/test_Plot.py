@@ -3,8 +3,9 @@ from guitarsounds import Plot
 from guitarsounds import helpers_tests
 import matplotlib.pyplot as plt
 
+
 class MyTestCase(unittest.TestCase):
-    """ Test for the poltting class"""
+    """ Test for the plotting class"""
 
     def test_Plot_instantiation(self):
         """ Test that the class can be instantiated"""
@@ -37,7 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(hasattr(ax, 'lines'))
 
     def test_Plot_envelop(self):
-        """ Test the envelop Plot method"""
+        """ Test the envelope Plot method"""
         parent = helpers_tests.get_rnd_test_Signal()
         parent.plot.envelop()
         ax = plt.gca()

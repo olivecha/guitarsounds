@@ -5,11 +5,12 @@ import numpy as np
 import matplotlib.axes
 import matplotlib.pyplot as plt
 
+
 class MyTestCase(unittest.TestCase):
     """ Test class for the guitarsounds.Sound class"""
 
     def test_SoundPack_instantiation_from_files(self):
-        """ Test the the SoundPack constructor using files """
+        """ Test the SoundPack constructor using files """
         # instantiation from one audio file
         file = helpers_tests.get_rnd_audio_file()
         sp = SoundPack(file)
@@ -59,7 +60,7 @@ class MyTestCase(unittest.TestCase):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
         sp = SoundPack(files)
         plot_kinds = ['signal', 'envelop', 'log envelop',
-                       'fft', 'fft hist', 'peaks',
+                      'fft', 'fft hist', 'peaks',
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
             out = sp.compare_plot(kind)
@@ -84,4 +85,3 @@ class MyTestCase(unittest.TestCase):
         sp = SoundPack(files)
         sp.listen()
         self.assertTrue(True)
-
