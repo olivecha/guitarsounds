@@ -79,7 +79,7 @@ def sound_parameters():
     onset = ParameterSet('onset', onset_delay, onset_time)
 
     # Envelop
-    frame_size = Parameter('frame_size', 524, 'Number of samples in the array used to compute a point of the envelop')
+    frame_size = Parameter('frame_size', 301, 'Number of samples in the array used to compute a point of the envelop')
     hop_length = Parameter('hop_length', 200, 'Number of samples between envelop points')
     envelop = ParameterSet('envelop', frame_size, hop_length)
 

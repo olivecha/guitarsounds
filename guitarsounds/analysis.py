@@ -1251,32 +1251,55 @@ class Signal(object):
         # flatten the list
         return [item for sublist in occurrences for item in sublist]
 
-    def envelop(self):
+    def envelop(self, window=None, overlap=None):
         """
         Method calculating the amplitude envelop of a signal as a
         maximum of the absolute value of the signal.
         :return: Amplitude envelop of the signal
         """
-        # Get the hop length
-        hop_length = self.SP.envelop.hop_length.value
+        if window is None:
+            window = self.SP.envelop.frame_size.value
+        if overlap is None:
+            overlap = window // 2
+        elif overlap >= window:
+            raise ValueError('Overlap must be smaller than window')
+        sig = np.abs(self.signal)
+        t = self.time()
+        # Empty envelop and envelop time
+        env = [0]
+        env_time = [0]
+        idx = 0
+        while idx + window < sig.shape[0]:
+            env.append(np.max(sig[idx:idx + window]))
+            pt_idx = np.argmax(sig[idx:idx + window]) + idx
+            env_time.append(t[pt_idx])
+            idx += overlap
+        _, unique_time_index = np.unique(env_time, return_index=True)
+        return np.array(env)[unique_time_index]
 
-        # Compute the envelop
-        envelop = np.array(
-            [np.max(np.abs(self.signal[i:i + self.SP.envelop.frame_size.value])) for i in
-             range(0, len(self.signal), hop_length)])
-
-        envelop = np.insert(envelop, 0, 0)
-        return envelop
-
-    def envelop_time(self):
+    def envelop_time(self, window=None, overlap=None):
         """
         Method calculating the time vector associated to a signal envelop
         :return: Time vector associated to the signal envelop
         """
-        # Get the number of frames from the signal envelop
-        frames = range(len(self.envelop()))
-        # Return the envelop frames computed with Librosa
-        return librosa.frames_to_time(frames, hop_length=self.SP.envelop.hop_length.value)
+        if window is None:
+            window = self.SP.envelop.frame_size.value
+        if overlap is None:
+            overlap = window // 2
+        elif overlap >= window:
+            raise ValueError('Overlap must be smaller than window')
+        sig = np.abs(self.signal)
+        t = self.time()
+        # Empty envelop and envelop time
+        env = [0]
+        env_time = [0]
+        idx = 0
+        while idx + window < sig.shape[0]:
+            env.append(np.max(sig[idx:idx + window]))
+            pt_idx = np.argmax(sig[idx:idx + window]) + idx
+            env_time.append(t[pt_idx])
+            idx += overlap
+        return np.unique(env_time)
 
     def log_envelop(self):
         """
