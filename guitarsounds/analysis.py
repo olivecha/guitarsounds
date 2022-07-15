@@ -15,6 +15,9 @@ from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
 from tabulate import tabulate
+import wave
+
+wave_ver = wave
 
 """
 Getting the sound parameters from the guitarsounds_parameters.py file
@@ -280,7 +283,7 @@ class SoundPack(object):
                 plt.legend()
                 son = self.sounds[-1]
                 title0 = ' ' + key + ' : ' + str(int(son.bins[key].range[0])) + ' - ' + str(
-                        int(son.bins[key].range[1])) + ' Hz, '
+                         int(son.bins[key].range[1])) + ' Hz, '
                 title1 = 'Norm. Factors : '
                 title2 = 'x, '.join(str(np.around(norm_factor, 0)) for norm_factor in norm_factors)
                 plt.title(title0 + title1 + title2)
@@ -810,7 +813,7 @@ class Sound(object):
 
         if type(data) == str:
             # Load the sound data using librosa
-            if data[-3:] != 'wav':
+            if data.split('.')[-1] != 'wav':
                 raise ValueError('Only .wav are supported')
             else:
                 signal, sr = librosa.load(data)
@@ -1059,8 +1062,71 @@ class Signal(object):
         Spectral centroid of the frequency content of the signal
         :return: Spectral centroid of the signal (float)
         """
-        SC = np.sum(self.fft() * self.fft_frequencies())/np.sum(self.fft())
+        SC = np.sum(self.fft() * self.fft_frequencies()) / np.sum(self.fft())
         return SC
+
+    def peaks_old(self, max_freq=None, height=False, result=False):
+        """
+        Computes the harmonic peaks indexes from the FFT of the signal
+        :param max_freq: Supply a max frequency value overriding the one in guitarsounds_parameters
+        :param height: if True the height threshold is returned to be used in the 'peaks' plot
+        :param result: if True the Scipy peak finding results dictionary is returned
+        :return: peak indexes
+        """
+        # Replace None by the default value
+        if max_freq is None:
+            max_freq = self.SP.general.fft_range.value
+
+        # Get the fft and fft frequencies from the signal
+        fft, fft_freq = self.fft(), self.fft_frequencies()
+
+        # Find the max index
+        max_index = np.where(fft_freq >= max_freq)[0][0]
+
+        # Find an approximation of the distance between peaks, this only works for harmonic signals
+        peak_distance = np.argmax(fft) // 2
+
+        # Maximum of the signal in a small region on both ends
+        fft_max_start = np.max(fft[:peak_distance])
+        fft_max_end = np.max(fft[max_index - peak_distance:max_index])
+
+        # Build the curve below the peaks but above the noise
+        exponents = np.linspace(np.log10(fft_max_start), np.log10(fft_max_end), max_index)
+        intersect = 10 ** exponents[peak_distance]
+        diff_start = fft_max_start - intersect  # offset by a small distance so that the first max is not a peak
+        min_height = 10 ** np.linspace(np.log10(fft_max_start + diff_start), np.log10(fft_max_end), max_index)
+
+        first_peak_indexes, _ = sig.find_peaks(fft[:max_index], height=min_height, distance=peak_distance)
+
+        number_of_peaks = len(first_peak_indexes)
+        if number_of_peaks > 0:
+            average_len = int(max_index / number_of_peaks) * 3
+        else:
+            average_len = int(max_index / 3)
+
+        if average_len % 2 == 0:
+            average_len += 1
+
+        average_fft = sig.savgol_filter(fft[:max_index], average_len, 1, mode='mirror') * 1.9
+        min_freq_index = np.where(fft_freq >= 70)[0][0]
+        average_fft[:min_freq_index] = 1
+
+        peak_indexes, res = sig.find_peaks(fft[:max_index], height=average_fft, distance=min_freq_index)
+
+        # Remove noisy peaks at the low frequencies
+        while fft[peak_indexes[0]] < 5e-2:
+            peak_indexes = np.delete(peak_indexes, 0)
+        while fft[peak_indexes[-1]] < 1e-4:
+            peak_indexes = np.delete(peak_indexes, -1)
+
+        if not height and not result:
+            return peak_indexes
+        elif height:
+            return peak_indexes, average_fft
+        elif result:
+            return peak_indexes, res
+        elif height and result:
+            return peak_indexes, height, res
 
     def peaks(self, max_freq=None, height=False, result=False):
         """
@@ -1078,7 +1144,10 @@ class Signal(object):
         fft, fft_freq = self.fft(), self.fft_frequencies()
 
         # Find the max index
-        max_index = np.where(fft_freq >= max_freq)[0][0]
+        try:
+            max_index = np.where(fft_freq >= max_freq)[0][0]
+        except IndexError:
+            max_index = fft_freq.shape[0] 
 
         # Find an approximation of the distance between peaks, this only works for harmonic signals
         peak_distance = np.argmax(fft) // 2
@@ -1403,7 +1472,7 @@ class Signal(object):
 
         if onset > delay_samples:  # To make sure the index is positive
             new_signal = self.signal[onset - delay_samples:]
-            new_signal[:delay_samples//2] = new_signal[:delay_samples//2]*np.linspace(0, 1, delay_samples//2) 
+            new_signal[:delay_samples // 2] = new_signal[:delay_samples // 2] * np.linspace(0, 1, delay_samples // 2) 
             trimmed_signal = Signal(new_signal, self.sr, self.SP)
             trimmed_signal.noise = self.signal[:onset - delay_samples]
             trimmed_signal.trimmed = True
@@ -1425,7 +1494,7 @@ class Signal(object):
         """
         max_index = int(time_length * self.sr)
         new_signal = self.signal[:max_index]
-        new_signal[-50:] = new_signal[-50:]*np.linspace(1, 0, 50)
+        new_signal[-50:] = new_signal[-50:] * np.linspace(1, 0, 50)
         time_trimmed_signal = Signal(new_signal, self.sr, self.SP)
         time_trimmed_signal.time_length = time_length
         return time_trimmed_signal
