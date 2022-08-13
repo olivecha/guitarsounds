@@ -15,6 +15,81 @@ MAX_B_VALUE = 476.8504184761331
 MEAN_B_VALUE = (MIN_B_VALUE + MAX_B_VALUE) / 2
 
 
+def get_arrgen_interval(s):
+    """ Returns the best array interval value for the sound s """
+    if s.fundamental < 120:
+        return 5
+    elif s.fundamental > 225:
+        return 7
+    else:
+        return 6
+
+
+def sigarr_gen(s, intervals=None, max_time=2, envelop_param=-1):
+    """ Generates a signal array from a sound instance """
+
+    # Compute the number of intervals if needed
+    if intervals is None:
+        intervals = int(get_arrgen_interval(s) * max_time)
+
+    # Compute the time intervals and the centers
+    time_intervals = np.linspace(0.13, max_time, intervals)
+    center_times = [np.mean([time_intervals[i], time_intervals[i + 1]]) for i in range(len(time_intervals) - 1)]
+
+    # Sound division in sub intervals
+    sub_sigs = []
+    for i, _ in enumerate(time_intervals[:-1]):
+        # create a signal from subset indexes
+        idx1 = time_index(s.signal, time_intervals[i])
+        idx2 = time_index(s.signal, time_intervals[i + 1])
+        new_sig = guitarsounds.Signal(s.signal.signal[idx1:idx2], s.signal.sr, s.SP)
+        sub_sigs.append(new_sig)
+
+    # Extract peak data
+    s.signal.SP.change('fft_range', 12000)
+    peaks = s.signal.peaks()
+    peak_freqs = s.signal.fft_frequencies()[peaks]
+
+    # Extract the time vector
+    t = s.signal.time()
+    t = t[t < max_time]
+
+    # Rebuild the signal peak by peak
+    new_sig = 0
+    itrps = []
+    # for each peak
+    for i, pf in enumerate(peak_freqs):
+        # for each sub signal get the peak amplitude
+        amps = []
+        # For each sub signal
+        for sig in sub_sigs:
+            fidx = frequency_index(sig, pf)
+            amps.append(real_fft(sig)[fidx])
+        # Create an interpolator with the center times
+        amp_itrp = interp1d(center_times, amps, kind='linear', fill_value='extrapolate')
+        itrps.append(amp_itrp)
+        new_sig += amp_itrp(t) * np.sin(pf * t * 2 * np.pi)
+
+    # rescale between -0.95-0.95
+    new_sig *= 0.95 / np.max(np.abs(new_sig))
+    # get an onset envelop
+    env = get_expenv(envelop_param)
+    # Apply it to time = 0.0 - 0.1 s
+    t_idx = np.arange(t.shape[0])[t < 0.1][-1]
+    new_sig[:t_idx] = env(t[:t_idx]) * new_sig[:t_idx]
+    # Fade out the last 20 samples
+    new_sig[-20:] = new_sig[-20:] * np.linspace(1, 0.1, 20)
+
+    return new_sig
+
+
+def real_fft(s):
+    real_fft = np.fft.fft(s.signal)
+    # trim the imaginary part
+    real_fft = np.abs(real_fft[:real_fft.shape[0] // 2])
+    return real_fft
+
+
 def exp_from_ab(a, b):
     """ Create an exponential callable from a and b parameters """
     def custom_exp(t):
