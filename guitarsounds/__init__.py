@@ -3,6 +3,7 @@ from guitarsounds.interface import guitarGUI as Interface
 from guitarsounds.analysis import Signal, Sound, SoundPack, Plot
 from guitarsounds.analysis import plt
 import guitarsounds.helpers_tests
+from guitarsounds import parameters
 show = plt.show
 
 # Version of the guitarsounds package

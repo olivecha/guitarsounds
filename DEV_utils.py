@@ -1,5 +1,6 @@
 import guitarsounds
 from guitarsounds import Sound
+import guitarsounds.parameters
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,6 +14,14 @@ MEAN_A_VALUE = (MIN_A_VALUE + MAX_A_VALUE) / 2
 MIN_B_VALUE = 241.88870914170292 
 MAX_B_VALUE = 476.8504184761331 
 MEAN_B_VALUE = (MIN_B_VALUE + MAX_B_VALUE) / 2
+
+
+def note_freq(note):
+    """
+    Return the frequency associated to a musical note
+    """
+    freqs_of_notes = {'A5':110.0, 'B2':247.0, 'D4':147.0, 'E1':330.0, 'E6':82.01, 'G3':196.0}
+    return freqs_of_notes[note]
 
 
 def get_arrgen_interval(s):
