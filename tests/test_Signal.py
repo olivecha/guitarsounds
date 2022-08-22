@@ -140,13 +140,6 @@ class MyTestCase(unittest.TestCase):
         sig = sig.trim_time(1.)
         self.assertAlmostEqual(sig.time()[-1], 1.)
 
-    def test_Signal_filter_noise(self):
-        """ Possibly remove the filter noise method"""
-        sig = get_rnd_test_Signal()
-        sig = sig.trim_onset()
-        sig2 = sig.filter_noise()
-        self.assertIsInstance(sig2, Signal)
-
     def test_Signal_normalize(self):
         """ Test the method normalizing the amplitude of a signal"""
         sig = get_rnd_test_Signal()

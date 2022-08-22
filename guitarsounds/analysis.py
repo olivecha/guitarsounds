@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm
 import numpy as np
 import os
-from noisereduce.noisereducev1 import reduce_noise
+# from noisereduce.noisereducev1 import reduce_noise
 import scipy
 import scipy.optimize
 import scipy.integrate
@@ -1501,22 +1501,6 @@ class Signal(object):
         time_trimmed_signal = Signal(new_signal, self.sr, self.SP)
         time_trimmed_signal.time_length = time_length
         return time_trimmed_signal
-
-    def filter_noise(self, verbose=True):
-        """
-        Method filtering the noise from the recorded signal and returning a filtered signal.
-        If the signal was not trimmed it is trimmed in place then filtered.
-        If the signal can not be trimmed it can't be filtered and the original signal is returned
-        :return : A Signal instance, filtered if possible.
-        """
-        try:
-            return Signal(reduce_noise(audio_clip=self.signal, noise_clip=self.noise), self.sr, self.SP)
-        except AttributeError:
-            if self.trimmed is False:
-                if verbose:
-                    print('Not sufficient noise in the raw signal, unable to filter.')
-                    print('')
-                return self
 
     def normalize(self):
         """
