@@ -13,6 +13,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+tags
 eggs/
 .eggs/
 lib/
@@ -127,6 +128,7 @@ ssl/
 # User files
 Nbooks/
 DEV.ipynb
+*.swp
 
 # macos
 .DS_Store

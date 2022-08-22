@@ -190,9 +190,9 @@ def listen_sig_array(arr):
     arr2sig(arr).listen()
     
 
-def arr2sig(arr):
+def arr2sig(arr, sr=22050):
     """ Convert a signal array to a Signal class instance"""
-    return guitarsounds.Signal(arr, 22050, guitarsounds.parameters.sound_parameters())
+    return guitarsounds.Signal(arr, sr, guitarsounds.parameters.sound_parameters())
 
 
 def scomp(arr, s):

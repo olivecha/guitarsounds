@@ -1,4 +1,3 @@
-import librosa
 from soundfile import write
 import IPython.display as ipd
 import matplotlib.ticker as ticker
@@ -816,7 +815,7 @@ class Sound(object):
             if data.split('.')[-1] != 'wav':
                 raise ValueError('Only .wav are supported')
             else:
-                signal, sr = librosa.load(data)
+                signal, sr = utils.load_wav(data)
                 self.data = data
 
         elif type(data) == tuple:
@@ -824,6 +823,10 @@ class Sound(object):
 
         else:
             raise TypeError
+
+        # If the sample rate is not 22050 we resample
+        if sr != 22050:
+            signal = utils.resample(signal, sr, 22050)
 
         # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr, self.SP)
