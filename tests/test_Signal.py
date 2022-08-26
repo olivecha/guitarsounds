@@ -38,10 +38,10 @@ class MyTestCase(unittest.TestCase):
         signal = get_ref_test_Signal()
         fft = signal.fft()
         fft_freq = signal.fft_frequencies()
-        self.assertTrue(np.isclose(fft[0], 0.00434514742092674, 1e-3, 1e-3))
-        self.assertTrue(np.isclose(fft[-1], 2.106108138485372e-06, 1e-3, 1e-3))
-        self.assertTrue(np.isclose(fft_freq[0], 0., 1e-3, 1e-3))
-        self.assertTrue(np.isclose(fft_freq[-1], 11024.904519000935, 1e-3, 1e-3))
+        self.assertAlmostEqual(fft[0], 0.00434514742092674, 2)
+        self.assertAlmostEqual(fft[-1], 2.106108138485372e-06, 2)
+        self.assertAlmostEqual(fft_freq[0], 0., 2)
+        self.assertAlmostEqual(fft_freq[-1], 11024.904519000935, 2)
 
     def test_Signal_peaks(self):
         """ Test the fourier transform peak analysis methods of the Signal class"""
@@ -97,8 +97,8 @@ class MyTestCase(unittest.TestCase):
         """ Test the Signal frequency distribution of the fft"""
         sig = get_ref_test_Signal()
         fft_bins = sig.fft_bins()
-        self.assertAlmostEqual(fft_bins[0], 1.9096199812935186)
-        self.assertAlmostEqual(fft_bins[-1], 6393.789621366959)
+        self.assertAlmostEqual(fft_bins[0], 1.9096199812935186, 3)
+        self.assertAlmostEqual(fft_bins[-1], 6393.789621366959, 3)
 
     def test_Signal_envelop(self):
         """ Test the envelope computation of the Signal"""
@@ -106,7 +106,7 @@ class MyTestCase(unittest.TestCase):
         self.assertAlmostEqual(0, sig.envelop()[0])
         sig = get_ref_test_Signal()
         print(sig.envelop()[-1])
-        self.assertTrue(np.isclose(0.012232225388288498, sig.envelop()[-1], 1e-3, 1e-3))
+        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[-1], 3)
 
     def test_Signal_envelop_time(self):
         """ Test the envelope time vector of the signal"""

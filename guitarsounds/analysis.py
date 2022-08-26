@@ -824,10 +824,6 @@ class Sound(object):
         else:
             raise TypeError
 
-        # If the sample rate is not 22050 we resample
-        if sr != 22050:
-            signal = utils.resample(signal, sr, 22050)
-
         # create a Signal class from the signal and sample rate
         self.raw_signal = Signal(signal, sr, self.SP)
         # create an empty plot attribute
@@ -846,7 +842,7 @@ class Sound(object):
         self.presence = None
         self.brillance = None
 
-    def condition(self, verbose=True, return_self=False, filter_noise=False, auto_trim=False):
+    def condition(self, verbose=True, return_self=False, auto_trim=False, resample=True):
         """
         A method conditioning the Sound instance.
         - Trimming to just before the onset
@@ -857,11 +853,13 @@ class Sound(object):
         :param auto_trim: If True, the sound is trimmed to a fixed length according to its fundamental
         :return: a conditioned Sound instance if `return_self = True`
         """
+        # Resample only if the sample rate is not 22050
+        if resample & (self.raw_signal.sr != 22050):
+            signal, sr = self.raw_signal.signal, self.raw_signal.sr
+            self.raw_signal = Signal(utils.resample(signal, sr, 22050), 22050, self.SP)
+
         self.trim_signal(verbose=verbose)
-        if filter_noise:
-            self.filter_noise(verbose=verbose)
-        else:
-            self.signal = self.trimmed_signal
+        self.signal = self.trimmed_signal
         if self.fundamental is None:
             self.fundamental = self.signal.fundamental()
         if auto_trim:

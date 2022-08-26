@@ -178,7 +178,7 @@ def resample(y, sr_orig, sr_target=22050):
     # resample to sr=22050
     signal = resample(signal, sr, 22050)
     """
-    y_len = int((sr_target / sr_orig) * len(y))
+    y_len = int(sr_target * len(y) / sr_orig)
     y_new = scipy.signal.resample(y, num=y_len)
     return y_new    
     

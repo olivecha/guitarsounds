@@ -4,7 +4,8 @@ import guitarsounds.parameters
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, interp2d
+import librosa
 
 
 # -----Module variables----- #
@@ -174,20 +175,29 @@ def load_carbon_sounds(as_dict=False):
 def time_index(signal, time):
     """ Return the approximate index of time in signal"""
     t = signal.time()
-    idx = np.arange(t.shape[0])[t > time][0]
+    if t[-1] >= time:
+        idx = np.arange(t.shape[0])[t >= time][0]
+    else:
+        idx = np.arange(t.shape[0])[-1]
     return idx
 
 
 def frequency_index(signal, freq):
     """ Return the approximate index of the frequency in the signal fft"""
     f = signal.fft_frequencies()
-    idx = np.arange(f.shape[0])[f > freq][0]
+    if f[-1] >= freq:
+        idx = np.arange(f.shape[0])[f >= freq][0]
+    else:
+        idx = np.arange(f.shape[0])[-1]
     return idx
 
 
-def listen_sig_array(arr):
+def listen_sig_array(arr, sr=22050):
     """ listen a signal array """
-    arr2sig(arr).listen()
+    arr = arr2sig(arr, sr=sr)
+    if np.max(np.abs(arr.signal))<0.8:
+        arr = arr.normalize()
+    arr.listen()
     
 
 def arr2sig(arr, sr=22050):
@@ -293,4 +303,74 @@ def get_hi_exp(start, stop, step):
     exp_hi = a_max * np.exp((t + off_set) * b_min)
     return exp_hi
 
+def tf_decor(ax):
+    """ Decorate an axis with time/frequency labels """
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Frequency (Hz)')
 
+def mean_spec(sounds, max_time=2, hop_length=32):
+    """ 
+    Compute the mean normalized spectrogram 
+    from a list of sounds
+    """
+    # Create a list of all the spectrograms
+    all_specs = []
+    for si in sounds:
+        y = si.signal.trim_time(max_time).signal
+        D = librosa.stft(y, hop_length=hop_length)  # STFT of signal y
+        all_specs.append(np.abs(D))
+    # Transform to array and compute mean
+    all_specs = np.array(all_specs)
+    mean_spec = np.mean(all_specs, axis=0)
+    return mean_spec
+
+def spec_freq(sr=22050):
+    return librosa.fft_frequencies(sr=sr)
+
+def spec_time(spec, hop_length=32):
+    return librosa.frames_to_time(np.arange(spec.shape[1]), hop_length=hop_length)
+
+def spec_filter(spec, k):
+    """ Filter / smoothen spectrogram data k times """
+    kernel = np.array([[1, 1, 1,],
+                       [1, 1, 1,],
+                       [1, 1, 1,],])
+    kernel = kernel/np.sum(kernel)
+    spec_filtr = spec
+    for i in range(k):
+        spec_filtr = convolve(spec_filtr, kernel)
+        
+    return spec_filtr
+    
+
+def An_interpolator(spec, filtr=0, hop_length=32):
+    """ Construct the An interpolator from An data """
+    spec = spec_filter(spec, filtr)
+    time = spec_time(spec, hop_length)
+    freq = spec_freq()
+    An_itrp = interp2d(time, freq, spec)
+    
+    return An_itrp
+
+def sound_arr_from_itrp(itrp, fund):
+    """ Generate a sound array from an An interpolator """
+
+    # Use theoretical partial data
+    sigarr=0
+    # Time at sample rate intervals
+    time=np.linspace(0, 2, 22050*2)
+
+    while fund < 10000:
+        sigarr += itrp(time, fund) * np.sin(fund * time * 2 * np.pi)
+        fund += 110
+
+    sigarr *= 0.95 / np.max(np.abs(sigarr))
+    
+    # Apply onset envelop
+    env = get_expenv(-1)
+    # Apply it to time = 0.0 - 0.1 s
+    t_idx = np.arange(time.shape[0])[time < 0.1][-1]
+    sigarr[:t_idx] = env(time[:t_idx]) * sigarr[:t_idx]
+    # Fade out the last 20 samples
+    sigarr[-20:] = sigarr[-20:] * np.linspace(1, 0.1, 20)
+    return sigarr
