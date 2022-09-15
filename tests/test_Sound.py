@@ -33,10 +33,6 @@ class MyTestCase(unittest.TestCase):
         sound2 = Sound(file)
         sound2 = sound2.condition(return_self=True)
         self.assertTrue(sound2.signal is not None)
-        # test noise filtering
-        sound3 = Sound(file)
-        sound3.condition(filter_noise=True)
-        self.assertTrue(sound3.signal is not None)
         # test auto trim
         file = helpers_tests.get_rnd_audio_file()
         sound4 = Sound(file)
