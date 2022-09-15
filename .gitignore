@@ -74,6 +74,8 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+.ipynb
+Notebooks/
 
 # IPython
 profile_default/
@@ -130,6 +132,7 @@ Nbooks/
 DEV.ipynb
 *.swp
 *~
+dev_archive/
 
 # macos
 .DS_Store
