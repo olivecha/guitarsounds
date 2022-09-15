@@ -4,6 +4,8 @@ import scipy.integrate
 from scipy.interpolate import interp1d
 import guitarsounds
 from guitarsounds.parameters import sound_parameters
+import wave
+import struct
 
 # instantiation of the trim time interpolator
 sp = sound_parameters()
@@ -141,3 +143,42 @@ def trim_sounds(*sounds, length=None):
             sound.bin_divide()
             new_sounds.append(sound)
         return new_sounds
+
+
+def load_wav(filename):
+    """ 
+    load a wave file and return the signal data with the sample rate 
+    :param filename: string, name of the file to load
+    :return: signal_data, sample_rate
+
+    Example : 
+    y, sr = load_wav('sound.wav')
+    """
+    audio = wave.open(filename)
+    sr = audio.getframerate()
+    samples = []
+    for _ in range(audio.getnframes()):
+        frame = audio.readframes(1)
+        samples.append(struct.unpack("h", frame)[0])
+    signal = np.array(samples) / 32768
+    return signal, sr
+
+
+def resample(y, sr_orig, sr_target=22050):
+    """ 
+    resample a signal using scipy.signal 
+    :param y: signal data to be resampled
+    :param sr_orig: original sample rate
+    :param sr_target: target sample rate
+
+    Sample rate = n.o. samples in a second
+
+    Example :
+    signal, sr = load_wav('sound.wav')
+    # resample to sr=22050
+    signal = resample(signal, sr, 22050)
+    """
+    y_len = int(sr_target * len(y) / sr_orig)
+    y_new = scipy.signal.resample(y, num=y_len)
+    return y_new    
+    
