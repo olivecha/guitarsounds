@@ -5,5 +5,5 @@ numpy
 scipy
 tabulate
 ipywidgets
-
+pytest
 
