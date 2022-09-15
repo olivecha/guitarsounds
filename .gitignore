@@ -129,6 +129,7 @@ ssl/
 Nbooks/
 DEV.ipynb
 *.swp
+*~
 
 # macos
 .DS_Store

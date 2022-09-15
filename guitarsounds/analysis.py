@@ -603,6 +603,9 @@ class SoundPack(object):
             plt.title('Fourier Transform Peak Analysis for ' + son1.name + ' and ' + son2.name)
             plt.grid('on')
             plt.legend()
+            ax = plt.gca()
+            ax.set_xlabel('Frequency (Hz)')
+            ax.set_ylabel('Amplitude (0-1)')
         else:
             print('Unsupported for multiple sounds SoundPacks')
 
