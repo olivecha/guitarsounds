@@ -8,6 +8,7 @@ class Parameter(object):
         self.value = value
         self.info = info
 
+
 class ParameterSet(object):
     """
     A class to store multiple parameters as a set
@@ -22,6 +23,7 @@ class ParameterSet(object):
         parameters = [parameter for parameter in self.__dict__.values() if type(parameter) != str]
         for parameter in parameters:
             print('\t', parameter.name, ':', parameter.value)
+
 
 class GlobalParameters(object):
     """
@@ -79,7 +81,7 @@ def sound_parameters():
     onset = ParameterSet('onset', onset_delay, onset_time)
 
     # Envelop
-    frame_size = Parameter('frame_size', 524, 'Number of samples in the array used to compute a point of the envelop')
+    frame_size = Parameter('frame_size', 301, 'Number of samples in the array used to compute a point of the envelop')
     hop_length = Parameter('hop_length', 200, 'Number of samples between envelop points')
     envelop = ParameterSet('envelop', frame_size, hop_length)
 
@@ -93,7 +95,7 @@ def sound_parameters():
     # Fundamental
     min_freq = Parameter('min_freq', 60, 'Minimum frequency for the fundamental finding algorithm (Hz)')
     max_freq = Parameter('max_freq', 2000, 'Maximum frequency for the fundamental finding algorithm (Hz)')
-    frame_length = Parameter('frame_length', 1024, 'Frame length in samples to compute the fundamentals across the signal')
+    frame_length = Parameter('frame_length', 1024, 'Frame length in samples to compute the fundamentals in the signal')
     fundamental = ParameterSet('fundamental', min_freq, max_freq, frame_length)
 
     # Frequency bins to divide the signal
@@ -106,7 +108,7 @@ def sound_parameters():
     bins = ParameterSet('bins', bass, mid, highmid, uppermid, presence)
 
     # Damping
-    lower_threshold = Parameter('lower_threshold', 0.05, 'lower amplitude treshold for the time damping analysis')
+    lower_threshold = Parameter('lower_threshold', 0.05, 'lower amplitude threshold for the time damping analysis')
     damping = ParameterSet('damping', lower_threshold)
     
     # Default signal trim times
