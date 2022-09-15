@@ -1,9 +1,7 @@
 IPython
-librosa
 soundfile
 matplotlib
 numpy
-noisereduce
 scipy
 tabulate
 ipywidgets
