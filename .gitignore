@@ -132,6 +132,8 @@ Nbooks/
 DEV.ipynb
 *.swp
 *~
+*/*~
+*/*/*~
 dev_archive/
 
 # macos
