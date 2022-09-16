@@ -19,7 +19,7 @@ if os.path.isfile(requirementPath):
 # This call to setup() does all the work
 setup(
     name="guitarsounds",
-    version="1.0.0",
+    version="1.1.0",
     python_requires='>=3',
     description="A python package to analyze and visualize harmonic sounds",
     long_description=README,
@@ -29,7 +29,7 @@ setup(
         'Documentation': 'https://olivecha.github.io/guitarsounds/',
     },
     author="Olivier Chabot",
-    author_email="olivier.chabot.2@ens.etsmtl.ca",
+    author_email="olivier.chabot@polymtl.ca",
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
