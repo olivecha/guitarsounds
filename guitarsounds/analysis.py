@@ -965,11 +965,11 @@ class Sound(object):
         `Sound.plot_freq_bins(bins=['bass', 'mid'])` plots the bass and mid bins
         """
 
-        if type(bins) == str:
-            if bins == 'all':
-                bins = self.bins.keys()
-            elif bins in self.bins.keys:
-                bins = [bins]
+        if bins[0] == 'all':
+            bins = 'all'
+
+        if bins == 'all':
+            bins = self.bins.keys()
 
         for key in bins:
             lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'
