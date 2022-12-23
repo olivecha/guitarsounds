@@ -39,7 +39,7 @@ Then, navigate to the sub-directory where you want your work to be and create a 
 
 The graphic user interface can be launched by typing the following code in a cell of the notebook : 
 
-```
+```python
 import guitarsounds
 interface = guitarsounds.Interface()
 ```
