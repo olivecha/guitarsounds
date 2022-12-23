@@ -10,6 +10,7 @@ import scipy
 import scipy.optimize
 import scipy.integrate
 import scipy.interpolate
+from scipy.integrate import trapezoid
 from scipy import signal as sig
 from guitarsounds.parameters import sound_parameters
 import guitarsounds.utils as utils
@@ -500,7 +501,7 @@ class SoundPack(object):
             # for every frequency bin in the sound
             for f_bin in bin_strings:
                 log_envelop, log_time = sound.bins[f_bin].normalize().log_envelop()
-                integral.append(scipy.integrate.trapezoid(log_envelop, log_time))
+                integral.append(trapezoid(log_envelop, log_time))
 
             # a list of dict for every sound
             integrals.append(integral)
@@ -719,47 +720,62 @@ class SoundPack(object):
             fig, axs = plt.subplots(3, 2, figsize=(16, 16))
             axs = axs.reshape(-1)
 
+            # get the bins frequency values
             self.bin_strings = self.sounds[0].bins.keys()
             bins1 = self.sounds[0].bins.values()
             bins2 = self.sounds[1].bins.values()
 
             for signal1, signal2, bin_string, ax in zip(bins1, bins2, self.bin_strings, axs):
+                # Compute the log time and envelops integrals
                 log_envelop1, log_time1 = signal1.normalize().log_envelop()
                 log_envelop2, log_time2 = signal2.normalize().log_envelop()
-                integ = scipy.integrate.trapezoid
                 env_range1 = np.arange(2, len(log_envelop1), 1)
                 env_range2 = np.arange(2, len(log_envelop2), 1)
-                integral1 = np.array([integ(log_envelop1[:i], log_time1[:i]) for i in env_range1])
-                integral2 = np.array([integ(log_envelop2[:i], log_time2[:i]) for i in env_range2])
+                integral1 = np.array([trapezoid(log_envelop1[:i], log_time1[:i]) for i in env_range1])
+                integral2 = np.array([trapezoid(log_envelop2[:i], log_time2[:i]) for i in env_range2])
                 time1 = log_time1[2:len(log_time1):1]
                 time2 = log_time2[2:len(log_time2):1]
 
+                # resize arrays to match shape
+                common_len = min(len(time1), len(time2))
+                time1 = time1[:common_len]
+                time2 = time2[:common_len]
+                integral1 = integral1[:common_len]
+                integral2 = integral2[:common_len]
+
+                # plot the integral area curves
                 ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
                 ax.fill_between(time2, -integral2, label=self.sounds[1].name, alpha=0.4)
                 ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
-
                 ax.set_xlabel('time (s)')
                 ax.set_ylabel('cumulative power')
                 ax.set_xscale('log')
                 ax.set_title(bin_string)
                 ax.legend()
                 ax.grid('on')
+
             plt.tight_layout()
 
         elif f_bin in self.bin_strings:
-            fig, ax = plt.subplots(figsize=(8, 6))
+
+            # Compute the log envelops and areau curves
             signal1 = self.sounds[0].bins[f_bin]
             signal2 = self.sounds[1].bins[f_bin]
             log_envelop1, log_time1 = signal1.normalize().log_envelop()
             log_envelop2, log_time2 = signal2.normalize().log_envelop()
-            integ = scipy.integrate.trapezoid
-
-            integral1 = np.array([integ(log_envelop1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelop1), 1)])
-            integral2 = np.array([integ(log_envelop2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelop2), 1)])
+            integral1 = np.array([trapezoid(log_envelop1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelop1), 1)])
+            integral2 = np.array([trapezoid(log_envelop2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelop2), 1)])
             time1 = log_time1[2:len(log_time1):1]
             time2 = log_time2[2:len(log_time2):1]
 
-            # int_index = np.min([integral1.shape[0], integral2.shape[0]])
+            # resize arrays to match shape
+            common_len = min(len(time1), len(time2))
+            time1 = time1[:common_len]
+            time2 = time2[:common_len]
+            integral1 = integral1[:common_len]
+            integral2 = integral2[:common_len]
+
+            fig, ax = plt.subplots(figsize=(8, 6))
             ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
             ax.fill_between(time2, -integral2, label=self.sounds[1].name, alpha=0.4)
             ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
@@ -990,7 +1006,7 @@ class Sound(object):
 
         for f_bin in bin_strings:
             log_envelop, log_time = self.bins[f_bin].normalize().log_envelop()
-            integral.append(scipy.integrate.trapezoid(log_envelop, log_time))
+            integral.append(trapezoid(log_envelop, log_time))
 
         # create the bar plotting vectors
         fig, ax = plt.subplots(figsize=(6, 6))
@@ -1857,11 +1873,9 @@ class Plot(object):
         # Compute log envelop and log time
         log_envelop, log_time = self.parent.normalize().log_envelop()
 
-        # define integrating function
-        integ = scipy.integrate.trapezoid
 
         # compute the cumulative integral
-        integral = [integ(log_envelop[:i], log_time[:i]) for i in np.arange(2, len(log_envelop), 1)]
+        integral = [trapezoid(log_envelop[:i], log_time[:i]) for i in np.arange(2, len(log_envelop), 1)]
 
         # plot the integral
         plt.plot(log_time[2:], integral, **plot_kwargs)
