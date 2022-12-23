@@ -55,6 +55,7 @@ To go further, you may learn the guitarsounds API, see the API Tutorial notebook
 While extracting quantitative features from sounds allows for a meaningful analysis, listening to them remain an important part of the analysis. Soundfiles ca be loaded by creating a `Sound` class instance with the soundfile path as an argument
 
 ```python
+from guitarsounds import Sound
 mysound = Sound('example_sounds/Wood_Guitar/Wood_E1.wav')
 ```
 
@@ -64,6 +65,10 @@ The `Sound` instance can then be conditionned to trim it right before its onset 
 mysound.condition()
 ```
 The amplitude-time data of the `Sound` instance is stored in a `Signal` class and can be listened in a Jupyter Notebook:
+
+```python
+mysound.signal.listen()
+```
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171777901-58fad2db-e515-4c1e-ac2a-ca5f3c60708a.png">
 
