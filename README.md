@@ -74,13 +74,51 @@ mysound.signal.listen()
 
 Relevant time signal properties can then be rapidly extracted and visualized in the interactive Jupyter Notebook environment. For example, the time damping curve and the associated damping factor is a useful measure when measuring the effects of changes in the guitar design on the decay rate of different notes : 
 
+```python
+mysound.plot.time_damping()
+```
+
 <img width="400" alt="image" src="https://user-images.githubusercontent.com/78630053/171778130-6892e1c2-b435-4ac4-a7ae-bae289d8fd02.png">
 
 Two different sounds can also be compared using the `SoundPack` class, such as a tangible effect of a design change can be measured. Here we compare the fourier transform peaks of two guitars built using different materials : 
+```python
+import guitarsounds
+file1 = 'example_sounds/Wood_Guitar/Wood_A5.wav'
+file2 = 'example_sounds/Carbon_Guitar/Carbon_A5.wav'
+mysounds = guitarsounds.SoundPack(file1, file2, names=['wood', 'carbon'])
+mysounds.compare_peaks()
+```
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171778729-e5e69eff-2ad8-4448-b6fe-d54387d4a6e3.png">
 
-The base API of the guitarsounds classes can also be leveraged to create custom signal analysis features. The following example shows the relatively straightforward implementation of the cumulative fast fourier transform metric from [reference 1](https://arxiv.org/pdf/0901.3708.pdf). 
+The base API of the guitarsounds classes can also be leveraged to create custom signal analysis features. The following example shows the relatively straightforward implementation of the cumulative fast fourier transform metric from [reference 1](https://arxiv.org/pdf/0901.3708.pdf).
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import guitarsounds
+
+sound1 = guitarsounds.Sound('example_sounds/Wood_Guitar/Wood_A5.wav')
+sound1.condition()
+sound2 = guitarsounds.Sound('example_sounds/Carbon_Guitar/Carbon_A5.wav')
+sound2.condition()
+
+def cummul_fft(fft, fft_freq, max_freq=4000):
+    """ Cummulative fast fourier transform """
+    max_idx = np.nonzero(fft_freqs>max_freq)[0][0]
+    cummul_fft = [np.trapz(fft[0:i], freqs[0:i]) for i in range(1, max_idx+1)]
+    cummul_freqs = fft_freqs[1:max_idx+1]
+    return cummul_freqs, cummul_fft
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(*cummul_fft(sound1.signal.fft(), sound1.signal.fft_frequencies()), label-'wood')
+ax.plot(*cummul_fft(sound2.signal.fft(), sound2.signal.fft_frequencies()), label='carbon')
+ax.set_xlim(0, 2000)
+ax.set_xlabel('Frequency')
+ax.set_ylabel('Cumulative FFT')
+ax.legend()
+ax.show()
+```
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171780702-26ef6aee-8bb1-4561-bbf0-5d28bcacb736.png">
 
