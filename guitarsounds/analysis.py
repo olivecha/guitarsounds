@@ -790,23 +790,6 @@ class SoundPack(object):
         else:
             print('invalid frequency bin')
 
-    def coherence_plot(self):
-        """
-        __ Dual SoundPack Method __
-        computes and plots the coherence between the time signal of two Sounds
-        :return: None
-        """
-        if self.kind == 'dual':
-            f, C = sig.coherence(self.sounds[0].signal.signal, self.sounds[1].signal.signal, self.sounds[0].signal.sr)
-            plt.plot(f, C, color='b')
-            plt.yscale('log')
-            plt.xlabel('Fréquence (Hz)')
-            plt.ylabel('Coherence [0, 1]')
-            title = 'Cohérence entre les sons ' + self.sounds[0].name + ' et ' + self.sounds[1].name
-            plt.title(title)
-        else:
-            print('Unsupported for multiple sounds SoundPacks')
-
 
 class Sound(object):
     """
