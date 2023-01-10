@@ -1563,11 +1563,13 @@ class Plot(object):
         Signal.plot.envelop()
 
         Supported plots are :
-        'signal', 'envelop', 'log envelop', 'fft', 'fft hist', 'peaks', 'peak damping', 'time damping', 'integral'
+        'signal', 'envelop', 'log envelop', 'fft', 'fft hist', 'peaks',
+        'peak damping', 'time damping', 'integral'
     """
 
     # Illegal plot key word arguments
-    illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize', 'inverse', 'peak_height', 'fill']
+    illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize', 'inverse',
+                      'peak_height', 'fill']
 
     def __init__(self):
         # define the parent attribute
@@ -1652,13 +1654,17 @@ class Plot(object):
         plot_kwargs = self.sanitize_kwargs(kwargs)
 
         # find the index corresponding to the fft range
-        result = np.where(self.parent.fft_frequencies() >= self.parent.SP.general.fft_range.value)[0]
+        fft_frequencies = self.parent.fft_frequencies()
+        fft_range = self.parent.SP.general.fft_range.value
+        result = np.where(fft_frequencies >= fft_range)[0]
         if len(result) == 0:
             last_index = -1
         else:
             last_index = result[0]
 
-        plt.plot(self.parent.fft_frequencies()[:last_index], self.parent.fft()[:last_index], **plot_kwargs)
+        plt.plot(self.parent.fft_frequencies()[:last_index],
+                 self.parent.fft()[:last_index],
+                 **plot_kwargs)
         plt.xlabel("frequency"),
         plt.ylabel("amplitude"),
         plt.yscale('log')
@@ -1692,9 +1698,11 @@ class Plot(object):
 
     def peaks(self, **kwargs):
         """
-            Plots the Fourier Transform of the Signal, with the peaks detected with the `Signal.peaks()` method.
+            Plots the Fourier Transform of the Signal, with the peaks detected
+            with the `Signal.peaks()` method.
 
-            If `peak_height = True` is supplied in the keyword arguments the computed height threshold is
+            If `peak_height = True` is supplied in the keyword arguments the
+            computed height threshold is
             shown on the plot.
             """
 
@@ -1702,7 +1710,8 @@ class Plot(object):
 
         fft_freqs = self.parent.fft_frequencies()
         fft = self.parent.fft()
-        max_index = np.where(fft_freqs >= self.parent.SP.general.fft_range.value)[0][0]
+        fft_range = self.parent.SP.general.fft_range.value
+        max_index = np.where(fft_freqs >= fft_range)[0][0]
         peak_indexes, height = self.parent.peaks(height=True)
         plt.xlabel('Fréquence (Hz)')
         plt.ylabel('Amplitude')
@@ -1724,8 +1733,8 @@ class Plot(object):
             Supported key word arguments are :
 
             `n=5` : The order of the fitted polynomial curve, default is 5,
-            if the supplied value is too high, it will be reduced until the number of peaks
-            is sufficient to fit the polynomial.
+            if the supplied value is too high, it will be reduced until the
+            number of peaks is sufficient to fit the polynomial.
 
             `inverse=True` : Default value is True, if False, the damping ratio is shown instead
             of its inverse.
@@ -1782,8 +1791,8 @@ class Plot(object):
 
     def time_damping(self, **kwargs):
         """
-            Shows the signal envelop with the fitted negative exponential curve used to determine the
-            time damping ratio of the signal.
+            Shows the signal envelop with the fitted negative exponential
+            curve used to determine the time damping ratio of the signal.
             """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         # Get the envelop data

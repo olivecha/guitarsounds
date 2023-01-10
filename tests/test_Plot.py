@@ -1,5 +1,5 @@
-import helpers_tests
 import unittest
+import helpers_tests
 from guitarsounds import Plot
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,8 @@ class MyTestCase(unittest.TestCase):
     def test_Plot_sanitize_kwargs(self):
         """ Test the sanitize_kwargs method of the Plot class"""
         plot = Plot()
-        illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize', 'inverse', 'peak_height', 'fill']
+        illegal_kwargs = ['max_time', 'n', 'ticks', 'normalize',
+                          'inverse', 'peak_height', 'fill']
         kwargs = plot.sanitize_kwargs(illegal_kwargs)
         self.assertEqual(kwargs, {})
 
@@ -73,11 +74,32 @@ class MyTestCase(unittest.TestCase):
         parent.plot.peaks()
         ax = plt.gca()
         self.assertTrue(len(ax.lines) > 0)
+        # test with the height kwarg
+        plt.figure()
+        parent.plot.peaks(peak_height=True)
+        ax = plt.gca()
+        self.assertTrue(len(ax.lines) > 0)
 
     def test_Plot_peak_damping(self):
         """ Test the peak damping Plot method"""
         parent = helpers_tests.get_rnd_test_Signal()
+        plt.figure()
         parent.plot.peak_damping()
+        ax = plt.gca()
+        self.assertTrue(len(ax.lines) > 0)
+        # test with the inverse kwarg
+        plt.figure()
+        parent.plot.peak_damping(inverse=False)
+        ax = plt.gca()
+        self.assertTrue(len(ax.lines) > 0)
+        # test with a large n kwarg
+        plt.figure()
+        parent.plot.peak_damping(n=30)
+        ax = plt.gca()
+        self.assertTrue(len(ax.lines) > 0)
+        # test with the normalize kwarg
+        plt.figure()
+        parent.plot.peak_damping(normalize=True)
         ax = plt.gca()
         self.assertTrue(len(ax.lines) > 0)
 
