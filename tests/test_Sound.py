@@ -1,7 +1,8 @@
-import unittest
-from guitarsounds import helpers_tests, Sound, utils
 import sys
 import io
+import unittest
+from guitarsounds import Sound, utils
+import helpers_tests
 import matplotlib.pyplot as plt
 import numpy as np
 

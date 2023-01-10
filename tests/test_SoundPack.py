@@ -1,6 +1,7 @@
 import unittest
 import guitarsounds
-from guitarsounds import SoundPack, helpers_tests
+from guitarsounds import SoundPack
+import helpers_tests
 import numpy as np
 import matplotlib.axes
 import matplotlib.pyplot as plt

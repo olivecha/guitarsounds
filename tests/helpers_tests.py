@@ -9,8 +9,8 @@ from random import randint
 
 def get_rnd_audio_file():
     """ Get a random soundfile for the included example sounds"""
-    wood_root = os.path.join('..', 'example_sounds', 'Wood_Guitar')
-    carbon_root = os.path.join('..', 'example_sounds', 'Carbon_Guitar')
+    wood_root = os.path.join('example_sounds', 'Wood_Guitar')
+    carbon_root = os.path.join('example_sounds', 'Carbon_Guitar')
     wood_files = [os.path.join(wood_root, file) for file in os.listdir(wood_root)]
     carbon_files = [os.path.join(carbon_root, file) for file in os.listdir(carbon_root)]
     all_files = wood_files + carbon_files
@@ -28,7 +28,8 @@ def get_rnd_test_Signal():
 
 
 def get_ref_test_Signal():
-    reference_signal_file = os.path.join('..', 'example_sounds', 'Carbon_Guitar', 'Carbon_G3.wav')
+    """Return a reference signal used in the tests"""
+    reference_signal_file = os.path.join('example_sounds', 'Carbon_Guitar', 'Carbon_G3.wav')
     signal_data, sample_rate = load(reference_signal_file)
     signal_data = resample(signal_data, sample_rate, 22050)
     signal = Signal(signal_data, 22050, sound_parameters())

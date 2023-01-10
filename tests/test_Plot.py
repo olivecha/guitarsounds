@@ -1,6 +1,6 @@
+import helpers_tests
 import unittest
 from guitarsounds import Plot
-from guitarsounds import helpers_tests
 import matplotlib.pyplot as plt
 
 
