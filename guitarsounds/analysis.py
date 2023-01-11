@@ -28,7 +28,6 @@ SP = sound_parameters()
 Classes
 """
 
-
 class SoundPack(object):
     """
     A class to store and analyse multiple sounds

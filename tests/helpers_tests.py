@@ -8,7 +8,7 @@ from random import randint
 
 
 def get_rnd_audio_file():
-    """ Get a random soundfile for the included example sounds"""
+    """ Get a random soundfile from the included example sounds"""
     wood_root = os.path.join('example_sounds', 'Wood_Guitar')
     carbon_root = os.path.join('example_sounds', 'Carbon_Guitar')
     wood_files = [os.path.join(wood_root, file) for file in os.listdir(wood_root)]
