@@ -86,3 +86,7 @@ class MyTestCase(unittest.TestCase):
         sp = SoundPack(files)
         sp.listen()
         self.assertTrue(True)
+
+
+if __name__ == '__main__':
+    unittest.main()
