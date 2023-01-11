@@ -104,20 +104,6 @@ class MyTestCase(unittest.TestCase):
         sp.freq_bin_plot(f_bin='mid')
         self.assertTrue(len(plt.gcf().axes) == 1)
 
-    def test_soundpack_combine_envelop(self):
-        """ the the combine_envelop method of SoundPack """
-        files = [helpers_tests.get_rnd_audio_file() for i in range(3)]
-        sp = SoundPack(files)
-        # Test signal plot branch
-        sp.combine_envelop(kind='signal')
-        # the plot is supposed to have lines
-        self.assertTrue(len(plt.gcf().axes[0].lines) >= 0)
-        plt.close(plt.gcf())
-        # test the branch with a frequency bin and only showing the combined
-        # curve
-        sp.combine_envelop(kind='bass', show_sounds=False, show_rejects=False)
-        self.assertTrue(len(plt.gcf().axes[0].lines) == 1)
-
     def test_soundpack_fundamentals(self):
         """ test the fundamentals method of SoundPack """
         # create a SoundPack instance

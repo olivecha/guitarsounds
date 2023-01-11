@@ -104,7 +104,6 @@ class guitarGUI(object):
                ('Stacked plot', SoundPack.plot),
                ('Compared plot', SoundPack.compare_plot),
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
-               ('Combine Envelops', SoundPack.combine_envelop),
                ('Print Fundamentals', SoundPack.fundamentals),
                ('Bin power plot', SoundPack.integral_plot),
                ('Print bin powers', SoundPack.bin_power_table),
