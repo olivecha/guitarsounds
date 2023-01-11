@@ -1033,3 +1033,4 @@ class guitarGUI(object):
             self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
             while self.load_bar.value < 10:
                 self.load_bar.value += 1  # LoadBar = 10
+
