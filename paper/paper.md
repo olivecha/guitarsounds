@@ -22,9 +22,18 @@ bibliography: paper.bib
 
 # Summary
 
-Guitarsounds allows rapidly visualizing relevant features of harmonic sounds, enabling the comparison of musical instrument design iterations.
-Guitarsounds implements common signal processing techniques, such as the Fourier transform and augments them to allow for a meaningful analysis of transient harmonic sounds, such as sounds having a defined onset and a frequency-amplitude distribution concentrated around well defined partials.
-As an example, the log-time envelop of a sound filtered within a specific frequency bandwidth allows the comparison of the dynamic response of two instruments for a specific frequency range. 
+The `guitarsounds` python package allows rapidly visualizing relevant features of harmonic sounds. 
+
+The package is mainly developed to compare musical instrument design iterations.
+
+`guitarsounds` is wrapped around common signal processing techniques, such as the Fourier transform, and augments them to allow for a meaningful analysis of transient harmonic sounds.
+
+Such sounds are defined as having a well defined onset and a frequency-amplitude distribution clearly concentrated around defined partials.
+
+Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano or a percussion instrument. 
+
+As an example, the log-time envelop of a sound filtered within a specific frequency bandwidth allows the comparison of the dynamic response of two instruments for a specific frequency range.
+
 The guitarsounds package is divided in two main components, a simple object oriented advanced programming interface (API) which can be used to extract features from sounds and visualize them according to the experimenter's needs and a graphical user interface (GUI) from which all the features of guitarsounds can be accessed by users less knowledgeable in programming. 
 Guitarsounds is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
 
