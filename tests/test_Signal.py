@@ -167,7 +167,7 @@ class MyTestCase(unittest.TestCase):
         # assert the first point is t=0
         self.assertTrue(log_time[0] == 0.)
         # Reference signal test
-        sig = get_rnd_test_Signal()
+        sig = get_ref_test_Signal()
         self.assertAlmostEqual(10.438367195528919, sig.log_envelop()[1][-1], 3)
 
     def test_Signal_find_onset(self):
