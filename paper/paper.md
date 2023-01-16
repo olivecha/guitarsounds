@@ -22,20 +22,15 @@ bibliography: paper.bib
 
 # Summary
 
-The `guitarsounds` python package allows rapidly visualizing relevant features of harmonic sounds. 
+The `guitarsounds` python package allows rapidly visualizing relevant features of harmonic sounds and is mainly developed to compare musical instrument design iterations. `guitarsounds` is wrapped around common signal processing techniques, such as the Fourier transform, and augments them to perform a meaningful analysis of transient harmonic sounds. Such sounds are defined as having a well defined onset and a frequency-amplitude distribution clearly concentrated around defined partials. Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano or a percussion instrument. 
 
-The package is mainly developed to compare musical instrument design iterations.
+As an example, the log-time envelop, which describes the amplitude of a sound with a higher refinement in time at the start of the sound, can be computed for a sound filtered within a specific frequency bandwidth. 
+By plotting such a feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific frequency range.
 
-`guitarsounds` is wrapped around common signal processing techniques, such as the Fourier transform, and augments them to allow for a meaningful analysis of transient harmonic sounds.
-
-Such sounds are defined as having a well defined onset and a frequency-amplitude distribution clearly concentrated around defined partials.
-
-Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano or a percussion instrument. 
-
-As an example, the log-time envelop of a sound filtered within a specific frequency bandwidth allows the comparison of the dynamic response of two instruments for a specific frequency range.
-
-The guitarsounds package is divided in two main components, a simple object oriented advanced programming interface (API) which can be used to extract features from sounds and visualize them according to the experimenter's needs and a graphical user interface (GUI) from which all the features of guitarsounds can be accessed by users less knowledgeable in programming. 
-Guitarsounds is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
+The guitarsounds package is divided in two main components. 
+First, the package is constructed around a convenient object oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the experimenter's needs. 
+Then, a graphical user interface (GUI) makes all the features of `guitarsounds` available to users less knowledgeable in programming. 
+`guitarsounds` is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
 
 The main features of guitarsounds are: 
 
@@ -51,7 +46,7 @@ The main features of guitarsounds are:
 - Extract numerical values of certain features such as the Helmholtz cavity frequency of a guitar or an estimation of the fundamental frequency of a signal
 - Provide a easy to use signal processing API to extract new features according to specific needs which deals with lower level features such as the soundfile sample rate
 
-An example code snippet which compares the Fourier transform peaks of two signals is presented below with the associated output in \autoref{fig:fft-comp}. Both sounds are loaded from wave files, conditioned by setting the signal onset at a specific value from the signal start and trimming the signal according to its fundamental. The SoundPack object was created to easily compare a set of sounds. Different features are available when instantiating the SoundPack with two and more than two sounds. The matplotlib python package is used to visualize the sound features, thus the figures created by guitarsounds can be accessed to modify or save them. 
+An example code snippet which compares the Fourier transform peaks of two signals is presented below with the associated output in \autoref{fig:fft-comp}. Both sounds are loaded from wave files, conditioned by setting the signal onset at a specific value from the signal start and trimming the signal according to its fundamental. The SoundPack object was created to easily compare a set of sounds. Different features are available when instantiating the SoundPack with two and more than two sounds. The `matplotlib` python package is used to visualize the sound features, thus the figures created by guitarsounds can be accessed to modify or save them. 
 
 ```python
 import guitarsounds
@@ -78,8 +73,8 @@ As such, the guitarsounds package was used in previous academic work (in press) 
  A screen capture of the GUI is shown in \autoref{fig:gui}.
  The design of guitarsounds differs from existing packages in its ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a python data visualization stack where the sound specific needs can be handled by guitarsounds.
  More over, the GUI acts as a different way of using the same tool in the same environment (Jupyter Notebook) as to allow for institutional uniformity in teaching and experimentation.
- There exists overlap between guitarsounds and the librosa [@Librosa] python package for music analysis, however librosa is not a dependency of guitarsounds and the latter is more focused on feature extraction for machine learning application and lacks features tailored for harmonic sound analysis and  integrated comparison of sounds.
- Librosa is also aimed at an audience with a more developed knowledge of python programming.
+ There exists overlap between guitarsounds and the `librosa` [@Librosa] python package for music analysis, however `librosa` is not a dependency of guitarsounds and the latter is more focused on feature extraction for machine learning application and lacks features tailored for harmonic sound analysis and  integrated comparison of sounds.
+ `librosa` is also aimed at an audience with a more developed knowledge of python programming.
 
 ![Graphical user interface in the Jupyter Notebook environment.\label{fig:gui}](figuregui.png){width=50%}
 
