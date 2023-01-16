@@ -22,7 +22,9 @@ bibliography: paper.bib
 
 # Summary
 
-The `guitarsounds` python package allows rapidly visualizing relevant features of harmonic sounds and is mainly developed to compare musical instrument design iterations. `guitarsounds` is wrapped around common signal processing techniques, such as the Fourier transform, and augments them to perform a meaningful analysis of transient harmonic sounds. Such sounds are defined as having a well defined onset and a frequency-amplitude distribution clearly concentrated around defined partials. Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano or a percussion instrument. 
+The `guitarsounds` python package can be used to rapidly visualize relevant features of harmonic sounds and is mainly developed to compare musical instrument design iterations. 
+`guitarsounds` is wrapped around common signal processing techniques, such as the Fourier transform, and augments them to perform a meaningful analysis of transient harmonic sounds. 
+Such sounds are defined as having a well defined onset and a frequency-amplitude distribution clearly concentrated around defined partials. Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano or a percussion instrument. 
 
 As an example, the log-time envelop, which describes the amplitude of a sound with a higher refinement in time at the start of the sound, can be computed for a sound filtered within a specific frequency bandwidth. 
 By plotting such a feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific frequency range.
@@ -30,21 +32,35 @@ By plotting such a feature for the same note played on two instruments, the dyna
 The guitarsounds package is divided in two main components. 
 First, the package is constructed around a convenient object oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the experimenter's needs. 
 Then, a graphical user interface (GUI) makes all the features of `guitarsounds` available to users less knowledgeable in programming. 
-`guitarsounds` is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
+`guitarsounds` is meant to be used with the Jupyter Notebook interface as to permit interactively exploring the sound data, either with the API or the GUI.
 
 The main features of guitarsounds are: 
 
-- Load and save sounds to and from the WAVE file format
-- Automated Conditioning and normalization of loaded sounds to allow for a meaningful comparison
-- Visualization of  different features of the sounds, among them which are relevant to musical instrument design: 
+- Automate the loading, conditioning and normalization of  sound files to meaningfully compare their features.
+- Visualize sounds features relevant to musical instrument design, such as: 
     - Linear and logarithmic time envelop
     - Octave bins Fourier transform
     - Fourier transform peaks
     - Time dependent damping
-- Divide sounds in frequency bins to analyze variations in temporal behaviour for different frequency ranges
-- Extract the Fourier transform peaks of an harmonic signal using a custom peak finding algorithm
+- Divide sounds in frequency bins to analyze variations in temporal behaviour for different frequency ranges.
+- Extract the Fourier transform peaks of an harmonic signal using a custom peak finding algorithm.
 - Extract numerical values of certain features such as the Helmholtz cavity frequency of a guitar or an estimation of the fundamental frequency of a signal
-- Provide a easy to use signal processing API to extract new features according to specific needs which deals with lower level features such as the soundfile sample rate
+- Provide a easy to use signal processing API to extract new features according to specific needs which deals with lower level features such as the sound file sample rate
+
+Specifically, the API provides 5 classes nested together : `SoundPack`, `Sound`, `Signal`, `Plot`. 
+Starting from the innermost class, the `Plot` class handles the low level plotting of specific features, such as plotting the FFT for a single sound file. 
+The `Signal` class is used to store the array corresponding to a single signal. 
+For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. 
+An instance of the `Plot` class is constructed when a `Signal` class instance is constructed and stored as an attribute of the `Signal` class. 
+The `Signal` class provides all the features relying only on a single sound signal as class methods. 
+The `Sound` class is used to store all the information corresponding to a single sound file. 
+When a `.wav` file is read, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. 
+The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bins. 
+Finally, the `SoundPack` class is constructed from multiple `Sound` instances and provides the features used to compare the data between different sound files. 
+The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. 
+As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas, the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
+
+###### TODOOOO : rewrite example using the log-time envelop
 
 An example code snippet which compares the Fourier transform peaks of two signals is presented below with the associated output in \autoref{fig:fft-comp}. Both sounds are loaded from wave files, conditioned by setting the signal onset at a specific value from the signal start and trimming the signal according to its fundamental. The SoundPack object was created to easily compare a set of sounds. Different features are available when instantiating the SoundPack with two and more than two sounds. The `matplotlib` python package is used to visualize the sound features, thus the figures created by guitarsounds can be accessed to modify or save them. 
 
