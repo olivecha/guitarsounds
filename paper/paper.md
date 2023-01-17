@@ -29,7 +29,7 @@ Such sounds are defined as having a defined onset, and a frequency-amplitude dis
 Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano, or a percussion instrument. 
 
 The `guitarsounds` package is divided in two main components. 
-First, the package is developped around a convenient object oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the user's needs. 
+First, the package is developped around a convenient object-oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the user's needs. 
 Then, a graphical user interface (GUI) makes most of the features of `guitarsounds` available to users less knowledgeable in programming. 
 `guitarsounds` is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
 
@@ -39,7 +39,7 @@ The main features of guitarsounds are:
 - Visualize sounds features relevant to musical instrument design, such as: 
     - Linear and logarithmic time envelope
     - Octave bands Fourier transform
-    - Time dependent damping
+    - time-dependent damping
 - Divide sounds in frequency bands to analyze variations in temporal behaviour for different frequency ranges.
 - Extract the Fourier transform peaks of a harmonic signal using a custom peak finding algorithm.
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
