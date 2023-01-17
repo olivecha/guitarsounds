@@ -25,7 +25,7 @@ bibliography: paper.bib
 The `guitarsounds` Python package can be used to efficiently visualize relevant features of harmonic sounds and is mainly developed to compare musical instrument design iterations. 
 `guitarsounds` is wrapped around the implementation of common signal processing features, which are manly taken from `numpy` [@harris_array_2020] and `scipy` [@virtanen_scipy_2020]. 
 The signal processing features are augmented to perform the comparative analysis of transient harmonic sounds.
-Such sounds are defined as having a defined onset, and a frequency-amplitude distribution clearly concentrated around defined partials. 
+Such sounds are defined as having a clear onset, and a frequency-amplitude distribution clearly concentrated around partials. 
 Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano, or a percussion instrument. 
 
 The `guitarsounds` package is divided in two main components. 
@@ -39,14 +39,14 @@ The main features of guitarsounds are:
 - Visualize sounds features relevant to musical instrument design, such as: 
     - Linear and logarithmic time envelope
     - Octave bands Fourier transform
-    - time-dependent damping
+    - Time-dependent damping
 - Divide sounds in frequency bands to analyze variations in temporal behaviour for different frequency ranges.
 - Extract the Fourier transform peaks of a harmonic signal using a custom peak finding algorithm.
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
 - Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing acess to lower level features and handling the differences between sound files, such as the file sample rate.
 
 Specifically, the API provides 5 classes nested together : `SoundPack`, `Sound`, `Signal` and `Plot`. 
-Starting from the innermost class, the `Plot` class handles the low level plotting of specific features, such as plotting the FFT of a sound file.
+Starting from the innermost class, the `Plot` class handles the low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
 The `Signal` class is used to store the data of an array corresponding to a single signal. 
 For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. 
 An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. 
@@ -54,20 +54,18 @@ The `Signal` class contains all the features relying only on the data of a singl
 The `Sound` class is used to store all the information corresponding to a single sound file. 
 When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. 
 The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands. 
-Finally, the `SoundPack` class is contains multiple `Sound` class instances and provides the features used to compare the data between different sound files. 
+Finally, the `SoundPack` class contains multiple `Sound` class instances and provides the features used to compare the data between different sound files. 
 The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. 
 As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
 
-As an example, the log-time envelope, a feature illustrating the amplitude of a sound with a higher definition in time at the start of the sound, can be computed using `guitarsounds`. 
+As an example, the log-time envelope, a feature representing the amplitude of a sound with a higher definition in time at the start of the sound, can be computed using `guitarsounds`. 
 By plotting this feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific excitation frequency.
 A code snippet comparing the log-time envelope of two sounds is presented below with the associated output in \autoref{fig:log-comp}.
 In the following code, the `SoundPack` object is first instantiated from the specified sound files. 
 For each file, a `Sound` class instance is created and conditioned. 
 In the conditioning procedure, the signal is first resampled to have a sample rate equal to 22050 Hz, this is important to ensure all the features compared between sounds are computed using the same sample rate. 
-The sound is then trimmed so that the beginning of the onset is at 100 ms, as can be seen on figure \autoref{fig:log-comp}. 
-To ensure compared sounds have the same length, the end of the sounds is trimmed so that each sound has the same number of samples as the shortest sound.
-When a single `Sound` is instantiated, the end of the sound can be trimmed according to its fundamental frequency by setting the key-word argument `auto_trim=True` in the `condition` method. 
-By using this functionality, sounds having an higher fundamental frequency will be trimmed to a shorter length, as they tend to decay at a faster rate.
+The sound is then trimmed so that the beginning of the onset is at 100 ms, as can be seen on \autoref{fig:log-comp}. 
+To ensure compared sounds have the same length, the ends of the sounds are trimmed so that each sound has the same number of samples as the shortest sound. 
 The `guitarsounds` package relies on `matplotlib` [@hunter_matplotlib_2007] for all its vizualisation features. Thus, users familiar with `matplotlib` objects can tune the figures created by `guitarsounds` to their needs.
  
 
@@ -91,12 +89,12 @@ plt.gcd().savefig("log_envelope_compare") # To save the figure
 
 # Statement of need
 
-`guitarsounds` was developped to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs using customized sound features.
+`guitarsounds` was developped to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs using custom sound features.
 The `guitarsounds` package was used in previous academic work (in press) to investigate the difference between two guitar designed using an innovative numerical prototyping method based on topological optimization. 
 In the scope of this research, guitarsounds allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. 
 This feature is related to the instrument's tone [@sumi_classical_2008], and was used to study the differences between the two guitar designs.
  `guitarsounds` is also used in ongoing research at the Bruand lutherie school to manage sound data in a project where guitar sounds are generated with random values for specific features, to provide data for a psycho-acoustic study. 
-The `guitarsounds` API is also used to give an introduction to programming for data analysis to the school's students and in the teaching activities as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Hemlotz cavity frequency of an instrument. 
+The `guitarsounds` API is also used to give an introduction to programming for data analysis to the school's students and in the teaching activities, as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Hemlotz cavity frequency of an instrument. 
 The GUI was included in the package as knowledge or interest in programming isn't expected in the luthier's training. 
 A screen capture of the GUI is shown in \autoref{fig:gui}. 
 
