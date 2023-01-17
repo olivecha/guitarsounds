@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm
 import numpy as np
 import os
-# from noisereduce.noisereducev1 import reduce_noise
 import scipy
 import scipy.optimize
 import scipy.integrate
@@ -78,9 +77,11 @@ class SoundPack(object):
             # general case for multiple sounds
             self.kind = 'multiple'
 
+        # If filenames are supplied
         if type(sounds[0]) is str:
             self.sounds_from_files(sounds, names=names, fundamentals=fundamentals)
 
+        # Else sound instances are supplied
         else:
             self.sounds = sounds
 
@@ -103,10 +104,12 @@ class SoundPack(object):
                     for sound, n in zip(self.sounds, names):
                         sound.name = n
 
-        if equalize_time:
+            # If the sounds are not conditionned condition them
             for s in self.sounds:
                 if ~hasattr(s, 'signal'):
                     s.condition()
+
+        if equalize_time:
             self.equalize_time()
 
         # Define bin strings
@@ -460,7 +463,7 @@ class SoundPack(object):
 
         __ Dual SoundPack Method __
         Compares the peaks in the Fourier Transform of two Sounds,
-        the peak with the highest difference is highlighted
+        the peaks having the highest difference is highlighted
         """
         if self.kind == 'dual':
             son1 = self.sounds[0]
@@ -500,6 +503,8 @@ class SoundPack(object):
                         different_peaks1.append(peak1)
                         different_peaks2.append(peak2)
                 difference_threshold -= 0.01
+                if np.isclose(difference_threshold, 0.):
+                    break
 
             # Plot the output
             plt.figure(figsize=(10, 6))
@@ -508,14 +513,16 @@ class SoundPack(object):
             # Sound 1
             plt.plot(freq1, fft1, color='#919191', label=son1.name)
             plt.scatter(freq1[new_peaks1], fft1[new_peaks1], color='b', label='peaks')
-            plt.scatter(freq1[different_peaks1], fft1[different_peaks1], color='g', label='diff peaks')
-            annotation_string = 'Peaks with ' + str(np.around(difference_threshold, 2)) + ' difference'
-            plt.annotate(annotation_string, (freq1[different_peaks1[0]] + peak_distance / 2, fft1[different_peaks1[0]]))
+            if len(different_peaks1) > 0:
+                plt.scatter(freq1[different_peaks1[0]], fft1[different_peaks1[0]], color='g', label='diff peaks')
+                annotation_string = 'Peaks with ' + str(np.around(difference_threshold, 2)) + ' difference'
+                plt.annotate(annotation_string, (freq1[different_peaks1[0]] + peak_distance / 2, fft1[different_peaks1[0]]))
 
             # Sound2
             plt.plot(freq2, -fft2, color='#3d3d3d', label=son2.name)
             plt.scatter(freq2[new_peaks2], -fft2[new_peaks2], color='b')
-            plt.scatter(freq2[different_peaks2], -fft2[different_peaks2], color='g')
+            if len(different_peaks2) > 0:
+                plt.scatter(freq2[different_peaks2[0]], -fft2[different_peaks2[0]], color='g')
             plt.title('Fourier Transform Peak Analysis for ' + son1.name + ' and ' + son2.name)
             plt.grid('on')
             plt.legend()
@@ -562,7 +569,7 @@ class SoundPack(object):
 
         :param fraction: octave fraction value used to compute the frequency bins A higher number will show
         a more precise comparison, but conclusions may be harder to draw.
-        :param ticks:  If True the frequency bins intervals are used as X axis ticks
+        :param ticks:  If equal to 'bins' the frequency bins intervals are used as X axis ticks
         :return: None
         """
         if self.kind == 'dual':
