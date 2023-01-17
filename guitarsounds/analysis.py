@@ -168,7 +168,9 @@ class SoundPack(object):
             sound.signal = sound.signal.normalize()
             new_sounds.append(sound)
 
-        return SoundPack(new_sounds, names=names, fundamentals=fundamentals, SoundParams=self.SP, equalize_time=False)
+        self.sounds = new_sounds
+
+        return self
 
     """
     Methods for all SoundPacks

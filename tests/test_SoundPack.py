@@ -46,7 +46,7 @@ class MyTestCase(unittest.TestCase):
         sp = SoundPack(files)
         nsp = sp.normalize()
         for s in nsp.sounds:
-            self.assertTrue(abs(np.max(np.abs(s.signal.signal)) - 1.) < 1e-3)
+            self.assertAlmostEqual(np.max(np.abs(s.signal.signal)) , 1., 3)
 
     def test_SoundPack_plot(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
