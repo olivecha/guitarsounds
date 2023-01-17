@@ -39,9 +39,9 @@ The main features of guitarsounds are:
 - Automate the loading, conditioning and normalization of multiple sound files to meaningfully compare their features.
 - Visualize sounds features relevant to musical instrument design, such as: 
     - Linear and logarithmic time envelope
-    - Octave bins Fourier transform
+    - Octave bands Fourier transform
     - Time dependent damping
-- Divide sounds in frequency bins to analyze variations in temporal behaviour for different frequency ranges.
+- Divide sounds in frequency bands to analyze variations in temporal behaviour for different frequency ranges.
 - Extract the Fourier transform peaks of a harmonic signal using a custom peak finding algorithm.
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
 - Provide an easy-to-use signal processing API to compute new features meeting to specific needs by providing acess to lower level features and handling the differences between sound files, such as the file sample rate.
@@ -54,46 +54,55 @@ An instance of the `Plot` class is constructed for each `Signal` class instance 
 The `Signal` class provides all the features relying only on the data of a single sound signal as class methods. 
 The `Sound` class is used to store all the information corresponding to a single sound file. 
 When a `.wav` file is read, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. 
-The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bins. 
+The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands. 
 Finally, the `SoundPack` class is constructed from multiple `Sound` class instances and provides the features used to compare the data between different sound files. 
 The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. 
 As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
 
-###### TODOOOO : rewrite example using the log-time envelop
-
-As an example, the log-time envelope, which describes the amplitude of a sound with a higher refinement in time at the start of the sound, can be computed for a sound filtered within a specific frequency bandwidth. 
+As an example, the log-time envelope, a feature describing the amplitude of a sound with a higher refinement in time at the start of the sound, can be computed for a sound filtered within a specific frequency bandwidth. 
 By plotting this feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific frequency range.
-
-An example code snippet, which compares the Fourier transform peaks of two signals is presented below with the associated output in \autoref{fig:fft-comp}. Both sounds are loaded from wave files, conditioned by setting the signal onset at a specific value from the signal start and trimming the signal according to its fundamental. The SoundPack object was created to easily compare a set of sounds. Different features are available when instantiating the SoundPack with two and more than two sounds. The `matplotlib` Python package is used to visualize the sound features, thus the figures created by guitarsounds can be accessed to modify or save them. 
+A code snippet comparing the log-time envelope of two sounds is presented below with the associated output in \autoref{fig:log-comp}.
+In the following code, the `SoundPack` object is first instantiated from the specified sound files. 
+For each file, a `Sound` class instance is created and conditioned. 
+In the conditioning procedure, the signal is first resampled to have a sample rate of 22050, this is important to ensure all the features compared between sounds are computed using the same sample rate. 
+The sound is then trimmed so that the beginning of the onset is at 1 ms, as can be seen on fibure \autoref{fig:log-comp}. 
+To ensure compared sounds have the same length, the end of the sounds is trimmed so that each sound has the same number of samples as the shortest sound.
+When a single `Sound` is instantiated, the end of the sound can be trimmed according to its fundamental frequency by setting the key-word argument `auto_trim=True` in the `condition` method. 
+By using this functionality, sounds having an higher fundamental frequency will be trimmed to a shorter length, as they thend to decay at a faster rate.
+The `guitarsounds` package relies on `matplotlib` [@hunter_matplotlib_2007] for all its vizualisation features. Thus, users familiar with the `matplotlib` objects can tune the figures created by `guitarsounds` to their needs.
+ 
 
 ```python
 import guitarsounds
 import matplotlib.pyplot as plt
 
-file1 = 'example_sounds/Wood_Guitar/Wood_A5.wav'
-file2 = 'example_sounds/Carbon_Guitar/Carbon_A5.wav'
-mysounds = guitarsounds.SoundPack(file1, file2, names=['wood', 'carbon'])
-mysounds.compare_peaks()
+# Use guitarsound to compare the log-time envelope of two sounds
+soundfile1 = "example_sounds/Wood_Guitar/Wood_A5.wav"
+soundfile2 = "example_sounds/Carbon_Guitar/Carbon_A5.wav"
+mysounds = guitarsounds.SoundPack(soundfile1, soundfile2, names=["wood", "carbon"])
+mysounds.plot("log envelop")
 
-plt.gcf().savefig('peak_comparison')
+# Access the matplotlib Figure and Axes objects created by guitarsounds
+plt.gca().set_title("My sound comparison") # To change the title
+plt.gcd().savefig("log_envelope_compare") # To save the figure
 ```
 
-![Output of the code snippet comparing the Fourier transform peaks of two signals.\label{fig:fft-comp}](figurepeaks.png)
+![Output of the code snippet comparing the log-time envelop of two sounds.\label{fig:log-comp}](figurelogenv.png)
 
 # Statement of need
 
 Guitarsounds was written to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs based on arbitrary sound features.
-As such, the guitarsounds package was used in previous academic work (in press) to investigate the sound differences between two guitar designed using an innovative numerical prototyping method based on topological optimization. In the scope of this research, guitarsounds allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. As this feature is related to the instrument's tone [@sumi_classical_2008], it was usefull in highlighting the differences between the two guitar designs.
- `guitarsounds` is also used in ongoing research at the Bruand lutherie school to manage sound data in a project where sounds are generated with random vaules for specific features, to provide data for a psychoacoustic study.
-
- The `guitarsounds` API is also used as an introduction to programming for data analysis for the school's students, and the GUI allows visualizing sound features even for users with minimal affinity with computers, as it is the case for some students.
-
- More over, the guitarsounds package is used in the teaching activities as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Hemlotz cavity frequency of the instrument.
- The GUI was included in the package as knowledge or interest in programming isn't expected in the luthier's training.
- A screen capture of the GUI is shown in \autoref{fig:gui}.
- The design of guitarsounds differs from existing packages in its ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a Python data visualization stack where the sound specific needs can be handled by guitarsounds.
- More over, the GUI provides an alternative way of using the same tool in the same environment (Jupyter Notebook) which allows all users to use the same framework in teaching and experimentation.
- There exists overlap between `guitarsounds`, and the `librosa` [@Librosa] Python package for music analysis, however `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning application and lacks features tailored for harmonic sound analysis and  integrated comparison of sounds.
+As such, the guitarsounds package was used in previous academic work (in press) to investigate the sound differences between two guitar designed using an innovative numerical prototyping method based on topological optimization. 
+In the scope of this research, guitarsounds allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. 
+As this feature is related to the instrument's tone [@sumi_classical_2008], it was usefull in highlighting the differences between the two guitar designs.
+ `guitarsounds` is also used in ongoing research at the Bruand lutherie school to manage sound data in a project where guitar sounds are generated with random vaules for specific features, to provide data for a psychoacoustic study. 
+The `guitarsounds` API is also used as an introduction to programming for data analysis for the school's students, and the GUI allows visualizing sound features even for users with minimal affinity with computers, as it is the case for some students. 
+Moreover, the guitarsounds package is used in the teaching activities as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Hemlotz cavity frequency of an instrument. 
+The GUI was included in the package as knowledge or interest in programming isn't expected in the luthier's training. 
+A screen capture of the GUI is shown in \autoref{fig:gui}. 
+The design of guitarsounds differs from existing packages in its ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a Python data visualization stack where the sound specific needs can be handled by guitarsounds. 
+Moreover, the GUI provides an alternative way of using the same tool in the same environment (Jupyter Notebook) which allows all users to use the same framework in teaching and experimentation. 
+There exists overlap between `guitarsounds`, and the `librosa` [@Librosa] Python package for music analysis, however `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning application and lacks features tailored to harmonic sound analysis and  integrated comparison of sounds. 
 The  `librosa` package is also aimed at an audience with a more developed knowledge of Python programming.
 
 ![Graphical user interface in the Jupyter Notebook environment.\label{fig:gui}](figuregui.png){width=50%}
