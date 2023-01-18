@@ -424,6 +424,8 @@ class SoundPack(object):
                 integral.append(trapezoid(log_envelop, log_time))
 
             # a list of dict for every sound
+            integral = np.array(integral)
+            integral /= np.max(integral)
             integrals.append(integral)
 
         # create the bar plotting vectors
@@ -446,6 +448,8 @@ class SoundPack(object):
                 ax.bar(x, y, width=width, tick_label=list(bin_strings), label=sound.name, color=color)
             else:
                 ax.bar(x, y, width=width, label=sound.name, color=color)
+        ax.set_xlabel('frequency bin name')
+        ax.set_ylabel('normalized power')
         plt.legend()
     
     def listen(self):
@@ -529,8 +533,8 @@ class SoundPack(object):
             plt.grid('on')
             plt.legend()
             ax = plt.gca()
-            ax.set_xlabel('Frequency (Hz)')
-            ax.set_ylabel('Amplitude (0-1)')
+            ax.set_xlabel('frequency (Hz)')
+            ax.set_ylabel('mirror amplitude (0-1)')
         else:
             print('Unsupported for multiple sounds SoundPacks')
 
@@ -552,8 +556,8 @@ class SoundPack(object):
             plt.grid('on')
             plt.plot(son1.signal.fft_frequencies()[:index], son1.signal.fft()[:index], label=son1.name)
             plt.plot(son2.signal.fft_frequencies()[:index], -son2.signal.fft()[:index], label=son2.name)
-            plt.xlabel('Fréquence (Hz)')
-            plt.ylabel('Amplitude')
+            plt.xlabel('frequency (Hz)')
+            plt.ylabel('mirror amplitude (normalized)')
             plt.title('Mirror Fourier Transform for ' + son1.name + ' and ' + son2.name)
             plt.legend()
 
@@ -591,8 +595,8 @@ class SoundPack(object):
                              label=son2.name)
             ax1.set_title('FT Histogram for ' + son1.name + ' and ' + son2.name)
             ax1.set_xscale('log')
-            ax1.set_xlabel('Fréquence (Hz)')
-            ax1.set_ylabel('Amplitude')
+            ax1.set_xlabel('frequency (Hz)')
+            ax1.set_ylabel('amplitude')
             ax1.grid('on')
             ax1.legend()
 
@@ -606,8 +610,8 @@ class SoundPack(object):
             ax2.bar(x_values[p_index], diff[p_index], width=bar_widths[p_index], color='blue', alpha=0.6)
             ax2.set_title('Difference ' + son1.name + ' - ' + son2.name)
             ax2.set_xscale('log')
-            ax2.set_xlabel('Fréquence (Hz)')
-            ax2.set_ylabel('<- Son 2 : Son 1 ->')
+            ax2.set_xlabel('frequency (Hz)')
+            ax2.set_ylabel('<- sound 2 : sound 1 ->')
             ax2.grid('on')
 
             if ticks == 'bins':
@@ -666,13 +670,17 @@ class SoundPack(object):
                 time2 = time2[:common_len]
                 integral1 = integral1[:common_len]
                 integral2 = integral2[:common_len]
+                # Normalize
+                max_value = np.max(np.hstack([integral1, integral2]))
+                integral1 /= max_value
+                integral2 /= max_value
 
                 # plot the integral area curves
                 ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
                 ax.fill_between(time2, -integral2, label=self.sounds[1].name, alpha=0.4)
                 ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
                 ax.set_xlabel('time (s)')
-                ax.set_ylabel('cumulative power')
+                ax.set_ylabel('mirror cumulative power (normalized)')
                 ax.set_xscale('log')
                 ax.set_title(bin_string)
                 ax.legend()
@@ -698,6 +706,10 @@ class SoundPack(object):
             time2 = time2[:common_len]
             integral1 = integral1[:common_len]
             integral2 = integral2[:common_len]
+            # Normalize
+            max_value = np.max(np.hstack([integral1, integral2]))
+            integral1 /= max_value
+            integral2 /= max_value
 
             fig, ax = plt.subplots(figsize=(8, 6))
             ax.fill_between(time1, integral1, label=self.sounds[0].name, alpha=0.4)
@@ -705,7 +717,7 @@ class SoundPack(object):
             ax.fill_between(time2, integral1 - integral2, color='g', label='int diff', alpha=0.6)
 
             ax.set_xlabel('time (s)')
-            ax.set_ylabel('cumulative power')
+            ax.set_ylabel('mirror cumulative power (normalized)')
             ax.set_xscale('log')
             ax.set_title(f_bin)
             ax.legend(loc='upper left')
@@ -909,18 +921,23 @@ class Sound(object):
         """
         # Compute the bin powers
         bin_strings = list(self.bins.keys())
-        integral = []
+        integrals = []
 
         for f_bin in bin_strings:
             log_envelop, log_time = self.bins[f_bin].normalize().log_envelop()
-            integral.append(trapezoid(log_envelop, log_time))
+            integral = trapezoid(log_envelop, log_time)
+            integrals.append(integral)
+        max_value = np.max(integrals)
+        integrals = np.array(integrals)/max_value
 
         # create the bar plotting vectors
         fig, ax = plt.subplots(figsize=(6, 6))
 
         x = np.arange(0, len(bin_strings))
-        y = integral
+        y = integrals
         ax.bar(x, y, tick_label=list(bin_strings))
+        ax.set_xlabel("frequency bin name")
+        ax.set_ylabel("frequency bin power (normalized)")
 
 
 class Signal(object):
@@ -1484,7 +1501,7 @@ class Plot(object):
         plot_kwargs = self.sanitize_kwargs(kwargs)
         plt.plot(self.parent.time(), self.parent.signal, alpha=0.6, **plot_kwargs)
         plt.xlabel('time (s)')
-        plt.ylabel('amplitude')
+        plt.ylabel('amplitude [-1, 1]')
         plt.grid('on')
 
     def envelop(self, **kwargs):
@@ -1494,7 +1511,7 @@ class Plot(object):
         plot_kwargs = self.sanitize_kwargs(kwargs)
         plt.plot(self.parent.envelop_time(), self.parent.envelop(), **plot_kwargs)
         plt.xlabel("time (s)")
-        plt.ylabel("amplitude")
+        plt.ylabel("amplitude [0, 1]")
         plt.grid('on')
 
     def log_envelop(self, **kwargs):
@@ -1512,7 +1529,7 @@ class Plot(object):
 
         plt.plot(log_envelop_time[:max_index], log_envelop[:max_index], **plot_kwargs)
         plt.xlabel("time (s)")
-        plt.ylabel("amplitude")
+        plt.ylabel("amplitude [0, 1]")
         plt.xscale('log')
         plt.grid('on')
 
@@ -1538,8 +1555,8 @@ class Plot(object):
         plt.plot(self.parent.fft_frequencies()[:last_index],
                  self.parent.fft()[:last_index],
                  **plot_kwargs)
-        plt.xlabel("frequency"),
-        plt.ylabel("amplitude"),
+        plt.xlabel("frequency (Hz)"),
+        plt.ylabel("amplitude (normalized)"),
         plt.yscale('log')
         plt.grid('on')
 
@@ -1560,8 +1577,8 @@ class Plot(object):
         # Histogram of frequency values occurrences in octave bins
         plt.hist(self.parent.fft_bins(), utils.octave_histogram(self.parent.SP.general.octave_fraction.value),
                  alpha=0.7, **plot_kwargs)
-        plt.xlabel('Fréquence (Hz)')
-        plt.ylabel('Amplitude')
+        plt.xlabel('frequency (Hz)')
+        plt.ylabel('amplitude (normalized)')
         plt.xscale('log')
         plt.yscale('log')
         plt.grid('on')
@@ -1586,8 +1603,8 @@ class Plot(object):
         fft_range = self.parent.SP.general.fft_range.value
         max_index = np.where(fft_freqs >= fft_range)[0][0]
         peak_indexes, height = self.parent.peaks(height=True)
-        plt.xlabel('Fréquence (Hz)')
-        plt.ylabel('Amplitude')
+        plt.xlabel('frequency (Hz)')
+        plt.ylabel('amplitude')
         plt.yscale('log')
         plt.grid('on')
 
@@ -1622,10 +1639,10 @@ class Plot(object):
         # Get the damping ratio and peak frequencies
         if 'inverse' in kwargs.keys() and kwargs['inverse'] is False:
             zetas = np.array(self.parent.peak_damping())
-            ylabel = r'Damping $\zeta$'
+            ylabel = r'damping $\zeta$'
         else:
             zetas = 1 / np.array(self.parent.peak_damping())
-            ylabel = r'Inverse Damping $1/\zeta$'
+            ylabel = r'inverse damping $1/\zeta$'
 
         peak_freqs = self.parent.fft_frequencies()[self.parent.peaks()]
 
@@ -1656,7 +1673,7 @@ class Plot(object):
         plt.plot(freq, fun(freq), **plot2_kwargs)
         plt.grid('on')
         plt.title('Frequency vs Damping Factor with Order ' + str(n))
-        plt.xlabel('Frequency (Hz)')
+        plt.xlabel('frequency (Hz)')
         plt.ylabel(ylabel)
 
         if 'ticks' in kwargs and kwargs['ticks'] == 'bins':
@@ -1664,9 +1681,9 @@ class Plot(object):
 
     def time_damping(self, **kwargs):
         """
-            Shows the signal envelop with the fitted negative exponential
-            curve used to determine the time damping ratio of the signal.
-            """
+        Shows the signal envelop with the fitted negative exponential
+        curve used to determine the time damping ratio of the signal.
+        """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         # Get the envelop data
         envelop_time = self.parent.normalize().envelop_time()
@@ -1710,9 +1727,13 @@ class Plot(object):
 
         # Plot the damping curve
         ax.plot(envelop_time[first_index:second_index + first_index],
-                np.exp(zeta_omega * envelop_time[first_index:second_index + first_index]), c='k')
+                np.exp(zeta_omega * envelop_time[first_index:second_index + first_index]), 
+                c='k',
+                linestyle='--')
 
         plt.sca(ax)
+        if 'alpha' not in plot_kwargs:
+            plot_kwargs['alpha'] = 0.6
         self.parent.normalize().plot.envelop(**plot_kwargs)
 
         if 'label' not in plot_kwargs.keys():
@@ -1742,12 +1763,13 @@ class Plot(object):
 
         # compute the cumulative integral
         integral = [trapezoid(log_envelop[:i], log_time[:i]) for i in np.arange(2, len(log_envelop), 1)]
+        integral /= np.max(integral)
 
         # plot the integral
         plt.plot(log_time[2:], integral, **plot_kwargs)
 
         # Add labels and scale
         plt.xlabel('time (s)')
-        plt.ylabel('cumulative power')
+        plt.ylabel('cumulative power (normalized)')
         plt.xscale('log')
         plt.grid('on')
