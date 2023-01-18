@@ -1471,7 +1471,7 @@ class Plot(object):
         labels = [label for label in self.parent.SP.bins.__dict__ if label != 'name']
         labels.append('brillance')
         x = [param.value for param in self.parent.SP.bins.__dict__.values() if param != 'bins']
-        x.append(11250)
+        x.append(11025)
         x_formatter = ticker.FixedFormatter(labels)
         x_locator = ticker.FixedLocator(x)
         ax = plt.gca()
@@ -1499,8 +1499,9 @@ class Plot(object):
 
     def log_envelop(self, **kwargs):
         """
-            Plots the signal envelop with logarithmic window widths on a logarithmic x-axis scale.
-            """
+        Plots the signal envelop with logarithmic window widths on a logarithmic x-axis scale.
+        :param max_time: maximum time used for the x-axis in the plot (seconds)
+        """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         log_envelop, log_envelop_time = self.parent.log_envelop()
 
@@ -1517,11 +1518,11 @@ class Plot(object):
 
     def fft(self, **kwargs):
         """
-            Plots the Fourier Transform of the Signal.
+        Plots the Fourier Transform of the Signal.
 
-            If `ticks = 'bins'` is supplied in the keyword arguments, the frequency ticks are replaced
-            with the frequency bin values.
-            """
+        If `ticks = 'bins'` is supplied in the keyword arguments, the frequency ticks are replaced
+        with the frequency bin values.
+        """
 
         plot_kwargs = self.sanitize_kwargs(kwargs)
 
@@ -1530,7 +1531,7 @@ class Plot(object):
         fft_range = self.parent.SP.general.fft_range.value
         result = np.where(fft_frequencies >= fft_range)[0]
         if len(result) == 0:
-            last_index = -1
+            last_index = len(fft_frequencies)
         else:
             last_index = result[0]
 
@@ -1701,14 +1702,15 @@ class Plot(object):
         wd = 2 * np.pi * self.parent.fundamental()
 
         # Plot the two points used for the regression
-        plt.scatter(envelop_time[[first_index, second_index]], envelop[[first_index, second_index]], color='r')
+        plt.scatter(envelop_time[[first_index, first_index + second_index]], 
+                    envelop[[first_index, first_index + second_index]], color='r')
 
         # get the current ax
         ax = plt.gca()
 
         # Plot the damping curve
-        ax.plot(envelop_time[first_index:second_index],
-                np.exp(zeta_omega * envelop_time[first_index:second_index]), c='k')
+        ax.plot(envelop_time[first_index:second_index + first_index],
+                np.exp(zeta_omega * envelop_time[first_index:second_index + first_index]), c='k')
 
         plt.sca(ax)
         self.parent.normalize().plot.envelop(**plot_kwargs)
