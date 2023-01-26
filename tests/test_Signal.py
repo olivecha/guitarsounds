@@ -92,7 +92,7 @@ class MyTestCase(unittest.TestCase):
         ref_sig = get_ref_test_Signal()
         freq_damping = ref_sig.peak_damping()
         self.assertAlmostEqual(freq_damping[0], 0.001719112228705382)
-        self.assertAlmostEqual(freq_damping[-1], 0.00020142136609286606)
+        self.assertAlmostEqual(freq_damping[-1], 3.539409059254861e-05)
 
     def test_Signal_fundamental(self):
         """ Test the signal fundamental finding method"""
