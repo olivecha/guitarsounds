@@ -767,7 +767,6 @@ class Sound(object):
                 raise ValueError('Only .wav are supported')
             else:
                 signal, sr = utils.load_wav(data)
-                self.data = data
 
         elif type(data) == tuple:
             signal, sr = data
@@ -807,9 +806,10 @@ class Sound(object):
         """
         A method conditioning the Sound instance.
         - Trimming to just before the onset
-        :param verbose: if True problem with trimming and filtering are reported
+        :param verbose: if True problem with trimming are reported
         :param return_self: If True the method returns the conditioned Sound instance
         :param auto_trim: If True, the sound is trimmed to a fixed length according to its fundamental
+        :param resample: If True, the signal is resampled to 22050 Hz
         :return: a conditioned Sound instance if `return_self = True`
         """
         # Resample only if the sample rate is not 22050
