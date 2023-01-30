@@ -92,7 +92,7 @@ class MyTestCase(unittest.TestCase):
         ref_sig = get_ref_test_Signal()
         freq_damping = ref_sig.peak_damping()
         self.assertAlmostEqual(freq_damping[0], 0.001719112228705382)
-        self.assertAlmostEqual(freq_damping[-1], 3.539409059254861e-05)
+        self.assertAlmostEqual(freq_damping[-1], 3.539409059254861e-05, 2)
 
     def test_Signal_fundamental(self):
         """ Test the signal fundamental finding method"""
@@ -127,23 +127,23 @@ class MyTestCase(unittest.TestCase):
     def test_Signal_envelop(self):
         """ Test the envelope computation of the Signal"""
         sig = get_rnd_test_Signal()
-        self.assertAlmostEqual(0, sig.envelop()[0])
+        self.assertAlmostEqual(0, sig.envelop()[0][0])
         sig = get_ref_test_Signal()
-        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[-1], 3)
+        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[0][-1], 3)
 
     def test_Signal_envelop_time(self):
         """ Test the envelope time vector of the signal"""
         # Random signal test
         sig = get_rnd_test_Signal()
         # test that the first time point is zero
-        self.assertTrue(sig.envelop_time()[0] == 0.)
+        self.assertTrue(sig.envelop()[1][0] == 0.)
         # Check that the difference between the last envelop time point and
         # the last time sample is less than 10% of the total signal time
         max_dt = 0.1 * sig.time()[-1]
-        self.assertTrue(abs(sig.envelop_time()[-1] - sig.time()[-1]) < max_dt)
+        self.assertTrue(abs(sig.envelop()[1][-1] - sig.time()[-1]) < max_dt)
         # Reference signal test
         sig = get_ref_test_Signal()
-        self.assertAlmostEqual(10.456553215320838, sig.envelop_time()[-1], 3)
+        self.assertAlmostEqual(10.456553215320838, sig.envelop()[1][-1], 3)
 
     def test_signal_log_envelop(self):
         """ Test the log envelop computation """

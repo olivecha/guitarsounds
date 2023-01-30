@@ -732,13 +732,26 @@ class Sound(object):
     A class to store audio signals obtained from a sound and compare them
     """
 
-    def __init__(self, data, name='', fundamental=None, SoundParams=None):
+    def __init__(self, data, name='', condition=True, auto_trim=False,
+                 use_raw_signal=False, normalize_raw_signal=False, 
+                 fundamental=None, SoundParams=None):
         """
-        Creates a Sound instance from a .wav file, name as a string and fundamental frequency
-        value can be user specified.
+        Creates a Sound instance from a .wav file, name as a string and 
+        fundamental frequency value can be user specified.
+
         :param data: data path to the .wav data
         :param name: Sound instance name to use in plot legend and titles
-        :param fundamental: Fundamental frequency value if None the value is estimated
+        :param condition: Bool, whether to condition or not the Sound instance 
+        if `True`, the `Sound` instance is conditioned in the constructor
+        :param auto_trim: Bool, whether to trim the end of the sound or not 
+        according to predefined sound length correlated to the fundamental.
+        :param use_raw_signal: Do not condition the `Sound` and instead 
+        use the raw signal
+        :param normalize_raw_signal: If `use_raw_signal` is `True`, setting 
+        `normalize_raw_signal` to `True` will normalize the raw signal before it
+        is used in the `Sound` class
+        :param fundamental: Fundamental frequency value if None the value is 
+        estimated
         from the FFT (see `Signal.fundamental`).
         :param SoundParams: SoundParameters to use in the Sound instance
         """
@@ -779,6 +792,16 @@ class Sound(object):
         self.uppermid = None
         self.presence = None
         self.brillance = None
+
+        if condition:
+            self.condition(verbose=True,
+                           return_self=False,
+                           auto_trim=auto_trim,
+                           resample=True)
+        else:
+            if use_raw_signal:
+                self.use_raw_signal(normalized=normalize_raw_signal,
+                                    return_self=False)
 
     def condition(self, verbose=True, return_self=False, auto_trim=False, resample=True):
         """
@@ -1083,7 +1106,7 @@ class Signal(object):
         :return: The damping ratio, a scalar.
         """
         # Get the envelop data
-        envelop, envelop_time = self.parent.normalize().envelop() 
+        envelop, envelop_time = self.normalize().envelop() 
 
         # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelop)
