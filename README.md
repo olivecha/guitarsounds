@@ -91,38 +91,7 @@ mysounds.compare_peaks()
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171778729-e5e69eff-2ad8-4448-b6fe-d54387d4a6e3.png">
 
-The base API of the guitarsounds classes can also be leveraged to create custom signal analysis features. The following example shows the relatively straightforward implementation of the cumulative fast fourier transform metric from [reference 1](https://arxiv.org/pdf/0901.3708.pdf).
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-import guitarsounds
-
-sound1 = guitarsounds.Sound('example_sounds/Wood_Guitar/Wood_A5.wav')
-sound1.condition()
-sound2 = guitarsounds.Sound('example_sounds/Carbon_Guitar/Carbon_A5.wav')
-sound2.condition()
-
-def cummul_fft(fft, fft_freq, max_freq=4000):
-    """ Cummulative fast fourier transform """
-    max_idx = np.nonzero(fft_freqs>max_freq)[0][0]
-    cummul_fft = [np.trapz(fft[0:i], freqs[0:i]) for i in range(1, max_idx+1)]
-    cummul_freqs = fft_freqs[1:max_idx+1]
-    return cummul_freqs, cummul_fft
-
-fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(*cummul_fft(sound1.signal.fft(), sound1.signal.fft_frequencies()), label-'wood')
-ax.plot(*cummul_fft(sound2.signal.fft(), sound2.signal.fft_frequencies()), label='carbon')
-ax.set_xlim(0, 2000)
-ax.set_xlabel('Frequency')
-ax.set_ylabel('Cumulative FFT')
-ax.legend()
-ax.show()
-```
-
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/78630053/171780702-26ef6aee-8bb1-4561-bbf0-5d28bcacb736.png">
-
-Thus guitarsounds allows both fast and interactive analysis of transient harmonic sounds as well as easily developing and testing new signal analysis features. 
+The base API of the guitarsounds classes can also be leveraged to create custom signal analysis features. More info and advanced examples are available in the [API Tutorial Notebook](https://github.com/olivecha/guitarsounds/blob/main/docs/API_Tutorial.ipynb). 
 
 ## Community
 
