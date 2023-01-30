@@ -59,11 +59,6 @@ from guitarsounds import Sound
 mysound = Sound('example_sounds/Wood_Guitar/Wood_E1.wav')
 ```
 
-The `Sound` instance can then be conditioned to trim it right before its onset and filter the noise if needed:
-
-```python
-mysound.condition()
-```
 The amplitude-time data of the `Sound` instance is stored in a `Signal` class and can be listened in a Jupyter Notebook:
 
 ```python
