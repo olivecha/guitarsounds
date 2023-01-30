@@ -139,7 +139,7 @@ class SoundPack(object):
         self.sounds = []
         for file, name, fundamental in zip(sound_files, names, fundamentals):
             self.sounds.append(Sound(file, name=name, fundamental=fundamental,
-                                     SoundParams=self.SP).condition(return_self=True))
+                                     SoundParams=self.SP))
 
     def equalize_time(self):
         """
@@ -485,15 +485,17 @@ class SoundPack(object):
             fft1 = son1.signal.fft()[:index1]
             fft2 = son2.signal.fft()[:index2]
 
-            peak_distance1 = np.mean([freq1[peaks1[i]] - freq1[peaks1[i + 1]] for i in range(len(peaks1) - 1)]) / 4
-            peak_distance2 = np.mean([freq2[peaks2[i]] - freq2[peaks2[i + 1]] for i in range(len(peaks2) - 1)]) / 4
+            short_peaks_1 = [peak for peak in peaks1 if peak < (len(freq1) - 1)]
+            short_peaks_2 = [peak for peak in peaks2 if peak < (len(freq1) - 1)]
+            peak_distance1 = np.mean([freq1[peaks1[i]] - freq1[peaks1[i + 1]] for i in range(len(short_peaks_1) - 1)]) / 4
+            peak_distance2 = np.mean([freq2[peaks2[i]] - freq2[peaks2[i + 1]] for i in range(len(short_peaks_2) - 1)]) / 4
             peak_distance = np.abs(np.mean([peak_distance1, peak_distance2]))
 
             # Align  the two peak vectors
             new_peaks1 = []
             new_peaks2 = []
-            for peak1 in peaks1:
-                for peak2 in peaks2:
+            for peak1 in short_peaks_1:
+                for peak2 in short_peaks_2:
                     if np.abs(freq1[peak1] - freq2[peak2]) < peak_distance:
                         new_peaks1.append(peak1)
                         new_peaks2.append(peak2)
