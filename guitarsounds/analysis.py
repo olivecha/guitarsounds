@@ -784,10 +784,8 @@ class Sound(object):
         """
         A method conditioning the Sound instance.
         - Trimming to just before the onset
-        - Filtering the noise
         :param verbose: if True problem with trimming and filtering are reported
         :param return_self: If True the method returns the conditioned Sound instance
-        :param filter_noise: If True the Sound is filtered using a noise reducing algorithm
         :param auto_trim: If True, the sound is trimmed to a fixed length according to its fundamental
         :return: a conditioned Sound instance if `return_self = True`
         """
@@ -836,15 +834,6 @@ class Sound(object):
         self.bins = self.signal.make_freq_bins()
         # unpack the bins
         self.bass, self.mid, self.highmid, self.uppermid, self.presence, self.brillance = self.bins.values()
-
-    def filter_noise(self, verbose=True):
-        """
-        Filters the noise in the signal attribute
-        :param verbose: if True problem are printed to the terminal
-        :return: None
-        """
-        # filter the noise in the Signal class
-        self.signal = self.trimmed_signal.filter_noise(verbose=verbose)
 
     def trim_signal(self, verbose=True):
         """
@@ -953,17 +942,18 @@ class Signal(object):
         :param signal: vector containing the signal samples
         :param sr: sample rate of the signal (Hz)
         :param SoundParam: Sound Parameter instance to use with the signal
-        :para freq_range: Frequency range to use with the signal
+        :para freq_range: Frequency range to use with the signal.
+        This is the maximum frequency used when computing Fourier transform
+        peaks and plotting Fourier transform related plots.
         """
         self.SP = SoundParam
         self.onset = None
         self.signal = signal
         self.sr = sr
         self.range = freq_range
-        self.trimmed = None
-        self.noise = None
         self.plot = Plot()
         self.plot.parent = self
+        self.norm_factor = None
 
     def time(self):
         """
@@ -1093,8 +1083,7 @@ class Signal(object):
         :return: The damping ratio, a scalar.
         """
         # Get the envelop data
-        envelop_time = self.normalize().envelop_time()
-        envelop = self.normalize().envelop()
+        envelop, envelop_time = self.parent.normalize().envelop() 
 
         # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelop)
@@ -1163,7 +1152,7 @@ class Signal(object):
         Finds the Hemlotz cavity frequency index from the Fourier Transform by searching for a peak in the expected
         range (80 - 100 Hz), if the fundamental is too close to the expected Hemlotz frequency a comment
         is printed and None is returned.
-        :return: If successful the cavity peak index
+        :return: The index of the cavity peak
         """
         first_index = np.where(self.fft_frequencies() >= 80)[0][0]
         second_index = np.where(self.fft_frequencies() >= 110)[0][0]
@@ -1195,9 +1184,13 @@ class Signal(object):
 
     def fft_bins(self):
         """
-        Transforms the Fourier Transform signal into a statistic distribution.
-        Occurrences of each frequency varies from 0 to 100 according to their
-        amplitude.
+        Transforms the Fourier transform array into a statistic distribution 
+        ranging from 0 to 100. 
+        Accordingly, the maximum of the fourier transform with value 1.0 will
+        be equal to 100 and casted as an integer.
+        Values below 0.001 will be equal to 0. 
+        This representation of the Fourier transform is used to construct
+        octave bands histograms.
         :return : a list containing the frequency occurrences.
         """
 
@@ -1215,7 +1208,15 @@ class Signal(object):
     def envelop(self, window=None, overlap=None):
         """
         Method calculating the amplitude envelop of a signal as a
-        maximum of the absolute value of the signal.
+        maximum of the absolute value of the signal. 
+        The same `window` and `overlap` parameters should be used to compute 
+        the signal and time arrays so that they contain the same 
+        number of points (and can be plotted together).
+        :param window: integer, length in samples of the window used to
+        compute the signal envelop.
+        :param overlap: integer, overlap in samples used to overlap two
+        subsequent windows in the computation of the signal envelop.
+        The overlap value should be smaller than the window value.
         :return: Amplitude envelop of the signal
         """
         if window is None:
@@ -1236,31 +1237,7 @@ class Signal(object):
             env_time.append(t[pt_idx])
             idx += overlap
         _, unique_time_index = np.unique(env_time, return_index=True)
-        return np.array(env)[unique_time_index]
-
-    def envelop_time(self, window=None, overlap=None):
-        """
-        Method calculating the time vector associated to a signal envelop
-        :return: Time vector associated to the signal envelop
-        """
-        if window is None:
-            window = self.SP.envelop.frame_size.value
-        if overlap is None:
-            overlap = window // 2
-        elif overlap >= window:
-            raise ValueError('Overlap must be smaller than window')
-        signal_array = np.abs(self.signal)
-        t = self.time()
-        # Empty envelop and envelop time
-        env = [0]
-        env_time = [0]
-        idx = 0
-        while idx + window < signal_array.shape[0]:
-            env.append(np.max(signal_array[idx:idx + window]))
-            pt_idx = np.argmax(signal_array[idx:idx + window]) + idx
-            env_time.append(t[pt_idx])
-            idx += overlap
-        return np.unique(env_time)
+        return np.array(env)[unique_time_index], np.unique(env_time)
 
     def log_envelop(self):
         """
@@ -1271,7 +1248,7 @@ class Signal(object):
         :return: The log envelop and the time vector associated in a tuple
         """
         if self.onset is None:
-            onset = np.argmax(self.signal)
+            onset = np.argmax(np.abs(self.signal))
         else:
             onset = self.onset
 
@@ -1344,19 +1321,20 @@ class Signal(object):
                 if verbose:
                     print('Onset detection did not converge \n')
                     print('Approximating onset with signal max value \n')
-                    broke = True
-                    break
+                broke = True
+                break
         if broke:
-            return np.argmax(self.signal)
+            return np.argmax(np.abs(self.signal))
         else:
-            return np.argmax(np.abs(self.signal[i:i + window_index])) + i
+            i -= overlap
+            return np.argmax(np.abs(self.signal[i:i + window_index])) + i 
 
     def trim_onset(self, verbose=True):
         """
         Trim the signal at the onset (max) minus the delay in milliseconds as
         Specified in the SoundParameters
-        :param : verbose if False the warning comments are not displayed
-        :return : a trimmed signal with a noise attribute
+        :param verbose: if False the warning comments are not displayed
+        :return : The trimmed signal
         """
         # nb of samples to keep before the onset
         delay_samples = int((self.SP.onset.onset_delay.value / 1000) * self.sr)
@@ -1366,16 +1344,13 @@ class Signal(object):
             new_signal = self.signal[onset - delay_samples:]
             new_signal[:delay_samples // 2] = new_signal[:delay_samples // 2] * np.linspace(0, 1, delay_samples // 2) 
             trimmed_signal = Signal(new_signal, self.sr, self.SP)
-            trimmed_signal.noise = self.signal[:onset - delay_samples]
-            trimmed_signal.trimmed = True
-            trimmed_signal.onset = np.argmax(trimmed_signal.signal)
+            trimmed_signal.onset = trimmed_signal.find_onset(verbose=verbose)
             return trimmed_signal
 
         else:
             if verbose:
                 print('Signal is too short to be trimmed before onset.')
                 print('')
-            self.trimmed = False
             return self
 
     def trim_time(self, time_length):
@@ -1388,7 +1363,6 @@ class Signal(object):
         new_signal = self.signal[:max_index]
         new_signal[-50:] = new_signal[-50:] * np.linspace(1, 0, 50)
         time_trimmed_signal = Signal(new_signal, self.sr, self.SP)
-        time_trimmed_signal.time_length = time_length
         return time_trimmed_signal
 
     def normalize(self):
@@ -1509,7 +1483,8 @@ class Plot(object):
             Plots the envelope of the signal as amplitude vs time.
             """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        plt.plot(self.parent.envelop_time(), self.parent.envelop(), **plot_kwargs)
+        envelop_arr, envelop_time = self.parent.envelop()
+        plt.plot(envelop_time, envelop_arr, **plot_kwargs)
         plt.xlabel("time (s)")
         plt.ylabel("amplitude [0, 1]")
         plt.grid('on')
@@ -1686,8 +1661,7 @@ class Plot(object):
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         # Get the envelop data
-        envelop_time = self.parent.normalize().envelop_time()
-        envelop = self.parent.normalize().envelop()
+        envelop, envelop_time = self.parent.normalize().envelop() 
 
         # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelop)
