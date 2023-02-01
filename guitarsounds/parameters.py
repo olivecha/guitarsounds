@@ -76,7 +76,7 @@ def sound_parameters():
     general = ParameterSet('general', octave_fraction, fft_range)
 
     # Onset
-    onset_delay = Parameter('onset_delay', 100, 'Delay before the onset (attack) to keep when trimming the signal')
+    onset_delay = Parameter('onset_delay', 100, 'Delay before the onset (attack) in milliseconds to keep when trimming the signal')
     onset_time = Parameter('onset_time', 0.005, 'Time interval used to detect the onset in seconds')
     onset = ParameterSet('onset', onset_delay, onset_time)
 

@@ -1,7 +1,8 @@
-import unittest
-from guitarsounds import helpers_tests, Sound, utils
 import sys
 import io
+import unittest
+from guitarsounds import Sound, utils
+import helpers_tests
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -57,8 +58,9 @@ class MyTestCase(unittest.TestCase):
         # This method is already tested in the Signal class tests
         file = helpers_tests.get_rnd_audio_file()
         sound = Sound(file)
-        bins = sound.raw_signal.make_freq_bins()
-        self.assertIsInstance(bins, dict)
+        sound.condition()
+        sound.bin_divide()
+        self.assertIsInstance(sound.bins, dict)
 
     def test_Sound_trim_signal(self):
         """ Test for the trim signal method of the Sound class """

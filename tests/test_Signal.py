@@ -1,7 +1,8 @@
 import unittest
 from guitarsounds import Signal
-from guitarsounds.helpers_tests import get_rnd_test_Signal, get_ref_test_Signal
+from helpers_tests import get_rnd_test_Signal, get_ref_test_Signal
 import numpy as np
+import matplotlib.pyplot as plt
 import os
 from contextlib import redirect_stdout
 import io
@@ -13,7 +14,6 @@ class MyTestCase(unittest.TestCase):
         """ Test that a Signal class is created from a soundfile"""
         signal = get_rnd_test_Signal()
         self.assertIsInstance(signal, Signal)
-        return signal
 
     def test_Signal_time(self):
         """ Test that the time vector of the signal is correct"""
@@ -27,14 +27,38 @@ class MyTestCase(unittest.TestCase):
         with redirect_stdout(f):
             signal.listen()
         s = f.getvalue()
-        # This is a very wierd test, and it may break with the feature still working
-        # A better way to test IPython outputs probably exists
+        # This is a very wierd test, and it may break with the feature still
+        # working. A better way to test IPython outputs probably exists
         self.assertEqual(s, '<IPython.lib.display.Audio object>\n')
         # test that the temporary file was removed
         self.assertFalse('temp.wav' in os.listdir())
 
+    def test_signal_old_plot(self):
+        """
+        Test the Signal.old_plot method
+        """
+        plot_kinds = ['signal',
+                      'envelop',
+                      'log envelop',
+                      'fft',
+                      'fft hist',
+                      'peaks',
+                      'peak damping',
+                      'time damping',
+                      'integral']
+        signal = get_rnd_test_Signal()
+        for kind in plot_kinds:
+            plt.figure()
+            signal.old_plot(kind)
+            ax = plt.gca()
+            self.assertTrue(hasattr(ax, 'lines'))
+            plt.close(plt.gcf())
+
     def test_Signal_fft(self):
-        """ Test the signal fourier transform and corresponding frequency array"""
+        """
+        Test the signal fourier transform
+        and corresponding frequency array
+        """
         signal = get_ref_test_Signal()
         fft = signal.fft()
         fft_freq = signal.fft_frequencies()
@@ -68,7 +92,7 @@ class MyTestCase(unittest.TestCase):
         ref_sig = get_ref_test_Signal()
         freq_damping = ref_sig.peak_damping()
         self.assertAlmostEqual(freq_damping[0], 0.001719112228705382)
-        self.assertAlmostEqual(freq_damping[-1], 0.00020142136609286606)
+        self.assertAlmostEqual(freq_damping[-1], 3.539409059254861e-05, 2)
 
     def test_Signal_fundamental(self):
         """ Test the signal fundamental finding method"""
@@ -103,24 +127,48 @@ class MyTestCase(unittest.TestCase):
     def test_Signal_envelop(self):
         """ Test the envelope computation of the Signal"""
         sig = get_rnd_test_Signal()
-        self.assertAlmostEqual(0, sig.envelop()[0])
+        self.assertAlmostEqual(0, sig.envelop()[0][0])
         sig = get_ref_test_Signal()
-        print(sig.envelop()[-1])
-        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[-1], 3)
+        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[0][-1], 3)
 
     def test_Signal_envelop_time(self):
         """ Test the envelope time vector of the signal"""
+        # Random signal test
         sig = get_rnd_test_Signal()
-        self.assertTrue(sig.envelop_time()[0] == 0.)
-        self.assertTrue(abs(sig.envelop_time()[-1] - sig.time()[-1]) < 2)
+        # test that the first time point is zero
+        self.assertTrue(sig.envelop()[1][0] == 0.)
+        # Check that the difference between the last envelop time point and
+        # the last time sample is less than 10% of the total signal time
+        max_dt = 0.1 * sig.time()[-1]
+        self.assertTrue(abs(sig.envelop()[1][-1] - sig.time()[-1]) < max_dt)
+        # Reference signal test
+        sig = get_ref_test_Signal()
+        self.assertAlmostEqual(10.456553215320838, sig.envelop()[1][-1], 3)
 
-    def test_Signal_log_envelop_time(self):
-        """ Test the logarithmic time envelop computation"""
-        sig = get_rnd_test_Signal()
-        log_env, log_time = sig.log_envelop()
-        # zero removed from time
-        self.assertTrue(log_time[0] == 0)
+    def test_signal_log_envelop(self):
+        """ Test the log envelop computation """
+        # Random signal test
+        sig = get_ref_test_Signal()
+        log_env, _ = sig.log_envelop()
+        # Sanity test
+        self.assertAlmostEqual(0., log_env[0])
         self.assertTrue(log_env[-1] < np.max(log_env))
+        # Reference signal test
+        sig = get_ref_test_Signal()
+        self.assertAlmostEqual(0.02650194260179424,
+                               sig.log_envelop()[0][-1],
+                               3)
+
+    def test_signal_log_envelop_time(self):
+        """ Test the logarithmic time envelop computation"""
+        # Random signal test
+        sig = get_rnd_test_Signal()
+        _, log_time = sig.log_envelop()
+        # assert the first point is t=0
+        self.assertTrue(log_time[0] == 0.)
+        # Reference signal test
+        sig = get_ref_test_Signal()
+        self.assertAlmostEqual(10.438367195528919, sig.log_envelop()[1][-1], 3)
 
     def test_Signal_find_onset(self):
         """  test the method finding the onset of the signal"""

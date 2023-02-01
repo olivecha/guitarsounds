@@ -1,6 +1,7 @@
 from IPython.display import display, clear_output, HTML
 from IPython import get_ipython
 from guitarsounds.analysis import Plot, Signal, Sound, SoundPack
+from guitarsounds.utils import generate_error_widget
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import io
@@ -9,11 +10,10 @@ import struct
 import numpy as np
 
 
-def generate_error_widget(text):
-    return widgets.HTML('<p style="color:#CC4123;">' + text + '</p>')
 
 
 class guitarGUI(object):
+    """ Main Graphical user interface class """
     # Output layout
     out_layout = {'border': '1px solid black'}
 
@@ -21,13 +21,20 @@ class guitarGUI(object):
     box_layout = widgets.Layout(align_items='stretch', flex_flow='line', width='50%')
 
     # Fundamental input style
-    fundamental_style = style = {'description_width': 'initial'}
+    style = {'description_width': 'initial'}
 
     # Attribute for output layout
     output = widgets.Output(layout={'border': '1px solid black'})
 
     # List of plot methods
-    plot_methods = [Plot.signal, Plot.envelop, Plot.log_envelop, Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping,
+    plot_methods = [Plot.signal, 
+                    Plot.envelop, 
+                    Plot.log_envelop, 
+                    Plot.fft, 
+                    Plot.fft_hist, 
+                    Plot.peaks, 
+                    Plot.peak_damping,
+                    Plot.integral,
                     Plot.time_damping, ]
     bin_ticks_methods = [Plot.fft, Plot.fft_hist, Plot.peaks, Plot.peak_damping, ]
 
@@ -57,6 +64,7 @@ class guitarGUI(object):
                ('Peaks plot', Plot.peaks),
                ('Peak damping plot', Plot.peak_damping),
                ('Time damping plot', Plot.time_damping),
+               ('Cumulative integral plot', Plot.integral),
                ('Frequency damping values', Sound.peak_damping), ]
 
     drop_down_style = {'description_width': '150px'}
@@ -90,7 +98,6 @@ class guitarGUI(object):
                ('Stacked plot', SoundPack.plot),
                ('Compared plot', SoundPack.compare_plot),
                ('Frequency Bin plot', SoundPack.freq_bin_plot),
-               ('Combine Envelops', SoundPack.combine_envelop),
                ('Print Fundamentals', SoundPack.fundamentals),
                ('Bin power plot', SoundPack.integral_plot),
                ('Print bin powers', SoundPack.bin_power_table),
@@ -127,7 +134,6 @@ class guitarGUI(object):
                ('Fourier Transform Peaks', 'peaks'),
                ('Peak Damping', 'peak damping'),
                ('Time Damping', 'time damping'),
-               ('Timbre Attributes', 'timbre'),
                ('Cumulative integral', 'integral'), ]
 
     plot_drop_down = widgets.Dropdown(options=options, value='signal', style=drop_down_style,
@@ -137,12 +143,14 @@ class guitarGUI(object):
 
     def __init__(self):
         """
-        Here We display the three file choosing buttons matched with the
+        Constructor for the Graphical User Interface class
+
+        Upon instanciation of the class, we display the three file choosing buttons matched with the
         three types of analyses when one is clicked the user is prompted
         to choose files.
 
         When files are chosen  the user press the 'Ok' Button and the
-        Program advances to defining names see `.on_ok_button_clicked_1`.
+        Interface  advances to defining names see `.on_ok_button_clicked_1`.
         """
 
         # __ Buttons __
@@ -207,7 +215,7 @@ class guitarGUI(object):
         self.button2.on_click(self.on_dual_button_clicked)
         self.button3.on_click(self.on_multiple_button_clicked)
         self.ok_button.on_click(self.on_ok_button_clicked_1)
-        self.disable_file_selection(False)
+        self.change_file_selection_state(False)
 
         # display the buttons
         display(self.button_box)
@@ -220,13 +228,14 @@ class guitarGUI(object):
         """
         Displays the single file selector, allowing the user to choose
         one file.
+        :param: b the ipywidget button object for which this method is executed when it is clicked
         """
         if b is not None:
             pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
-        self.disable_file_selection(True)
+        self.change_file_selection_state(True)
         with output:
             display(self.single_file_selector)
 
@@ -240,13 +249,14 @@ class guitarGUI(object):
         """
         Displays two single file selectors, allowing the user
         to choose two files.
+        :param: b the ipywidget button object for which this method is executed when it is clicked
         """
         if b is not None:
             pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
-        self.disable_file_selection(True)
+        self.change_file_selection_state(True)
         with output:
             display(self.dual_file_selector_1)
             display(self.dual_file_selector_2)
@@ -261,13 +271,14 @@ class guitarGUI(object):
         """
         Displays a multiple file selector allowing the user
         to select multiple files
+        :param: b the ipywidget button object for which this method is executed when it is clicked
         """
         if b is not None:
             pass
         clear_output(wait=True)
 
         output = widgets.Output(layout={'border': '1px solid black'})
-        self.disable_file_selection(True)
+        self.change_file_selection_state(True)
         with output:
             display(self.mult_file_selector)
 
@@ -277,7 +288,11 @@ class guitarGUI(object):
         display(self.button_box)
         display(output)
 
-    def disable_file_selection(self, state):
+    def change_file_selection_state(self, state):
+        """
+        Change the state of the file selection buttons
+        :param state: bool state to which the selection should be changed
+        """
         self.button1.disabled = state
         self.button2.disabled = state
         self.button3.disabled = state
@@ -286,6 +301,7 @@ class guitarGUI(object):
         """
         The user clicks this button when he is done choosing files and when
         he is done defining names
+        :param: b the ipywidget button object for which this method is executed when it is clicked
         """
         if b is not None:
             pass
@@ -342,6 +358,7 @@ class guitarGUI(object):
         - The "Ok" and "Go" buttons appears after the loading bar is done
         - The dropdown corresponds to the methods associated to
         the analysis
+        :param: b the ipywidget button object for which this method is executed when it is clicked
         """
         if b is not None:
             pass
@@ -459,6 +476,7 @@ class guitarGUI(object):
         """
         Method called when the info button is clicked
         Displays the help string associated with the current dropdown method
+        :param info:  the ipywidget button object for which this method is executed when it is clicked
         """
         if info.button_style == '':
             # change the style to make the button blue
@@ -521,6 +539,7 @@ class guitarGUI(object):
         """
         Method called when the normalize button is clicked
         The normalized attribute is inverted according to the current value
+        :param toggle: the ipywidget button object for which this method is executed when pressed
         """
         if toggle.button_style == '':
             toggle.button_style = 'success'
@@ -539,6 +558,7 @@ class guitarGUI(object):
 
         A load bar is displayed while te files are loaded, when the
         load bar is done the `.on_loaded_bar()` method is called.
+        :param b: the ipywidget button object for which this method is executed when pressed
         """
         if b is not None:
             pass
@@ -563,6 +583,7 @@ class guitarGUI(object):
         5. The 'Ok' button is enabled and the 'Go' button is disabled
         6. The dropdown is set back to its default value
         7. The buttons and output are displayed
+        :param b: the ipywidget button object corresponding to the go button
         """
         if b is not None:
             pass
@@ -723,6 +744,7 @@ class guitarGUI(object):
         The "Go" button is disabled
         The dropdown with the methods according to the
         current analysis is displayed.
+        :param change: the object containing the current value of the load bar
         """
         # When the bar reaches the end
         if change["new"] >= 10:
@@ -1004,3 +1026,4 @@ class guitarGUI(object):
             self.Pack = SoundPack(self.sounds, names=[sound.name for sound in self.sounds])
             while self.load_bar.value < 10:
                 self.load_bar.value += 1  # LoadBar = 10
+
