@@ -41,6 +41,16 @@ jobs:
         PDOC_ALLOW_EXEC: 1
       run: |
         pdoc -o docs guitarsounds
+        
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "olivecha"
+        git config --global user.email "olivier.chabot.2@ens.etsmtl.ca"
+
+        git add -A
+        git commit -m "update docs"
+        git push
+        
   #  job to deploy to github pages
   deploy:
     environment:
