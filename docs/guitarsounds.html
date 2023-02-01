@@ -32,9 +32,6 @@
 
         <h2>API Documentation</h2>
             <ul class="memberlist">
-            <li>
-                    <a class="function" href="#show">show</a>
-            </li>
     </ul>
 
 
@@ -59,121 +56,13 @@ guitarsounds    </h1>
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="c1"># __init__.py</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a><span class="kn">from</span> <span class="nn">guitarsounds.interface</span> <span class="kn">import</span> <span class="n">guitarGUI</span> <span class="k">as</span> <span class="n">Interface</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="kn">from</span> <span class="nn">guitarsounds.analysis</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Sound</span><span class="p">,</span> <span class="n">SoundPack</span><span class="p">,</span> <span class="n">Plot</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a><span class="kn">from</span> <span class="nn">guitarsounds.analysis</span> <span class="kn">import</span> <span class="n">plt</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a><span class="n">show</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">7</span></a><span class="c1"># Version of the guitarsounds package</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos">8</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a><span class="c1"># Version of the guitarsounds package</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;1.1.0&#39;</span>
 </span></pre></div>
 
 
             </section>
-                <section id="show">
-                            <input id="show-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">show</span><span class="signature pdoc-code condensed">(<span class="param"><span class="o">*</span><span class="n">args</span>, </span><span class="param"><span class="o">**</span><span class="n">kwargs</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="show-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#show"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="show-343"><a href="#show-343"><span class="linenos">343</span></a><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span id="show-344"><a href="#show-344"><span class="linenos">344</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="show-345"><a href="#show-345"><span class="linenos">345</span></a><span class="sd">    Display all open figures.</span>
-</span><span id="show-346"><a href="#show-346"><span class="linenos">346</span></a>
-</span><span id="show-347"><a href="#show-347"><span class="linenos">347</span></a><span class="sd">    Parameters</span>
-</span><span id="show-348"><a href="#show-348"><span class="linenos">348</span></a><span class="sd">    ----------</span>
-</span><span id="show-349"><a href="#show-349"><span class="linenos">349</span></a><span class="sd">    block : bool, optional</span>
-</span><span id="show-350"><a href="#show-350"><span class="linenos">350</span></a><span class="sd">        Whether to wait for all figures to be closed before returning.</span>
-</span><span id="show-351"><a href="#show-351"><span class="linenos">351</span></a>
-</span><span id="show-352"><a href="#show-352"><span class="linenos">352</span></a><span class="sd">        If `True` block and run the GUI main loop until all figure windows</span>
-</span><span id="show-353"><a href="#show-353"><span class="linenos">353</span></a><span class="sd">        are closed.</span>
-</span><span id="show-354"><a href="#show-354"><span class="linenos">354</span></a>
-</span><span id="show-355"><a href="#show-355"><span class="linenos">355</span></a><span class="sd">        If `False` ensure that all figure windows are displayed and return</span>
-</span><span id="show-356"><a href="#show-356"><span class="linenos">356</span></a><span class="sd">        immediately.  In this case, you are responsible for ensuring</span>
-</span><span id="show-357"><a href="#show-357"><span class="linenos">357</span></a><span class="sd">        that the event loop is running to have responsive figures.</span>
-</span><span id="show-358"><a href="#show-358"><span class="linenos">358</span></a>
-</span><span id="show-359"><a href="#show-359"><span class="linenos">359</span></a><span class="sd">        Defaults to True in non-interactive mode and to False in interactive</span>
-</span><span id="show-360"><a href="#show-360"><span class="linenos">360</span></a><span class="sd">        mode (see `.pyplot.isinteractive`).</span>
-</span><span id="show-361"><a href="#show-361"><span class="linenos">361</span></a>
-</span><span id="show-362"><a href="#show-362"><span class="linenos">362</span></a><span class="sd">    See Also</span>
-</span><span id="show-363"><a href="#show-363"><span class="linenos">363</span></a><span class="sd">    --------</span>
-</span><span id="show-364"><a href="#show-364"><span class="linenos">364</span></a><span class="sd">    ion : Enable interactive mode, which shows / updates the figure after</span>
-</span><span id="show-365"><a href="#show-365"><span class="linenos">365</span></a><span class="sd">          every plotting command, so that calling ``show()`` is not necessary.</span>
-</span><span id="show-366"><a href="#show-366"><span class="linenos">366</span></a><span class="sd">    ioff : Disable interactive mode.</span>
-</span><span id="show-367"><a href="#show-367"><span class="linenos">367</span></a><span class="sd">    savefig : Save the figure to an image file instead of showing it on screen.</span>
-</span><span id="show-368"><a href="#show-368"><span class="linenos">368</span></a>
-</span><span id="show-369"><a href="#show-369"><span class="linenos">369</span></a><span class="sd">    Notes</span>
-</span><span id="show-370"><a href="#show-370"><span class="linenos">370</span></a><span class="sd">    -----</span>
-</span><span id="show-371"><a href="#show-371"><span class="linenos">371</span></a><span class="sd">    **Saving figures to file and showing a window at the same time**</span>
-</span><span id="show-372"><a href="#show-372"><span class="linenos">372</span></a>
-</span><span id="show-373"><a href="#show-373"><span class="linenos">373</span></a><span class="sd">    If you want an image file as well as a user interface window, use</span>
-</span><span id="show-374"><a href="#show-374"><span class="linenos">374</span></a><span class="sd">    `.pyplot.savefig` before `.pyplot.show`. At the end of (a blocking)</span>
-</span><span id="show-375"><a href="#show-375"><span class="linenos">375</span></a><span class="sd">    ``show()`` the figure is closed and thus unregistered from pyplot. Calling</span>
-</span><span id="show-376"><a href="#show-376"><span class="linenos">376</span></a><span class="sd">    `.pyplot.savefig` afterwards would save a new and thus empty figure. This</span>
-</span><span id="show-377"><a href="#show-377"><span class="linenos">377</span></a><span class="sd">    limitation of command order does not apply if the show is non-blocking or</span>
-</span><span id="show-378"><a href="#show-378"><span class="linenos">378</span></a><span class="sd">    if you keep a reference to the figure and use `.Figure.savefig`.</span>
-</span><span id="show-379"><a href="#show-379"><span class="linenos">379</span></a>
-</span><span id="show-380"><a href="#show-380"><span class="linenos">380</span></a><span class="sd">    **Auto-show in jupyter notebooks**</span>
-</span><span id="show-381"><a href="#show-381"><span class="linenos">381</span></a>
-</span><span id="show-382"><a href="#show-382"><span class="linenos">382</span></a><span class="sd">    The jupyter backends (activated via ``%matplotlib inline``,</span>
-</span><span id="show-383"><a href="#show-383"><span class="linenos">383</span></a><span class="sd">    ``%matplotlib notebook``, or ``%matplotlib widget``), call ``show()`` at</span>
-</span><span id="show-384"><a href="#show-384"><span class="linenos">384</span></a><span class="sd">    the end of every cell by default. Thus, you usually don&#39;t have to call it</span>
-</span><span id="show-385"><a href="#show-385"><span class="linenos">385</span></a><span class="sd">    explicitly there.</span>
-</span><span id="show-386"><a href="#show-386"><span class="linenos">386</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="show-387"><a href="#show-387"><span class="linenos">387</span></a>    <span class="n">_warn_if_gui_out_of_main_thread</span><span class="p">()</span>
-</span><span id="show-388"><a href="#show-388"><span class="linenos">388</span></a>    <span class="k">return</span> <span class="n">_get_backend_mod</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span></pre></div>
-
-
-            <div class="docstring"><p>Display all open figures.</p>
-
-<h2 id="parameters">Parameters</h2>
-
-<p>block : bool, optional
-    Whether to wait for all figures to be closed before returning.</p>
-
-<pre><code>If `True` block and run the GUI main loop until all figure windows
-are closed.
-
-If `False` ensure that all figure windows are displayed and return
-immediately.  In this case, you are responsible for ensuring
-that the event loop is running to have responsive figures.
-
-Defaults to True in non-interactive mode and to False in interactive
-mode (see `.pyplot.isinteractive`).
-</code></pre>
-
-<h2 id="see-also">See Also</h2>
-
-<p>ion : Enable interactive mode, which shows / updates the figure after
-      every plotting command, so that calling <code><a href="#show">show()</a></code> is not necessary.
-ioff : Disable interactive mode.
-savefig : Save the figure to an image file instead of showing it on screen.</p>
-
-<h2 id="notes">Notes</h2>
-
-<p><strong>Saving figures to file and showing a window at the same time</strong></p>
-
-<p>If you want an image file as well as a user interface window, use
-<code>.pyplot.savefig</code> before <code>.pyplot.show</code>. At the end of (a blocking)
-<code><a href="#show">show()</a></code> the figure is closed and thus unregistered from pyplot. Calling
-<code>.pyplot.savefig</code> afterwards would save a new and thus empty figure. This
-limitation of command order does not apply if the show is non-blocking or
-if you keep a reference to the figure and use <code>.Figure.savefig</code>.</p>
-
-<p><strong>Auto-show in jupyter notebooks</strong></p>
-
-<p>The jupyter backends (activated via <code>%matplotlib inline</code>,
-<code>%matplotlib notebook</code>, or <code>%matplotlib widget</code>), call <code><a href="#show">show()</a></code> at
-the end of every cell by default. Thus, you usually don't have to call it
-explicitly there.</p>
-</div>
-
-
-                </section>
     </main>
 <script>
     function escapeHTML(html) {
