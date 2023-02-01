@@ -15,11 +15,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   #  job to update the docs
   update:
@@ -43,13 +38,9 @@ jobs:
         pdoc -o docs guitarsounds
         
     - name: Commit and push changes
-      run: |
-        git config --global user.name "olivecha"
-        git config --global user.email "olivier.chabot.2@ens.etsmtl.ca"
-
-        git add -A
-        git commit -m "update docs"
-        git push
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Update docs
         
   #  job to deploy to github pages
   deploy:
