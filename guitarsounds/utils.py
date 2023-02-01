@@ -4,6 +4,7 @@ import numpy as np
 import scipy.optimize
 import scipy.integrate
 from scipy.interpolate import interp1d
+from scipy.optimize import least_squares
 import guitarsounds
 from guitarsounds.parameters import sound_parameters
 
@@ -26,6 +27,7 @@ trim_dict = {'E2': sp.trim.E2.value,
 freq2trim = interp1d(list(freq_dict.values()),
                      list(trim_dict.values()),
                      fill_value='extrapolate')
+
 
 def nth_order_polynomial_residual(A, n, x, y):
     """
@@ -53,7 +55,7 @@ def nth_order_polynomial_fit(n, x, y):
     while n > len(x):
         n -= 1
     guess = np.ones(n)
-    result = scipy.optimize.least_squares(nth_order_polynomial_residual,
+    result = least_squares(nth_order_polynomial_residual,
                                           guess,
                                           args=(n, x, y))
     A = result.x
@@ -74,7 +76,7 @@ def octave_values(fraction, min_freq=10, max_freq=20200):
     values
     from 10 Hz to 20200 Hz.
     :param fraction: octave fraction value (1/3, 1, 1/2, ...)
-    :param min_freq: minimum frequency in the computed octave fracitons
+    :param min_freq: minimum frequency in the computed octave fractions
     :param max_freq: maximum frequency considered in the octave fractions
     :return: the value in frequencies corresponding to the octave bins
     """
