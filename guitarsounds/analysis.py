@@ -287,7 +287,7 @@ class SoundPack(object):
                 plt.title(title0 + title1 + title2)
             plt.tight_layout()
 
-        elif f_bin in [*list(SP.bins.__dict__.keys())[1:], 'brillance']:
+        elif f_bin in [*list(sound_parameters().bins.__dict__.keys())[1:], 'brillance']:
             plt.figure(figsize=(10, 4))
             # Plot every envelop for a single frequency bin
             norm_factors = np.array([son.bins[f_bin].normalize().norm_factor for son in self.sounds])
@@ -545,7 +545,9 @@ class SoundPack(object):
         if self.kind == 'dual':
             son1 = self.sounds[0]
             son2 = self.sounds[1]
-            index = np.where(son1.signal.fft_frequencies() > SP.general.fft_range.value)[0][0]
+            fft_range_value = sound_parameters().general.fft_range.value
+            fft_freq_value = son1.signal.fft_frequencies()
+            index = np.where(fft_freq_value > fft_range_value)[0][0]
 
             plt.figure(figsize=(10, 6))
             plt.yscale('symlog')
