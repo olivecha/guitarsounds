@@ -16,12 +16,6 @@ import guitarsounds.utils as utils
 from tabulate import tabulate
 import wave
 
-wave_ver = wave
-
-"""
-Getting the sound parameters from the guitarsounds_parameters.py file
-"""
-SP = sound_parameters()
 
 """
 Classes
@@ -60,7 +54,7 @@ class SoundPack(object):
         """
         # create a copy of the sound parameters
         if SoundParams is None:
-            self.SP = SP
+            self.SP = sound_parameters()
         else:
             self.SP = SoundParams
 
@@ -759,7 +753,7 @@ class Sound(object):
         """
         # create a reference of the parameters
         if SoundParams is None:
-            self.SP = SP
+            self.SP = sound_parameters()
         else:
             self.SP = SoundParams
 
@@ -1772,3 +1766,5 @@ class Plot(object):
         plt.ylabel('cumulative power (normalized)')
         plt.xscale('log')
         plt.grid('on')
+
+
