@@ -21,7 +21,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
+  #  job to update the docs
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libsndfile1-dev
+        python -m pip install --upgrade pip
+        pip install pdoc
+    - name: Update docs
+      run: |
+        pdoc -o docs guitarsounds
+  #  job to deploy to github pages
   deploy:
     environment:
       name: github-pages
