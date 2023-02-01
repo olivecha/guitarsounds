@@ -51,7 +51,7 @@ class MyTestCase(unittest.TestCase):
     def test_SoundPack_plot(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
         sp = SoundPack(files)
-        plot_kinds = ['signal', 'envelop', 'log envelop',
+        plot_kinds = ['signal', 'envelope', 'log envelope',
                       'fft', 'fft hist', 'peaks',
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
     def test_SoundPack_compare_plot_multiple(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(3)]
         sp = SoundPack(files)
-        plot_kinds = ['signal', 'envelop', 'log envelop',
+        plot_kinds = ['signal', 'envelope', 'log envelope',
                       'fft', 'fft hist', 'peaks',
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:
@@ -74,7 +74,7 @@ class MyTestCase(unittest.TestCase):
     def test_SoundPack_compare_plot_dual(self):
         files = [helpers_tests.get_rnd_audio_file() for _ in range(2)]
         sp = SoundPack(files)
-        plot_kinds = ['signal', 'envelop', 'log envelop',
+        plot_kinds = ['signal', 'envelope', 'log envelope',
                       'fft', 'fft hist', 'peaks',
                       'peak damping', 'time damping', 'integral']
         for kind in plot_kinds:

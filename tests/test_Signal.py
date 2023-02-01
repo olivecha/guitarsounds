@@ -38,8 +38,8 @@ class MyTestCase(unittest.TestCase):
         Test the Signal.old_plot method
         """
         plot_kinds = ['signal',
-                      'envelop',
-                      'log envelop',
+                      'envelope',
+                      'log envelope',
                       'fft',
                       'fft hist',
                       'peaks',
@@ -124,51 +124,51 @@ class MyTestCase(unittest.TestCase):
         self.assertAlmostEqual(fft_bins[0], 1.9096199812935186, 3)
         self.assertAlmostEqual(fft_bins[-1], 6393.789621366959, 3)
 
-    def test_Signal_envelop(self):
+    def test_Signal_envelope(self):
         """ Test the envelope computation of the Signal"""
         sig = get_rnd_test_Signal()
-        self.assertAlmostEqual(0, sig.envelop()[0][0])
+        self.assertAlmostEqual(0, sig.envelope()[0][0])
         sig = get_ref_test_Signal()
-        self.assertAlmostEqual(0.012232225388288498, sig.envelop()[0][-1], 3)
+        self.assertAlmostEqual(0.012232225388288498, sig.envelope()[0][-1], 3)
 
-    def test_Signal_envelop_time(self):
+    def test_Signal_envelope_time(self):
         """ Test the envelope time vector of the signal"""
         # Random signal test
         sig = get_rnd_test_Signal()
         # test that the first time point is zero
-        self.assertTrue(sig.envelop()[1][0] == 0.)
-        # Check that the difference between the last envelop time point and
+        self.assertTrue(sig.envelope()[1][0] == 0.)
+        # Check that the difference between the last envelope time point and
         # the last time sample is less than 10% of the total signal time
         max_dt = 0.1 * sig.time()[-1]
-        self.assertTrue(abs(sig.envelop()[1][-1] - sig.time()[-1]) < max_dt)
+        self.assertTrue(abs(sig.envelope()[1][-1] - sig.time()[-1]) < max_dt)
         # Reference signal test
         sig = get_ref_test_Signal()
-        self.assertAlmostEqual(10.456553215320838, sig.envelop()[1][-1], 3)
+        self.assertAlmostEqual(10.456553215320838, sig.envelope()[1][-1], 3)
 
-    def test_signal_log_envelop(self):
-        """ Test the log envelop computation """
+    def test_signal_log_envelope(self):
+        """ Test the log envelope computation """
         # Random signal test
         sig = get_ref_test_Signal()
-        log_env, _ = sig.log_envelop()
+        log_env, _ = sig.log_envelope()
         # Sanity test
         self.assertAlmostEqual(0., log_env[0])
         self.assertTrue(log_env[-1] < np.max(log_env))
         # Reference signal test
         sig = get_ref_test_Signal()
         self.assertAlmostEqual(0.02650194260179424,
-                               sig.log_envelop()[0][-1],
+                               sig.log_envelope()[0][-1],
                                3)
 
-    def test_signal_log_envelop_time(self):
-        """ Test the logarithmic time envelop computation"""
+    def test_signal_log_envelope_time(self):
+        """ Test the logarithmic time envelope computation"""
         # Random signal test
         sig = get_rnd_test_Signal()
-        _, log_time = sig.log_envelop()
+        _, log_time = sig.log_envelope()
         # assert the first point is t=0
         self.assertTrue(log_time[0] == 0.)
         # Reference signal test
         sig = get_ref_test_Signal()
-        self.assertAlmostEqual(10.438367195528919, sig.log_envelop()[1][-1], 3)
+        self.assertAlmostEqual(10.438367195528919, sig.log_envelope()[1][-1], 3)
 
     def test_Signal_find_onset(self):
         """  test the method finding the onset of the signal"""
