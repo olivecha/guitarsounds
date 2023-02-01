@@ -1,6 +1,7 @@
 from IPython.display import display, clear_output, HTML
 from IPython import get_ipython
 from guitarsounds.analysis import Plot, Signal, Sound, SoundPack
+from guitarsounds.utils import generate_error_widget
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import io
@@ -9,13 +10,6 @@ import struct
 import numpy as np
 
 
-def generate_error_widget(text):
-    """
-    Creates a ipywidget error message from a string
-    :param text: python str of the error message
-    :return: widgets.HTLM object corresponding to the error message
-    """
-    return widgets.HTML('<p style="color:#CC4123;">' + text + '</p>')
 
 
 class guitarGUI(object):
