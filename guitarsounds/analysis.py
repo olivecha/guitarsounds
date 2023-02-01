@@ -115,7 +115,9 @@ class SoundPack(object):
 
     def sounds_from_files(self, sound_files, names=None, fundamentals=None):
         """
-        Create Sound class instances and assign them to the SoundPack from a list of files
+        Create Sound class instances and assign them to the SoundPack 
+        from a list of files
+
         :param sound_files: sound filenames
         :param names: sound names
         :param fundamentals: user specified fundamental frequencies
@@ -137,7 +139,8 @@ class SoundPack(object):
 
     def equalize_time(self):
         """
-        Trim the sounds so that they all have the length of the shortest sound, trimming is done at the end.
+        Trim the sounds so that they all have the length of the shortest sound, 
+        trimming is done at the end of the sounds.
         :return: None
         """
         trim_index = np.min([len(sound.signal.signal) for sound in self.sounds])
@@ -152,7 +155,7 @@ class SoundPack(object):
     def normalize(self):
         """
         Normalize all the signals in the SoundPack and returns a normalized
-        instance of itself
+        instance of itself. See `Signal.normalize` for more information.
         :return: SoundPack with normalized signals
         """
         new_sounds = []
@@ -176,10 +179,13 @@ class SoundPack(object):
 
         __ Multiple SoundPack Method __
         Plots a specific signal.plot for all sounds on the same figure
-        Ex : compare_plot('fft') plots the fft of all sounds on a single figure
+
+        Ex : SoundPack.plot('fft') plots the fft of all sounds on a single figure
         The color argument is set to none so that the plots have different colors
-        :param kind: Attribute passed to the `signal.plot()` method
-        :param kwargs: keywords arguments to pass to the `signal.plot()` method
+        :param kind: feature name passed to the `signal.plot()` method
+        :param kwargs: keywords arguments to pass to the `matplotlib.plot()` 
+        method
+
         :return: None
         """
         plt.figure(figsize=(8, 6))
@@ -198,11 +204,12 @@ class SoundPack(object):
 
         __ Multiple SoundPack Method __
         Draws the same kind of plot on a different axis for each sound
-        Example : `SoundPack.compare_plot('peaks')` with 4 Sounds will plot a figure with 4 axes, with each
-        a different 'peak' plot.
+        Example : `SoundPack.compare_plot('peaks')` with 4 Sounds will plot a 
+        figure with 4 axes, with each a different 'peak' plot.
 
         :param kind: kind argument passed to `Signal.plot()`
-        :param kwargs: key word arguments passed to Signal.plot()
+        :param kwargs: key word arguments passed to `matplotlib.plot()`
+
         :return: None
         """
         # if a dual SoundPack : only plot two big plots
@@ -254,14 +261,15 @@ class SoundPack(object):
 
     def freq_bin_plot(self, f_bin='all'):
         """
-        Plots the log envelop of specified frequency bins
+        Plots the log envelope of specified frequency bins
 
         __ Multiple SoundPack Method __
-        A function to compare signals decomposed frequency wise in the time domain on a logarithm scale.
-        The methods plot all the sounds and plots their frequency bins according to the frequency bin argument f_bin.
+        A function to compare signals decomposed frequency wise in the time 
+        domain on a logarithm scale. The methods plot all the sounds and plots 
+        their frequency bins according to the frequency bin argument f_bin.
 
-        Example : SoundPack.freq_bin_plot(f_bin='mid') will plot the log-scale envelop of the 'mid' signal of every
-        sound in the SoundPack
+        Example : SoundPack.freq_bin_plot(f_bin='mid') will plot the log-scale 
+        envelope of the 'mid' signal of every sound in the SoundPack.
 
         f_bin: frequency bins to compare, Supported arguments are :
         'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
@@ -276,7 +284,7 @@ class SoundPack(object):
                 # plot every sound for a frequency bin
                 norm_factors = np.array([son.bins[key].normalize().norm_factor for son in self.sounds])
                 for i, son in enumerate(self.sounds):
-                    son.bins[key].normalize().old_plot('log envelop', label=son.name)
+                    son.bins[key].normalize().old_plot('log envelope', label=son.name)
                 plt.xscale('log')
                 plt.legend()
                 son = self.sounds[-1]
@@ -289,10 +297,10 @@ class SoundPack(object):
 
         elif f_bin in [*list(sound_parameters().bins.__dict__.keys())[1:], 'brillance']:
             plt.figure(figsize=(10, 4))
-            # Plot every envelop for a single frequency bin
+            # Plot every envelope for a single frequency bin
             norm_factors = np.array([son.bins[f_bin].normalize().norm_factor for son in self.sounds])
             for i, son in enumerate(self.sounds):
-                son.bins[f_bin].normalize().old_plot('log envelop', label=(str(i + 1) + '. ' + son.name))
+                son.bins[f_bin].normalize().old_plot('log envelope', label=(str(i + 1) + '. ' + son.name))
             plt.xscale('log')
             plt.legend()
             son = self.sounds[-1]
@@ -309,6 +317,7 @@ class SoundPack(object):
         """
         __ Multiple Soundpack Method __
         Displays the fundamentals of every sound in the SoundPack
+
         :return: None
         """
         names = np.array([sound.name for sound in self.sounds])
@@ -322,13 +331,14 @@ class SoundPack(object):
 
     def integral_plot(self, f_bin='all'):
         """
-        Normalized cumulative bin power plot for the frequency bins
+        Normalized cumulative bin power plot for the frequency bins.
+        See `Plot.integral` for more information.
 
         __ Multiple SoundPack Method __
         Plots the cumulative integral plot of specified frequency bins
         see help(Plot.integral)
 
-        f_bin: frequency bins to compare, Supported arguments are :
+        :param f_bin: frequency bins to compare, Supported arguments are 
         'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
         """
 
@@ -373,7 +383,10 @@ class SoundPack(object):
         """
         Displays a table with the signal power contained in every frequency bin
         
-        The power is computed as the time integral of the signal
+        The power is computed as the time integral of the signal, such as :
+
+            $ P = \int_0^{t_{max}} sig(t) dt $
+
         """
         # Bin power distribution table
         bin_strings = self.bin_strings
@@ -385,8 +398,8 @@ class SoundPack(object):
             integral = []
             # for every frequency bin in the sound
             for f_bin in bin_strings:
-                log_envelop, log_time = sound.bins[f_bin].normalize().log_envelop()
-                integral.append(scipy.integrate.trapezoid(log_envelop, log_time))
+                log_envelope, log_time = sound.bins[f_bin].normalize().log_envelope()
+                integral.append(scipy.integrate.trapezoid(log_envelope, log_time))
 
             # a list of dict for every sound
             integrals.append(integral)
@@ -402,7 +415,12 @@ class SoundPack(object):
         """
         Histogram of the frequency bin power for multiple sounds
 
-        frequency bin power is computed as the integral of the bin envelop
+        frequency bin power is computed as the integral of the bin envelope, 
+        such as 
+
+            $ P = \int_0^{t_{max}} env(t) dt $
+
+
         """
         # Compute the bin powers
         bin_strings = self.bin_strings
@@ -414,8 +432,8 @@ class SoundPack(object):
             integral = []
             # for every frequency bin in the sound
             for f_bin in bin_strings:
-                log_envelop, log_time = sound.bins[f_bin].normalize().log_envelop()
-                integral.append(trapezoid(log_envelop, log_time))
+                log_envelope, log_time = sound.bins[f_bin].normalize().log_envelope()
+                integral.append(trapezoid(log_envelope, log_time))
 
             # a list of dict for every sound
             integral = np.array(integral)
@@ -448,7 +466,8 @@ class SoundPack(object):
     
     def listen(self):
         """
-        Listen to all the sounds in the SoundPack inside the Jupyter Notebook environment
+        Listen to all the sounds in the SoundPack inside the Jupyter Notebook 
+        environment
         """
         for sound in self.sounds:
             sound.signal.listen()
@@ -463,7 +482,10 @@ class SoundPack(object):
 
         __ Dual SoundPack Method __
         Compares the peaks in the Fourier Transform of two Sounds,
-        the peaks having the highest difference is highlighted
+        the peaks having the highest difference are highlighted. If no peaks
+        are found to have a significant difference, only the two normalized 
+        Fourier transform are plotted in a mirror configuration to visualize
+        them.
         """
         if self.kind == 'dual':
             son1 = self.sounds[0]
@@ -539,7 +561,9 @@ class SoundPack(object):
         Plot the Fourier Transforms of two sounds on opposed axis to compare the spectral content
 
         __ Dual SoundPack Method __
-        The fourier transforms are normalized between 0 and [-1, 1], the y scale is logarithmic
+        The fourier transforms are plotted normalized between 0 and 1. 
+        The y scale is symmetric logarithmic, so that a signal is plotted 
+        between 0 and -1, and the other is plotted between 0 and 1. 
         :return: None
         """
         if self.kind == 'dual':
@@ -631,7 +655,7 @@ class SoundPack(object):
 
     def integral_compare(self, f_bin='all'):
         """
-          Cumulative bin envelop integral comparison for two signals
+          Cumulative bin envelope integral comparison for two signals
 
           __ Dual SoundPack Method __
           Plots the cumulative integral plot of specified frequency bins
@@ -652,13 +676,13 @@ class SoundPack(object):
             bins2 = self.sounds[1].bins.values()
 
             for signal1, signal2, bin_string, ax in zip(bins1, bins2, self.bin_strings, axs):
-                # Compute the log time and envelops integrals
-                log_envelop1, log_time1 = signal1.normalize().log_envelop()
-                log_envelop2, log_time2 = signal2.normalize().log_envelop()
-                env_range1 = np.arange(2, len(log_envelop1), 1)
-                env_range2 = np.arange(2, len(log_envelop2), 1)
-                integral1 = np.array([trapezoid(log_envelop1[:i], log_time1[:i]) for i in env_range1])
-                integral2 = np.array([trapezoid(log_envelop2[:i], log_time2[:i]) for i in env_range2])
+                # Compute the log time and envelopes integrals
+                log_envelope1, log_time1 = signal1.normalize().log_envelope()
+                log_envelope2, log_time2 = signal2.normalize().log_envelope()
+                env_range1 = np.arange(2, len(log_envelope1), 1)
+                env_range2 = np.arange(2, len(log_envelope2), 1)
+                integral1 = np.array([trapezoid(log_envelope1[:i], log_time1[:i]) for i in env_range1])
+                integral2 = np.array([trapezoid(log_envelope2[:i], log_time2[:i]) for i in env_range2])
                 time1 = log_time1[2:len(log_time1):1]
                 time2 = log_time2[2:len(log_time2):1]
 
@@ -688,13 +712,13 @@ class SoundPack(object):
 
         elif f_bin in self.bin_strings:
 
-            # Compute the log envelops and areau curves
+            # Compute the log envelopes and areau curves
             signal1 = self.sounds[0].bins[f_bin]
             signal2 = self.sounds[1].bins[f_bin]
-            log_envelop1, log_time1 = signal1.normalize().log_envelop()
-            log_envelop2, log_time2 = signal2.normalize().log_envelop()
-            integral1 = np.array([trapezoid(log_envelop1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelop1), 1)])
-            integral2 = np.array([trapezoid(log_envelop2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelop2), 1)])
+            log_envelope1, log_time1 = signal1.normalize().log_envelope()
+            log_envelope2, log_time2 = signal2.normalize().log_envelope()
+            integral1 = np.array([trapezoid(log_envelope1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelope1), 1)])
+            integral2 = np.array([trapezoid(log_envelope2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelope2), 1)])
             time1 = log_time1[2:len(log_time1):1]
             time2 = log_time2[2:len(log_time2):1]
 
@@ -882,7 +906,7 @@ class Sound(object):
 
     def plot_freq_bins(self, bins='all'):
         """
-        Method to plot all the frequency bins logarithmic envelops of a sound
+        Method to plot all the frequency bins logarithmic envelopes of a sound
 
         The parameter `bins` allows choosing specific frequency bins to plot
         By default the function plots all the bins
@@ -902,7 +926,7 @@ class Sound(object):
 
         for key in bins:
             lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'
-            self.bins[key].old_plot('log envelop', label=lab)
+            self.bins[key].old_plot('log envelope', label=lab)
 
         plt.xscale('log')
         plt.yscale('log')
@@ -925,7 +949,7 @@ class Sound(object):
         """
         Histogram of the frequency bin power
 
-        frequency bin power is computed as the integral of the bin envelop.
+        frequency bin power is computed as the integral of the bin envelope.
         See guitarsounds.parameters.sound_parameters().bins.info() for the
         frequency bin intervals.
         """
@@ -934,8 +958,8 @@ class Sound(object):
         integrals = []
 
         for f_bin in bin_strings:
-            log_envelop, log_time = self.bins[f_bin].normalize().log_envelop()
-            integral = trapezoid(log_envelop, log_time)
+            log_envelope, log_time = self.bins[f_bin].normalize().log_envelope()
+            integral = trapezoid(log_envelope, log_time)
             integrals.append(integral)
         max_value = np.max(integrals)
         integrals = np.array(integrals)/max_value
@@ -978,7 +1002,7 @@ class Signal(object):
 
     def time(self):
         """
-        Returns the time vector associated to the signal
+        Returns the time vector associated with the signal
         :return: numpy array corresponding to the time values
         of the signal samples in seconds
         """
@@ -1100,26 +1124,26 @@ class Signal(object):
     def time_damping(self):
         """
         Computes the time wise damping ratio of the signal by fitting a negative exponential curve
-        to the Signal envelop and computing the ratio with the Signal fundamental frequency.
+        to the Signal envelope and computing the ratio with the Signal fundamental frequency.
         :return: The damping ratio, a scalar.
         """
-        # Get the envelop data
-        envelop, envelop_time = self.normalize().envelop() 
+        # Get the envelope data
+        envelope, envelope_time = self.normalize().envelope() 
 
         # First point is the maximum because e^-kt is strictly decreasing
-        first_index = np.argmax(envelop)
+        first_index = np.argmax(envelope)
 
         # The second point is the first point where the signal crosses the lower_threshold line
         second_point_thresh = self.SP.damping.lower_threshold.value
         try:
-            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
+            second_index = np.flatnonzero(envelope[first_index:] <= second_point_thresh)[0]
         except IndexError:
-            second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh * 2)[0]
+            second_index = np.flatnonzero(envelope[first_index:] <= second_point_thresh * 2)[0]
 
         # Function to compute the residual for the exponential curve fit
         def residual_function(zeta_w, t, s):
             """
-            Function computing the residual to curve fit a negative exponential to the signal envelop
+            Function computing the residual to curve fit a negative exponential to the signal envelope
             :param zeta_w: zeta*omega constant
             :param t: time vector
             :param s: signal
@@ -1130,8 +1154,8 @@ class Signal(object):
         zeta_guess = [-0.5]
 
         result = scipy.optimize.least_squares(residual_function, zeta_guess,
-                                              args=(envelop_time[first_index:second_index],
-                                                    envelop[first_index:second_index]))
+                                              args=(envelope_time[first_index:second_index],
+                                                    envelope[first_index:second_index]))
         # Get the zeta*omega constant
         zeta_omega = result.x[0]
 
@@ -1182,8 +1206,8 @@ class Signal(object):
 
     def cavity_frequency(self):
         """
-        Finds the hemlotz cavity frequency from the Fourier Transform by searching for a peak in the expected
-        range (80 - 100 Hz), if the fundamental is too close to the expected hemlotz frequency a comment
+        Finds the Hemlotz cavity frequency from the Fourier Transform by searching for a peak in the expected
+        range (80 - 100 Hz), if the fundamental is too close to the expected Hemlotz frequency a comment
         is printed and None is returned.
         :return: If successful, the cavity peak frequency
         """
@@ -1196,7 +1220,7 @@ class Signal(object):
 
     def fft_frequencies(self):
         """
-        Computes the frequency vector associated to the Signal Fourier Transform
+        Computes the frequency vector associated with the Signal Fourier Transform
         :return: an array containing the frequency values.
         """
         fft = self.fft()
@@ -1207,7 +1231,7 @@ class Signal(object):
         """
         Transforms the Fourier transform array into a statistic distribution 
         ranging from 0 to 100. 
-        Accordingly, the maximum of the fourier transform with value 1.0 will
+        Accordingly, the maximum of the Fourier transform with value 1.0 will
         be equal to 100 and casted as an integer.
         Values below 0.001 will be equal to 0. 
         This representation of the Fourier transform is used to construct
@@ -1226,29 +1250,29 @@ class Signal(object):
         # flatten the list
         return [item for sublist in occurrences for item in sublist]
 
-    def envelop(self, window=None, overlap=None):
+    def envelope(self, window=None, overlap=None):
         """
-        Method calculating the amplitude envelop of a signal as a
+        Method calculating the amplitude envelope of a signal as a
         maximum of the absolute value of the signal. 
         The same `window` and `overlap` parameters should be used to compute 
         the signal and time arrays so that they contain the same 
         number of points (and can be plotted together).
         :param window: integer, length in samples of the window used to
-        compute the signal envelop.
+        compute the signal envelope.
         :param overlap: integer, overlap in samples used to overlap two
-        subsequent windows in the computation of the signal envelop.
+        subsequent windows in the computation of the signal envelope.
         The overlap value should be smaller than the window value.
-        :return: Amplitude envelop of the signal
+        :return: Amplitude envelope of the signal
         """
         if window is None:
-            window = self.SP.envelop.frame_size.value
+            window = self.SP.envelope.frame_size.value
         if overlap is None:
             overlap = window // 2
         elif overlap >= window:
             raise ValueError('Overlap must be smaller than window')
         signal_array = np.abs(self.signal)
         t = self.time()
-        # Empty envelop and envelop time
+        # Empty envelope and envelope time
         env = [0]
         env_time = [0]
         idx = 0
@@ -1260,31 +1284,31 @@ class Signal(object):
         _, unique_time_index = np.unique(env_time, return_index=True)
         return np.array(env)[unique_time_index], np.unique(env_time)
 
-    def log_envelop(self):
+    def log_envelope(self):
         """
-        Computes the logarithmic scale envelop of the signal.
+        Computes the logarithmic scale envelope of the signal.
         The width of the samples increases exponentially so that
         the envelope appears having a constant window width on
         an X axis logarithmic scale.
-        :return: The log envelop and the time vector associated in a tuple
+        :return: The log envelope and the time vector associated in a tuple
         """
         if self.onset is None:
             onset = np.argmax(np.abs(self.signal))
         else:
             onset = self.onset
 
-        start_time = self.SP.log_envelop.start_time.value
+        start_time = self.SP.log_envelope.start_time.value
         while start_time > (onset / self.sr):
             start_time /= 10.
 
         start_exponent = int(np.log10(start_time))  # closest 10^x value for smooth graph
 
-        if self.SP.log_envelop.min_window.value is None:
+        if self.SP.log_envelope.min_window.value is None:
             min_window = 15 ** (start_exponent + 4)
             if min_window < 15:  # Value should at least be 10
                 min_window = 15
         else:
-            min_window = self.SP.log_envelop.min_window.value
+            min_window = self.SP.log_envelope.min_window.value
 
         # initial values
         current_exponent = start_exponent
@@ -1292,28 +1316,28 @@ class Signal(object):
         index = int(current_time * self.sr)  # Start at the specified time
         window = min_window  # number of samples per window
         overlap = window // 2
-        log_envelop = [0]
-        log_envelop_time = [0]  # First value for comparison
+        log_envelope = [0]
+        log_envelope_time = [0]  # First value for comparison
 
         while index + window <= len(self.signal):
 
-            while log_envelop_time[-1] < 10 ** (current_exponent + 1):
+            while log_envelope_time[-1] < 10 ** (current_exponent + 1):
                 if (index + window) < len(self.signal):
-                    log_envelop.append(np.max(np.abs(self.signal[index:index + window])))
+                    log_envelope.append(np.max(np.abs(self.signal[index:index + window])))
                     pt_idx = np.argmax(np.abs(self.signal[index:index + window]))
-                    log_envelop_time.append(self.time()[index + pt_idx])
+                    log_envelope_time.append(self.time()[index + pt_idx])
                     index += overlap
                 else:
                     break
 
-            if window * 10 < self.SP.log_envelop.max_window.value:
+            if window * 10 < self.SP.log_envelope.max_window.value:
                 window = window * 10
             else:
-                window = self.SP.log_envelop.max_window.value
+                window = self.SP.log_envelope.max_window.value
             overlap = window // 2
             current_exponent += 1
-        time, idxs = np.unique(log_envelop_time, return_index=True)
-        return np.array(log_envelop)[idxs], time
+        time, idxs = np.unique(log_envelope_time, return_index=True)
+        return np.array(log_envelope)[idxs], time
 
     def find_onset(self, verbose=True):
         """
@@ -1444,10 +1468,10 @@ class Signal(object):
 class Plot(object):
     """
         A class to handle all the plotting functions of the Signal and to allow a nice call signature :
-        Signal.plot.envelop()
+        Signal.plot.envelope()
 
         Supported plots are :
-        'signal', 'envelop', 'log envelop', 'fft', 'fft hist', 'peaks',
+        'signal', 'envelope', 'log envelope', 'fft', 'fft hist', 'peaks',
         'peak damping', 'time damping', 'integral'
     """
 
@@ -1461,8 +1485,8 @@ class Plot(object):
 
         # dictionary with methods and keywords
         self.method_dict = {'signal': self.signal,
-                            'envelop': self.envelop,
-                            'log envelop': self.log_envelop,
+                            'envelope': self.envelope,
+                            'log envelope': self.log_envelope,
                             'fft': self.fft,
                             'fft hist': self.fft_hist,
                             'peaks': self.peaks,
@@ -1499,31 +1523,31 @@ class Plot(object):
         plt.ylabel('amplitude [-1, 1]')
         plt.grid('on')
 
-    def envelop(self, **kwargs):
+    def envelope(self, **kwargs):
         """
-            Plots the envelope of the signal as amplitude vs time.
-            """
+        Plots the envelope of the signal as amplitude vs time.
+        """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        envelop_arr, envelop_time = self.parent.envelop()
-        plt.plot(envelop_time, envelop_arr, **plot_kwargs)
+        envelope_arr, envelope_time = self.parent.envelope()
+        plt.plot(envelope_time, envelope_arr, **plot_kwargs)
         plt.xlabel("time (s)")
         plt.ylabel("amplitude [0, 1]")
         plt.grid('on')
 
-    def log_envelop(self, **kwargs):
+    def log_envelope(self, **kwargs):
         """
-        Plots the signal envelop with logarithmic window widths on a logarithmic x-axis scale.
+        Plots the signal envelope with logarithmic window widths on a logarithmic x-axis scale.
         :param max_time: maximum time used for the x-axis in the plot (seconds)
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        log_envelop, log_envelop_time = self.parent.log_envelop()
+        log_envelope, log_envelope_time = self.parent.log_envelope()
 
-        if ('max_time' in kwargs.keys()) and (kwargs['max_time'] < log_envelop_time[-1]):
-            max_index = np.nonzero(log_envelop_time >= kwargs['max_time'])[0][0]
+        if ('max_time' in kwargs.keys()) and (kwargs['max_time'] < log_envelope_time[-1]):
+            max_index = np.nonzero(log_envelope_time >= kwargs['max_time'])[0][0]
         else:
-            max_index = len(log_envelop_time)
+            max_index = len(log_envelope_time)
 
-        plt.plot(log_envelop_time[:max_index], log_envelop[:max_index], **plot_kwargs)
+        plt.plot(log_envelope_time[:max_index], log_envelope[:max_index], **plot_kwargs)
         plt.xlabel("time (s)")
         plt.ylabel("amplitude [0, 1]")
         plt.xscale('log')
@@ -1677,21 +1701,21 @@ class Plot(object):
 
     def time_damping(self, **kwargs):
         """
-        Shows the signal envelop with the fitted negative exponential
+        Shows the signal envelope with the fitted negative exponential
         curve used to determine the time damping ratio of the signal.
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        # Get the envelop data
-        envelop, envelop_time = self.parent.normalize().envelop() 
+        # Get the envelope data
+        envelope, envelope_time = self.parent.normalize().envelope() 
 
         # First point is the maximum because e^-kt is strictly decreasing
-        first_index = np.argmax(envelop)
+        first_index = np.argmax(envelope)
 
         # The second point is the first point where the signal crosses the lower_threshold line
         second_point_thresh = self.parent.SP.damping.lower_threshold.value
         while True:
             try:
-                second_index = np.flatnonzero(envelop[first_index:] <= second_point_thresh)[0]
+                second_index = np.flatnonzero(envelope[first_index:] <= second_point_thresh)[0]
                 break
             except IndexError:
                 second_point_thresh *= 2
@@ -1705,8 +1729,8 @@ class Plot(object):
         zeta_guess = [-0.5]
 
         result = scipy.optimize.least_squares(residual_function, zeta_guess,
-                                              args=(envelop_time[first_index:second_index],
-                                                    envelop[first_index:second_index]))
+                                              args=(envelope_time[first_index:second_index],
+                                                    envelope[first_index:second_index]))
         # Get the zeta*omega constant
         zeta_omega = result.x[0]
 
@@ -1714,25 +1738,25 @@ class Plot(object):
         wd = 2 * np.pi * self.parent.fundamental()
 
         # Plot the two points used for the regression
-        plt.scatter(envelop_time[[first_index, first_index + second_index]], 
-                    envelop[[first_index, first_index + second_index]], color='r')
+        plt.scatter(envelope_time[[first_index, first_index + second_index]], 
+                    envelope[[first_index, first_index + second_index]], color='r')
 
         # get the current ax
         ax = plt.gca()
 
         # Plot the damping curve
-        ax.plot(envelop_time[first_index:second_index + first_index],
-                np.exp(zeta_omega * envelop_time[first_index:second_index + first_index]), 
+        ax.plot(envelope_time[first_index:second_index + first_index],
+                np.exp(zeta_omega * envelope_time[first_index:second_index + first_index]), 
                 c='k',
                 linestyle='--')
 
         plt.sca(ax)
         if 'alpha' not in plot_kwargs:
             plot_kwargs['alpha'] = 0.6
-        self.parent.normalize().plot.envelop(**plot_kwargs)
+        self.parent.normalize().plot.envelope(**plot_kwargs)
 
         if 'label' not in plot_kwargs.keys():
-            ax.legend(['damping curve', 'signal envelop'])
+            ax.legend(['damping curve', 'signal envelope'])
 
         title = 'Zeta : ' + str(np.around(-zeta_omega / wd, 5)) + ' Fundamental ' + \
                 str(np.around(self.parent.fundamental(), 0)) + 'Hz'
@@ -1740,24 +1764,24 @@ class Plot(object):
 
     def integral(self, **kwargs):
         """
-        Cumulative integral plot of the normalized signal log envelop
+        Cumulative integral plot of the normalized signal log envelope
 
         Represents the power distribution variation in time for the signal.
         This is a plot of the function $F(x)$ such as :
 
-        $ F(x) = \int_0^x e(x) dx $
+        $ F(x) = \int_0^x env(x) dx $
 
-        Where e(x) is the signal envelop.
+        Where e(x) is the signal envelope.
         """
         # sanitize the kwargs
         plot_kwargs = self.sanitize_kwargs(kwargs)
 
-        # Compute log envelop and log time
-        log_envelop, log_time = self.parent.normalize().log_envelop()
+        # Compute log envelope and log time
+        log_envelope, log_time = self.parent.normalize().log_envelope()
 
 
         # compute the cumulative integral
-        integral = [trapezoid(log_envelop[:i], log_time[:i]) for i in np.arange(2, len(log_envelop), 1)]
+        integral = [trapezoid(log_envelope[:i], log_time[:i]) for i in np.arange(2, len(log_envelope), 1)]
         integral /= np.max(integral)
 
         # plot the integral

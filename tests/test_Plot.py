@@ -38,17 +38,17 @@ class MyTestCase(unittest.TestCase):
         ax = plt.gca()
         self.assertTrue(hasattr(ax, 'lines'))
 
-    def test_Plot_envelop(self):
+    def test_Plot_envelope(self):
         """ Test the envelope Plot method"""
         parent = helpers_tests.get_rnd_test_Signal()
-        parent.plot.envelop()
+        parent.plot.envelope()
         ax = plt.gca()
         self.assertTrue(hasattr(ax, 'lines'))
 
-    def test_Plot_log_envelop(self):
-        """ Test the log envelop Plot method"""
+    def test_Plot_log_envelope(self):
+        """ Test the log envelope Plot method"""
         parent = helpers_tests.get_rnd_test_Signal()
-        parent.plot.log_envelop()
+        parent.plot.log_envelope()
         ax = plt.gca()
         self.assertTrue(len(ax.lines) > 0)
 

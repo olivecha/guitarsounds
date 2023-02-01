@@ -28,8 +28,8 @@ class guitarGUI(object):
 
     # List of plot methods
     plot_methods = [Plot.signal, 
-                    Plot.envelop, 
-                    Plot.log_envelop, 
+                    Plot.envelope, 
+                    Plot.log_envelope, 
                     Plot.fft, 
                     Plot.fft_hist, 
                     Plot.peaks, 
@@ -40,8 +40,8 @@ class guitarGUI(object):
 
     # Plot info dict
     plot_info_dict = {'signal': Plot.signal,
-                      'envelop': Plot.envelop,
-                      'log envelop': Plot.log_envelop,
+                      'envelope': Plot.envelope,
+                      'log envelope': Plot.log_envelope,
                       'fft': Plot.fft,
                       'fft hist': Plot.fft_hist,
                       'peaks': Plot.peaks,
@@ -57,8 +57,8 @@ class guitarGUI(object):
                ('Frequency bin plot', Sound.plot_freq_bins),
                ('Frequency bin histogram', Sound.bin_hist),
                ('Signal plot', Plot.signal),
-               ('Envelop plot', Plot.envelop),
-               ('Log-envelop plot', Plot.log_envelop),
+               ('envelope plot', Plot.envelope),
+               ('Log-envelope plot', Plot.log_envelope),
                ('Fourier transform plot', Plot.fft),
                ('Fourier transform histogram', Plot.fft_hist),
                ('Peaks plot', Plot.peaks),
@@ -127,8 +127,8 @@ class guitarGUI(object):
     # Plot type choice drop down
     options = [('', 1),
                ('Signal', 'signal'),
-               ('Envelop', 'envelop'),
-               ('Log Scale Envelop', 'log envelop'),
+               ('envelope', 'envelope'),
+               ('Log Scale envelope', 'log envelope'),
                ('Fourier Transform', 'fft'),
                ('Fourier Transform Histogram', 'fft hist'),
                ('Fourier Transform Peaks', 'peaks'),
@@ -190,7 +190,7 @@ class guitarGUI(object):
         self.dual_file_selector_2 = widgets.FileUpload(accept='.wav', multiple=False)
         self.mult_file_selector = widgets.FileUpload(accept='.wav', multiple=True)
 
-        # Dict with dropdown methods to display the menu associated to
+        # Dict with dropdown methods to display the menu associated with
         # the analysis
         self.first_level_drop_down = {'Single': self.single_drop_down,
                                       'Dual': self.dual_drop_down,
@@ -356,7 +356,7 @@ class guitarGUI(object):
 
         __ when interface.state = 'method choice' __
         - The "Ok" and "Go" buttons appears after the loading bar is done
-        - The dropdown corresponds to the methods associated to
+        - The dropdown corresponds to the methods associated with
         the analysis
         :param: b the ipywidget button object for which this method is executed when it is clicked
         """
@@ -766,7 +766,7 @@ class guitarGUI(object):
             # create the output
             output = widgets.Output(layout=self.out_layout)
 
-            # display the dropdown associated to the current analysis
+            # display the dropdown associated with the current analysis
             self.current_drop_down = self.first_level_drop_down[self.analysis]
             with output:
                 display(self.current_drop_down)

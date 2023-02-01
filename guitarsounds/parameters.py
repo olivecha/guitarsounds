@@ -80,17 +80,17 @@ def sound_parameters():
     onset_time = Parameter('onset_time', 0.005, 'Time interval used to detect the onset in seconds')
     onset = ParameterSet('onset', onset_delay, onset_time)
 
-    # Envelop
-    frame_size = Parameter('frame_size', 301, 'Number of samples in the array used to compute a point of the envelop')
-    hop_length = Parameter('hop_length', 200, 'Number of samples between envelop points')
-    envelop = ParameterSet('envelop', frame_size, hop_length)
+    # envelope
+    frame_size = Parameter('frame_size', 301, 'Number of samples in the array used to compute a point of the envelope')
+    hop_length = Parameter('hop_length', 200, 'Number of samples between envelope points')
+    envelope = ParameterSet('envelope', frame_size, hop_length)
 
-    # Log Envelop
-    start_time = Parameter('start_time', 0.01, 'First point in the log scale envelop')
-    min_window = Parameter('min_window', None, 'Minimum window size for the log envelop computed from start_time by '
+    # Log envelope
+    start_time = Parameter('start_time', 0.01, 'First point in the log scale envelope')
+    min_window = Parameter('min_window', None, 'Minimum window size for the log envelope computed from start_time by '
                                                'default')
-    max_window = Parameter('max_window', 2048, 'Maximum window size for the log envelop in samples')
-    log_envelop = ParameterSet('log_envelop', start_time, min_window, max_window)
+    max_window = Parameter('max_window', 2048, 'Maximum window size for the log envelope in samples')
+    log_envelope = ParameterSet('log_envelope', start_time, min_window, max_window)
 
     # Fundamental
     min_freq = Parameter('min_freq', 60, 'Minimum frequency for the fundamental finding algorithm (Hz)')
@@ -120,6 +120,6 @@ def sound_parameters():
     e = Parameter('E4', 2.5, 'Default trim time for the E4 note')
     trim_times = ParameterSet('trim', E, A, D, G, B, e)
 
-    SoundParameters = GlobalParameters(general, onset, envelop, log_envelop, fundamental, bins, damping, trim_times)
+    SoundParameters = GlobalParameters(general, onset, envelope, log_envelope, fundamental, bins, damping, trim_times)
 
     return SoundParameters
