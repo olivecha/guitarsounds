@@ -43,7 +43,7 @@ jobs:
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: Update docs
+        commit_message: auto update docs
         
   #  job to deploy to github pages
   deploy:
