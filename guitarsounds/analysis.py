@@ -717,8 +717,8 @@ class SoundPack(object):
             signal2 = self.sounds[1].bins[f_bin]
             log_envelope1, log_time1 = signal1.normalize().log_envelope()
             log_envelope2, log_time2 = signal2.normalize().log_envelope()
-            integral1 = np.array([trapezoid(log_envelope1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelop1), 1)])
-            integral2 = np.array([trapezoid(log_envelope2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelop2), 1)])
+            integral1 = np.array([trapezoid(log_envelope1[:i], log_time1[:i]) for i in np.arange(2, len(log_envelope1), 1)])
+            integral2 = np.array([trapezoid(log_envelope2[:i], log_time2[:i]) for i in np.arange(2, len(log_envelope2), 1)])
             time1 = log_time1[2:len(log_time1):1]
             time2 = log_time2[2:len(log_time2):1]
 
@@ -1128,7 +1128,7 @@ class Signal(object):
         :return: The damping ratio, a scalar.
         """
         # Get the envelope data
-        envelope, envelop_time = self.normalize().envelope() 
+        envelope, envelope_time = self.normalize().envelope() 
 
         # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelope)
@@ -1528,8 +1528,8 @@ class Plot(object):
         Plots the envelope of the signal as amplitude vs time.
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        envelope_arr, envelop_time = self.parent.envelope()
-        plt.plot(envelope_time, envelop_arr, **plot_kwargs)
+        envelope_arr, envelope_time = self.parent.envelope()
+        plt.plot(envelope_time, envelope_arr, **plot_kwargs)
         plt.xlabel("time (s)")
         plt.ylabel("amplitude [0, 1]")
         plt.grid('on')
@@ -1540,7 +1540,7 @@ class Plot(object):
         :param max_time: maximum time used for the x-axis in the plot (seconds)
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
-        log_envelope, log_envelop_time = self.parent.log_envelope()
+        log_envelope, log_envelope_time = self.parent.log_envelope()
 
         if ('max_time' in kwargs.keys()) and (kwargs['max_time'] < log_envelope_time[-1]):
             max_index = np.nonzero(log_envelope_time >= kwargs['max_time'])[0][0]
@@ -1706,7 +1706,7 @@ class Plot(object):
         """
         plot_kwargs = self.sanitize_kwargs(kwargs)
         # Get the envelope data
-        envelope, envelop_time = self.parent.normalize().envelope() 
+        envelope, envelope_time = self.parent.normalize().envelope() 
 
         # First point is the maximum because e^-kt is strictly decreasing
         first_index = np.argmax(envelope)
