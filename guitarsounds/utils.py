@@ -6,6 +6,7 @@ import scipy.integrate
 from scipy.interpolate import interp1d
 from scipy.optimize import least_squares
 import guitarsounds
+import ipywidgets as widgets
 from guitarsounds.parameters import sound_parameters
 
 # instantiation of the trim time interpolator
