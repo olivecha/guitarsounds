@@ -24,28 +24,45 @@ Classes
 class SoundPack(object):
     """
     A class to store and analyse multiple sounds
-    Some methods are only available for the case with two sounds
+    Some methods are only available for SoundPacks containing two sounds
     """
 
-    def __init__(self, *sounds, names=None, fundamentals=None, SoundParams=None, equalize_time=True):
+    def __init__(self, *sounds, names=None, fundamentals=None, 
+                 SoundParams=None, equalize_time=True):
         """
-        The SoundPack can be instantiated from existing Sound class instances, either in a list or as
-        multiple arguments
+        The SoundPack can be instantiated from existing Sound class instances, 
+        either in a list or as multiple arguments
+        The class can also handle the creation of Sound class instances if the 
+        arguments are filenames, either a list or multiple arguments.
 
-        The class can also handle the creation of Sound class instances if the arguments are filenames,
-        either a list or multiple arguments.
+        :param sounds: `guitarsounds.Sound` instaces or filenames either as 
+        multiple arguments or as a list
+        :param names: list of strings with the names of the sounds that will be 
+        used in the plot legend labels 
+        :param fundamentals: list of numbers corresponding to the known sound 
+        fundamental frequencies. 
+        :param SoundParams: `guitarsounds.SoundParams` instance used to get 
+        the parameters used in the computation of the sound attributes 
+        :param equalize_time: if True, all the sounds used to create the 
+        SoundPack are truncated to the length of the shortest sound. 
 
-        If the number of Sound contained is equal to two, the SoundPack will be 'dual' and the associated methods
-        will be available
+        If the number of Sound contained is equal to two, the SoundPack will 
+        be 'dual' and the associated methods will be available :
 
-        If it contains multiple sounds the SoundPack will be multiple and a reduced number of methods will work
+            - `SoundPack.compare_peaks`
+            - `SoundPack.fft_mirror`
+            - `SoundPack.fft_diff`
+            - `SoundPack.integral_compare`
 
-        A list of names as strings and fundamental frequencies can be specified when creating the SoundPack
+        If it contains multiple sounds the SoundPack will be multiple and a 
+        reduced number of methods will be available to call
 
-        If equalize_time is set to False, the contained sounds will not be trimmed to the same length.
+        If the fundamental frequency is supplied for each sound, the 
+        computation of certain features can be more efficient, such as the 
+        time damping computation or Hemlotz frequency computation.
 
         Examples :
-        ```
+        ```python
         Sound_Test = SoundPack('sounds/test1.wav', 'sounds/test2.wav', names=['A', 'B'], fundamentals = [134, 134])
 
         sounds = [sound1, sound2, sound3, sound4, sound5] # instances of the Sound class
@@ -177,16 +194,16 @@ class SoundPack(object):
         """
         Superimposed plot of all the sounds on one figure for a specific kind
 
+        :param kind: feature name passed to the `signal.plot()` method
+        :param kwargs: keywords arguments to pass to the `matplotlib.plot()` 
+        method
+        :return: None
+
         __ Multiple SoundPack Method __
         Plots a specific signal.plot for all sounds on the same figure
 
         Ex : SoundPack.plot('fft') plots the fft of all sounds on a single figure
         The color argument is set to none so that the plots have different colors
-        :param kind: feature name passed to the `signal.plot()` method
-        :param kwargs: keywords arguments to pass to the `matplotlib.plot()` 
-        method
-
-        :return: None
         """
         plt.figure(figsize=(8, 6))
         for sound in self.sounds:
@@ -202,15 +219,15 @@ class SoundPack(object):
         """
         Plots all the sounds on different figures to compare them for a specific kind
 
+        :param kind: feature name passed to the `signal.plot()` method
+        :param kwargs: keywords arguments to pass to the `matplotlib.plot()` 
+        method
+        :return: None
+
         __ Multiple SoundPack Method __
         Draws the same kind of plot on a different axis for each sound
         Example : `SoundPack.compare_plot('peaks')` with 4 Sounds will plot a 
         figure with 4 axes, with each a different 'peak' plot.
-
-        :param kind: kind argument passed to `Signal.plot()`
-        :param kwargs: key word arguments passed to `matplotlib.plot()`
-
-        :return: None
         """
         # if a dual SoundPack : only plot two big plots
         if self.kind == 'dual':
@@ -262,6 +279,8 @@ class SoundPack(object):
     def freq_bin_plot(self, f_bin='all'):
         """
         Plots the log envelope of specified frequency bins
+        :param f_bin: frequency bins to compare, Supported arguments are :
+        'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
 
         __ Multiple SoundPack Method __
         A function to compare signals decomposed frequency wise in the time 
@@ -270,9 +289,6 @@ class SoundPack(object):
 
         Example : SoundPack.freq_bin_plot(f_bin='mid') will plot the log-scale 
         envelope of the 'mid' signal of every sound in the SoundPack.
-
-        f_bin: frequency bins to compare, Supported arguments are :
-        'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
         """
 
         if f_bin == 'all':
@@ -315,10 +331,11 @@ class SoundPack(object):
 
     def fundamentals(self):
         """
-        __ Multiple Soundpack Method __
         Displays the fundamentals of every sound in the SoundPack
 
         :return: None
+
+        __ Multiple Soundpack Method __
         """
         names = np.array([sound.name for sound in self.sounds])
         fundamentals = np.array([np.around(sound.fundamental, 1) for sound in self.sounds])
@@ -334,12 +351,12 @@ class SoundPack(object):
         Normalized cumulative bin power plot for the frequency bins.
         See `Plot.integral` for more information.
 
+        :param f_bin: frequency bins to compare, Supported arguments are 
+        'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
+
         __ Multiple SoundPack Method __
         Plots the cumulative integral plot of specified frequency bins
         see help(Plot.integral)
-
-        :param f_bin: frequency bins to compare, Supported arguments are 
-        'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
         """
 
         if f_bin == 'all':
@@ -386,7 +403,12 @@ class SoundPack(object):
         The power is computed as the time integral of the signal, such as :
 
             $ P = \int_0^{t_{max}} sig(t) dt $
-
+        
+        __ Multiple SoundPack Method __
+        The sounds are always normalized before computing the power. Because 
+        the signal amplitude is normalized between -1 and 1, the power value 
+        is adimentional, and can only be used to compare two sounds between  
+        eachother.
         """
         # Bin power distribution table
         bin_strings = self.bin_strings
@@ -415,12 +437,15 @@ class SoundPack(object):
         """
         Histogram of the frequency bin power for multiple sounds
 
-        frequency bin power is computed as the integral of the bin envelope, 
-        such as 
+        The power is computed as the time integral of the signal, such as :
 
-            $ P = \int_0^{t_{max}} env(t) dt $
-
-
+            $ P = \int_0^{t_{max}} sig(t) dt $
+        
+        __ Multiple SoundPack Method __
+        The sounds are always normalized before computing the power. Because 
+        the signal amplitude is normalized between -1 and 1, the power value 
+        is adimentional, and can only be used to compare two sounds between  
+        eachother.
         """
         # Compute the bin powers
         bin_strings = self.bin_strings
@@ -468,6 +493,8 @@ class SoundPack(object):
         """
         Listen to all the sounds in the SoundPack inside the Jupyter Notebook 
         environment
+
+        __ Multiple SoundPack Method __
         """
         for sound in self.sounds:
             sound.signal.listen()
@@ -554,7 +581,7 @@ class SoundPack(object):
             ax.set_xlabel('frequency (Hz)')
             ax.set_ylabel('mirror amplitude (0-1)')
         else:
-            print('Unsupported for multiple sounds SoundPacks')
+            raise ValueError('Unsupported for multiple sounds SoundPacks')
 
     def fft_mirror(self):
         """
@@ -590,15 +617,15 @@ class SoundPack(object):
         """
         Plot the difference between the spectral distribution in the two sounds
 
-        __ Dual SoundPack Method __
-        Compare the Fourier Transform of two sounds by computing the differences of the octave bins heights.
-        The two FTs are superimposed on the first plot to show differences
-        The difference between the two FTs is plotted on the second plot
-
         :param fraction: octave fraction value used to compute the frequency bins A higher number will show
         a more precise comparison, but conclusions may be harder to draw.
         :param ticks:  If equal to 'bins' the frequency bins intervals are used as X axis ticks
         :return: None
+
+        __ Dual SoundPack Method __
+        Compare the Fourier Transform of two sounds by computing the differences of the octave bins heights.
+        The two FTs are superimposed on the first plot to show differences
+        The difference between the two FTs is plotted on the second plot
         """
         if self.kind == 'dual':
             # Separate the sounds
@@ -657,12 +684,13 @@ class SoundPack(object):
         """
           Cumulative bin envelope integral comparison for two signals
 
+          :param f_bin: frequency bins to compare, Supported arguments are :
+          'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
+          :return: None
+
           __ Dual SoundPack Method __
           Plots the cumulative integral plot of specified frequency bins
           and their difference as surfaces
-
-          f_bin: frequency bins to compare, Supported arguments are :
-          'all', 'bass', 'mid', 'highmid', 'uppermid', 'presence', 'brillance'
           """
 
         # Case when plotting all the frequency bins
