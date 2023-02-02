@@ -142,7 +142,7 @@ class SoundPack(object):
         """
         # Make the default name list from sound filenames if none is supplied
         if (names is None) or (len(names) != len(sound_files)):
-            names = [file[:-4] for file in sound_files]  # remove the .wav
+            names = [os.path.split(file)[-1][:-4] for file in sound_files]  # remove the .wav
 
         # If the fundamentals are not supplied or mismatch in number None is used
         if (fundamentals is None) or (len(fundamentals) != len(sound_files)):
