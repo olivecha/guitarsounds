@@ -4,6 +4,7 @@ matplotlib
 numpy
 scipy
 tabulate
-ipywidgets
-
+ipywidgets < 8.0.0
+pytest
+jupyter
 
