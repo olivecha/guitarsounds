@@ -23,17 +23,17 @@ bibliography: paper.bib
 # Summary
 
 The `guitarsounds` Python package can be used to efficiently visualize relevant features of harmonic sounds and is mainly developed to compare musical instrument design iterations. 
-`guitarsounds` is wrapped around the implementation of common signal processing features, which are manly taken from `numpy` [@harris_array_2020] and `scipy` [@virtanen_scipy_2020]. 
+`guitarsounds` is wrapped around the implementation of common signal processing features, which are mainly taken from `numpy` [@harris_array_2020] and `scipy` [@virtanen_scipy_2020]. 
 The signal processing features are augmented to perform the comparative analysis of transient harmonic sounds.
 Such sounds are defined as having a clear onset, and a frequency-amplitude distribution clearly concentrated around partials. 
 Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano, or a percussion instrument. 
 
 The `guitarsounds` package is divided in two main components. 
-First, the package is developped around a convenient object-oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the user's needs. 
+First, the package is developed around a convenient object-oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the user's needs. 
 Then, a graphical user interface (GUI) makes most of the features of `guitarsounds` available to users less knowledgeable in programming. 
 `guitarsounds` is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
 
-The main features of guitarsounds are: 
+The main features of `guitarsounds` are: 
 
 - Automate the loading, conditioning and normalization of multiple sound files to meaningfully compare their features.
 - Visualize sounds features relevant to musical instrument design, such as: 
@@ -43,7 +43,7 @@ The main features of guitarsounds are:
 - Divide sounds in frequency bands to analyze variations in temporal behaviour for different frequency ranges.
 - Extract the Fourier transform peaks of a harmonic signal using a custom peak finding algorithm.
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
-- Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing acess to lower level features and handling the differences between sound files, such as the file sample rate.
+- Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing access to lower level features and handling the differences between sound files, such as the file sample rate.
 
 Specifically, the API provides 5 classes nested together : `SoundPack`, `Sound`, `Signal` and `Plot`. 
 Starting from the innermost class, the `Plot` class handles the low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
@@ -63,7 +63,7 @@ By plotting this feature for the same note played on two instruments, the dynami
 A code snippet comparing the log-time envelope of two sounds is presented below with the associated output in \autoref{fig:log-comp}.
 In the following code, the `SoundPack` object is first instantiated from the specified sound files. 
 For each file, a `Sound` class instance is created and conditioned. 
-In the conditioning procedure, the signal is first resampled to have a sample rate equal to 22050 Hz, this is important to ensure all the features compared between sounds are computed using the same sample rate. 
+In the conditioning procedure, the signal is first resampled to have a sample rate equal to 22050 Hz. This is important to ensure all the features compared between sounds are computed using the same sample rate. 
 The sound is then trimmed so that the beginning of the onset is at 100 ms, as can be seen on \autoref{fig:log-comp}. 
 To ensure compared sounds have the same length, the ends of the sounds are trimmed so that each sound has the same number of samples as the shortest sound. 
 The `guitarsounds` package relies on `matplotlib` [@hunter_matplotlib_2007] for all its vizualisation features. Thus, users familiar with `matplotlib` objects can tune the figures created by `guitarsounds` to their needs.
@@ -89,17 +89,17 @@ plt.gcd().savefig("log_envelope_compare") # To save the figure
 
 # Statement of need
 
-`guitarsounds` was developped to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs using custom sound features.
-The `guitarsounds` package was used in previous academic work (in press) to investigate the difference between two guitar designed using an innovative numerical prototyping method based on topological optimization. 
-In the scope of this research, guitarsounds allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. 
+`guitarsounds` was developed to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs using custom sound features.
+The `guitarsounds` package was used in previous academic work (in press) to investigate the difference between two guitar both designed using an innovative numerical prototyping method based on topological optimization. 
+In the scope of this research, `guitarsounds` allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. 
 This feature is related to the instrument's tone [@sumi_classical_2008], and was used to study the differences between the two guitar designs.
  `guitarsounds` is also used in ongoing research at the Bruand lutherie school to manage sound data in a project where guitar sounds are generated with random values for specific features, to provide data for a psycho-acoustic study. 
-The `guitarsounds` API is also used to give an introduction to programming for data analysis to the school's students and in the teaching activities, as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Hemlotz cavity frequency of an instrument. 
+The `guitarsounds` API is also used to give an introduction to programming for data analysis to the school's students and in the teaching activities, as a tool to visualize the physical phenomena involved in the sounds produced by guitars, such as the Helmholtz cavity frequency of an instrument. 
 The GUI was included in the package as knowledge or interest in programming isn't expected in the luthier's training. 
 A screen capture of the GUI is shown in \autoref{fig:gui}. 
 
 The features of `guitarsounds` differs from existing packages in its ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a Python data visualization stack where the sound specific needs can be handled by `guitarsounds`. 
-There exists an overlap between `guitarsounds`, and the `librosa` [@Librosa] Python package for music analysis, however `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning application and lacks features tailored to harmonic sound analysis and  integrated comparison of sounds. 
+There exists an overlap between `guitarsounds`, and the `librosa` [@Librosa] Python package for music analysis, however `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning applications and lacks features tailored to harmonic sound analysis and  integrated comparison of sounds. 
 The  `librosa` package is also aimed at an audience with a more developed knowledge of Python programming.
 
 ![Graphical user interface in the Jupyter Notebook environment.\label{fig:gui}](figuregui.png){width=50%}
