@@ -304,8 +304,8 @@ class SoundPack(object):
                 plt.xscale('log')
                 plt.legend()
                 son = self.sounds[-1]
-                title0 = ' ' + key + ' : ' + str(int(son.bins[key].range[0])) + ' - ' + str(
-                         int(son.bins[key].range[1])) + ' Hz, '
+                title0 = ' ' + key + ' : ' + str(int(son.bins[key].freq_range[0])) + ' - ' + str(
+                         int(son.bins[key].freq_range[1])) + ' Hz, '
                 title1 = 'Norm. Factors : '
                 title2 = 'x, '.join(str(np.around(norm_factor, 0)) for norm_factor in norm_factors)
                 plt.title(title0 + title1 + title2)
@@ -320,8 +320,8 @@ class SoundPack(object):
             plt.xscale('log')
             plt.legend()
             son = self.sounds[-1]
-            title0 = ' ' + f_bin + ' : ' + str(int(son.bins[f_bin].range[0])) + ' - ' + str(
-                int(son.bins[f_bin].range[1])) + ' Hz, '
+            title0 = ' ' + f_bin + ' : ' + str(int(son.bins[f_bin].freq_range[0])) + ' - ' + str(
+                int(son.bins[f_bin].freq_range[1])) + ' Hz, '
             title1 = 'Norm. Factors : '
             title2 = 'x, '.join(str(np.around(norm_factor, 0)) for norm_factor in norm_factors)
             plt.title(title0 + title1 + title2)
@@ -371,8 +371,8 @@ class SoundPack(object):
                     sound.bins[key].plot.integral(label=sound.name)
                 plt.legend()
                 sound = self.sounds[-1]
-                title0 = ' ' + key + ' : ' + str(int(sound.bins[key].range[0])) + ' - ' + str(
-                    int(sound.bins[key].range[1])) + ' Hz, '
+                title0 = ' ' + key + ' : ' + str(int(sound.bins[key].freq_range[0])) + ' - ' + str(
+                    int(sound.bins[key].freq_range[1])) + ' Hz, '
                 title1 = 'Norm. Factors : '
                 title2 = 'x, '.join(str(np.around(norm_factor, 0)) for norm_factor in norm_factors)
                 plt.title(title0 + title1 + title2)
@@ -387,8 +387,8 @@ class SoundPack(object):
                 sound.bins[f_bin].plot.integral(label=sound.name)
             plt.legend()
             sound = self.sounds[-1]
-            title0 = ' ' + f_bin + ' : ' + str(int(sound.bins[f_bin].range[0])) + ' - ' + str(
-                int(sound.bins[f_bin].range[1])) + ' Hz, '
+            title0 = ' ' + f_bin + ' : ' + str(int(sound.bins[f_bin].freq_range[0])) + ' - ' + str(
+                int(sound.bins[f_bin].freq_range[1])) + ' Hz, '
             title1 = 'Norm. Factors : '
             title2 = 'x, '.join(str(np.around(norm_factor, 0)) for norm_factor in norm_factors)
             plt.title(title0 + title1 + title2)
@@ -779,31 +779,33 @@ class SoundPack(object):
 
 class Sound(object):
     """
-    A class to store audio signals obtained from a sound and compare them
+    A class to store audio signals corresponding to a sound and compute 
+    features on them.
     """
 
-    def __init__(self, data, name='', condition=True, auto_trim=False,
-                 use_raw_signal=False, normalize_raw_signal=False, 
-                 fundamental=None, SoundParams=None):
+    def __init__(self, data, name='', fundamental=None, condition=True, 
+                 auto_trim=False, use_raw_signal=False, 
+                 normalize_raw_signal=False, SoundParams=None):
         """
-        Creates a Sound instance from a .wav file, name as a string and 
-        fundamental frequency value can be user specified.
+        Creates a Sound instance from a .wav file. A string can be supplied to
+        give a name to the sound. The fundamental frequency value can be 
+        specified to increase the accuracy of certain features.
 
-        :param data: data path to the .wav data
-        :param name: Sound instance name to use in plot legend and titles
+        :param data: path to the .wav data file
+        :param name: name to use in plot legend and titles
+        :param fundamental: Fundamental frequency value if None the value is 
+        estimated from the Fourier transform of the sound.
         :param condition: Bool, whether to condition or not the Sound instance 
         if `True`, the `Sound` instance is conditioned in the constructor
         :param auto_trim: Bool, whether to trim the end of the sound or not 
-        according to predefined sound length correlated to the fundamental.
+        according to a predefined sound length determined based on the 
+        fundamental frequency of the sound.
         :param use_raw_signal: Do not condition the `Sound` and instead 
-        use the raw signal
+        use the raw signal read from the file.
         :param normalize_raw_signal: If `use_raw_signal` is `True`, setting 
         `normalize_raw_signal` to `True` will normalize the raw signal before it
-        is used in the `Sound` class
-        :param fundamental: Fundamental frequency value if None the value is 
-        estimated
-        from the FFT (see `Signal.fundamental`).
-        :param SoundParams: SoundParameters to use in the Sound instance
+        is used in the `Sound` class.
+        :param SoundParams: SoundParameters to use with the Sound instance
         """
         # create a reference of the parameters
         if SoundParams is None:
@@ -854,11 +856,13 @@ class Sound(object):
 
     def condition(self, verbose=True, return_self=False, auto_trim=False, resample=True):
         """
-        A method conditioning the Sound instance.
-        - Trimming to just before the onset
-        :param verbose: if True problem with trimming are reported
-        :param return_self: If True the method returns the conditioned Sound instance
-        :param auto_trim: If True, the sound is trimmed to a fixed length according to its fundamental
+        A method conditioning the Sound instance by trimming it 0.1s before the 
+        onset and dividing it into frequency bins.
+        :param verbose: if True problems with the trimming process are reported
+        :param return_self: If True the method returns the conditioned Sound 
+        instance
+        :param auto_trim: If True, the sound is trimmed to a fixed length 
+        according to its fundamental
         :param resample: If True, the signal is resampled to 22050 Hz
         :return: a conditioned Sound instance if `return_self = True`
         """
@@ -881,11 +885,11 @@ class Sound(object):
 
     def use_raw_signal(self, normalized=False, return_self=False):
         """
-        Assigns the raw signal to the `signal` attribute of the Sound instance to
-        analyze it
+        Assigns the raw signal to the `signal` attribute of the Sound instance.
         :param normalized: if True, the raw signal is first normalized
-        :param return_self: if True the Sound instance is return after the signal attribute is defined
-        :return: None, self if return_self is True
+        :param return_self: if True the Sound instance is return after the 
+        signal attribute is defined
+        :return: self if return_self is True, else None
         """
         if normalized:
             self.signal = self.raw_signal.normalize()
@@ -897,12 +901,17 @@ class Sound(object):
 
     def bin_divide(self):
         """
-        Calls the `.make_freq_bins` method of the signal to create the signals associated
-        to the frequency bins. The bins are all stored in the `.bin` attribute and also as
-        their names (Ex: `Sound.mid` contains the mid signal).
+        Calls the `.make_freq_bins` method of the signal to create the 
+        signals instances associated to the frequency bins. 
         :return: None
+
+        The bins are all stored in the `.bin` attribute and also as
+        their names (Ex: `Sound.mid` contains the mid signal). The cutoff 
+        frequencies of the different bins can be changed in the 
+        `SoundParameters` instance of the Sound under the attribute `.SP`.
+        See guitarsounds.parameters.sound_parameters().bins.info() for the
+        frequency bin intervals.
         """
-        """ a method to divide the main signal into frequency bins"""
         # divide in frequency bins
         self.bins = self.signal.make_freq_bins()
         # unpack the bins
@@ -910,10 +919,11 @@ class Sound(object):
 
     def trim_signal(self, verbose=True):
         """
-        A method to trim the signal to a specific time before the onset. The time value
-        can be changed in the SoundParameters.
+        A method to trim the signal to a specific time before the onset. 
         :param verbose: if True problems encountered are printed to the terminal
         :return: None
+
+        The default time value of 0.1s can be changed in the SoundParameters.
         """
         # Trim the signal in the signal class
         self.trimmed_signal = self.raw_signal.trim_onset(verbose=verbose)
@@ -921,12 +931,9 @@ class Sound(object):
     def listen_freq_bins(self):
         """
         Method to listen to all the frequency bins of a sound
+        :return: None
 
-        The bins signals are obtained by filtering the sound signal
-        with band pass filters.
-
-        See guitarsounds.parameters.sound_parameters().bins.info() for the
-        frequency bin intervals.
+        See `help(Sound.bin_divide)` for more information.
         """
         for key in self.bins.keys():
             print(key)
@@ -935,6 +942,7 @@ class Sound(object):
     def plot_freq_bins(self, bins='all'):
         """
         Method to plot all the frequency bins logarithmic envelopes of a sound
+        :return: None
 
         The parameter `bins` allows choosing specific frequency bins to plot
         By default the function plots all the bins
@@ -944,6 +952,9 @@ class Sound(object):
         Example :
         `Sound.plot_freq_bins(bins='all')` plots all the frequency bins
         `Sound.plot_freq_bins(bins=['bass', 'mid'])` plots the bass and mid bins
+
+        For more information on the logarithmic envelope, see :
+            `help(Signal.log_envelope)`
         """
 
         if bins[0] == 'all':
@@ -953,8 +964,10 @@ class Sound(object):
             bins = self.bins.keys()
 
         for key in bins:
-            lab = key + ' : ' + str(int(self.bins[key].range[0])) + ' - ' + str(int(self.bins[key].range[1])) + ' Hz'
-            self.bins[key].old_plot('log envelope', label=lab)
+            range_start = str(int(self.bins[key].freq_range[0])) 
+            range_end = str(int(self.bins[key].freq_range[1])) 
+            lab = key + ' : ' + range_start + ' - ' + range_end + ' Hz'
+            self.bins[key].plot.log_envelope(label=lab)
 
         plt.xscale('log')
         plt.yscale('log')
@@ -965,7 +978,9 @@ class Sound(object):
         Prints a table with peak damping values and peak frequency values
 
         The peaks are found with the `signal.peaks()` function and the damping
-        values are computed with the half power bandwidth method.
+        values are computed using the half power bandwidth method.
+
+        see `help(Signal.peak_damping)` for more information.
         """
         peak_indexes = self.signal.peaks()
         frequencies = self.signal.fft_frequencies()[peak_indexes]
@@ -977,9 +992,11 @@ class Sound(object):
         """
         Histogram of the frequency bin power
 
-        frequency bin power is computed as the integral of the bin envelope.
+        Frequency bin power is computed as the integral of the bin envelope.
+        The power value is non dimensional and normalized. 
+
         See guitarsounds.parameters.sound_parameters().bins.info() for the
-        frequency bin intervals.
+        frequency bin frequency intervals.
         """
         # Compute the bin powers
         bin_strings = list(self.bins.keys())
@@ -1009,24 +1026,25 @@ class Signal(object):
     The signal is never changed in the class, when transformations are made, a new instance is returned.
     """
 
-    def __init__(self, signal, sr, SoundParam, freq_range=None):
+    def __init__(self, signal, sr, SoundParam=None, freq_range=None):
         """ 
-        Create a Signal class from a vector of samples and a sample rate
+        Create a Signal class from a vector of samples and a sample rate.
+
         :param signal: vector containing the signal samples
         :param sr: sample rate of the signal (Hz)
         :param SoundParam: Sound Parameter instance to use with the signal
-        :para freq_range: Frequency range to use with the signal.
-        This is the maximum frequency used when computing Fourier transform
-        peaks and plotting Fourier transform related plots.
         """
-        self.SP = SoundParam
+        if SoundParam is None:
+            self.SP = sound_parameters()
+        else:
+            self.SP = SoundParam
         self.onset = None
         self.signal = signal
         self.sr = sr
-        self.range = freq_range
         self.plot = Plot()
         self.plot.parent = self
         self.norm_factor = None
+        self.freq_range = freq_range
 
     def time(self):
         """
@@ -1041,12 +1059,13 @@ class Signal(object):
     def listen(self):
         """
         Method to listen the sound signal in a Jupyter Notebook
+        :return: None
 
         Listening to the sounds imported in the analysis tool allows the
         user to validate if the sound was well trimmed and filtered
 
         A temporary file is created, the IPython display Audio function is
-        called on it and then the file is removed
+        called on it, and then the file is removed.
         """
         file = 'temp.wav'
         write(file, self.signal, self.sr)
@@ -1064,17 +1083,25 @@ class Signal(object):
 
     def fft(self):
         """
-        Computes the Fast Fourier Transform of the signal and returns the vector.
+        Computes the Fast Fourier Transform of the signal and returns the 
+        normalized amplitude vector.
         :return: Fast Fourier Transform amplitude values in a numpy array
         """
         fft = np.fft.fft(self.signal)
-        fft = np.abs(fft[:int(len(fft) // 2)])  # Only the symmetric part of the absolute value
+        # Only the symmetric part of the absolute value
+        fft = np.abs(fft[:int(len(fft) // 2)])  
         return fft / np.max(fft)
 
     def spectral_centroid(self):
         """
         Spectral centroid of the frequency content of the signal
         :return: Spectral centroid of the signal (float)
+
+        The spectral centroid corresponds to the frequency where the area
+        under the fourier transform curve is equal on both sides.
+        This feature is usefull in determining the global frequency content
+        of a sound. A sound having an overall higher spectral centroid would
+        be perceived as higher, or brighter.
         """
         SC = np.sum(self.fft() * self.fft_frequencies()) / np.sum(self.fft())
         return SC
@@ -1082,7 +1109,8 @@ class Signal(object):
 
     def peaks(self, max_freq=None, height=False, result=False):
         """
-        Computes the harmonic peaks indexes from the FFT of the signal
+        Computes the harmonic peaks indexes from the Fourier Transform of 
+        the signal.
         :param max_freq: Supply a max frequency value overriding the one in
         guitarsounds_parameters
         :param height: if True the height threshold is returned to be used
@@ -1090,6 +1118,12 @@ class Signal(object):
         :param result: if True the Scipy peak finding results dictionary
         is returned
         :return: peak indexes
+
+        Because the sound is assumed to be harmonic, the Fourier transform 
+        peaks should be positionned at frequencies $nf$, where $f$ is the 
+        fundamental frequency of the signal. The peak data is usefull to 
+        compare the frequency content of two sounds, as in 
+        `Sound.compare_peaks`.
         """
         # Replace None by the default value
         if max_freq is None:
@@ -1151,9 +1185,11 @@ class Signal(object):
 
     def time_damping(self):
         """
-        Computes the time wise damping ratio of the signal by fitting a negative exponential curve
+        Computes the time wise damping ratio of the signal 
+        :return: The damping ratio (float).
+
+        by fitting a negative exponential curve 
         to the Signal envelope and computing the ratio with the Signal fundamental frequency.
-        :return: The damping ratio, a scalar.
         """
         # Get the envelope data
         envelope, envelope_time = self.normalize().envelope() 
