@@ -46,6 +46,7 @@ The main features of `guitarsounds` are:
 - Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing access to lower level features and handling the differences between sound files, such as the file sample rate.
 
 Specifically, the API provides 4 classes nested together : 
+
 - `Plot`: Low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
 - `Signal`: Store the data of an array corresponding to a single signal. For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. The `Signal` class contains all the features relying only on the data of a single sound signal, such as the computation of the envelope.
 - `Sound`: Store all the information corresponding to a single sound file. When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands.
