@@ -45,20 +45,13 @@ The main features of `guitarsounds` are:
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
 - Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing access to lower level features and handling the differences between sound files, such as the file sample rate.
 
-Specifically, the API provides 5 classes nested together : `SoundPack`, `Sound`, `Signal` and `Plot`. 
-Starting from the innermost class, the `Plot` class handles the low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
-The `Signal` class is used to store the data of an array corresponding to a single signal. 
-For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. 
-An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. 
-The `Signal` class contains all the features relying only on the data of a single sound signal, such as the computation of the envelope. 
-The `Sound` class is used to store all the information corresponding to a single sound file. 
-When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. 
-The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands. 
-Finally, the `SoundPack` class contains multiple `Sound` class instances and provides the features used to compare the data between different sound files. 
-The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. 
-As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
-
-As an example, the log-time envelope, a feature representing the amplitude of a sound with a higher definition in time at the start of the sound, can be computed using `guitarsounds`. 
+Specifically, the API provides 4 classes nested together : 
+- `Plot`: Low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
+- `Signal`: Store the data of an array corresponding to a single signal. For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. The `Signal` class contains all the features relying only on the data of a single sound signal, such as the computation of the envelope.
+- `Sound`: Store all the information corresponding to a single sound file. When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands.
+- `SoundPack`: Contain multiple `Sound` class instances and provides the features used to compare the data between different sound files. The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
+ 
+To illustrate the use of `guitarsounds`, the log-time envelope, a feature representing the amplitude of a sound with a higher definition in time at the start of the sound, can be computed using `guitarsounds`. 
 By plotting this feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific excitation frequency.
 A code snippet comparing the log-time envelope of two sounds is presented below with the associated output in \autoref{fig:log-comp}.
 In the following code, the `SoundPack` object is first instantiated from the specified sound files. 
@@ -90,7 +83,7 @@ plt.gcd().savefig("log_envelope_compare") # To save the figure
 # Statement of need
 
 `guitarsounds` was developed to meet the needs of the Bruand lutherie school, more precisely as a tool to visualize and compare the sounds of different guitar designs using custom sound features.
-The `guitarsounds` package was used in previous academic work (in press) to investigate the difference between two guitar both designed using an innovative numerical prototyping method based on topological optimization. 
+The `guitarsounds` package was used in previous academic work (in press) to investigate the difference between two guitars both designed using an innovative numerical prototyping method based on topological optimization. 
 In the scope of this research, `guitarsounds` allowed the measurement of specific sound features such as the slope of the peaks in the signal Fourier transform, computed using a linear regression. 
 This feature is related to the instrument's tone [@sumi_classical_2008], and was used to study the differences between the two guitar designs.
  `guitarsounds` is also used in ongoing research at the Bruand lutherie school to manage sound data in a project where guitar sounds are generated with random values for specific features, to provide data for a psycho-acoustic study. 
