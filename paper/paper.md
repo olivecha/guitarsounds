@@ -1,5 +1,5 @@
 ---
-title: 'guitarsounds : A Python package to visualize harmonic sounds for musical instrument design'
+title: 'guitarsounds: A Python package to visualize harmonic sounds for musical instrument design'
 tags:
   - Python
   - signal processing
@@ -29,11 +29,11 @@ Such sounds are defined as having a clear onset, and a frequency-amplitude distr
 Consequently, while the package is named `guitarsounds`, its analysis framework can be used with any harmonic sound, such as those produced by a piano, or a percussion instrument. 
 
 The `guitarsounds` package is divided in two main components. 
-First, the package is developed around a convenient object-oriented Application Programming Interface (API) which can be used to extract features from sounds and visualize them according to the user's needs. 
+First, the package is developed around a convenient object-oriented Application Programming Interface (API) that can be used to extract features from sounds and visualize them according to the user's needs. 
 Then, a graphical user interface (GUI) makes most of the features of `guitarsounds` available to users less knowledgeable in programming. 
-`guitarsounds` is meant to be used with the Jupyter Notebook interface as to allow interactively exploring the sound data, either with the API or the GUI.
+`guitarsounds` is meant to be used with the Jupyter Notebook interface to allow interactively exploring the sound data, either with the API or the GUI.
 
-The main features of `guitarsounds` are: 
+The main features of `guitarsounds` are to: 
 
 - Automate the loading, conditioning and normalization of multiple sound files to meaningfully compare their features.
 - Visualize sounds features relevant to musical instrument design, such as: 
@@ -45,12 +45,12 @@ The main features of `guitarsounds` are:
 - Extract numerical values for certain features such as the Helmholtz cavity frequency of a guitar.
 - Provide an easy-to-use signal processing API to compute new features meeting specific needs by providing access to lower level features and handling the differences between sound files, such as the file sample rate.
 
-Specifically, the API provides 4 classes nested together : 
+Specifically, the API provides four classes nested together: 
 
-- `Plot`: Low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
-- `Signal`: Store the data of an array corresponding to a single signal. For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. The `Signal` class contains all the features relying only on the data of a single sound signal, such as the computation of the envelope.
-- `Sound`: Store all the information corresponding to a single sound file. When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering or normalizing the sound signal. The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands.
-- `SoundPack`: Contain multiple `Sound` class instances and provides the features used to compare the data between different sound files. The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
+- `Plot`: Provides low level plotting of specific features, such as plotting the Fast Fourier Transform (FFT) of a sound file.
+- `Signal`: Stores the data of an array corresponding to a single signal. For example, if a sound file is read and filtered, the array resulting from the filtering operation will be stored in a new instance of the `Signal` class. An instance of the `Plot` class is constructed for each `Signal` class instance and stored as an attribute of the `Signal` class. The `Signal` class contains all the features relying only on the data of a single sound signal, such as the computation of the envelope.
+- `Sound`: Stores all the information corresponding to a single sound file. When a `.wav` file is read using `guitarsounds`, all the processing is handled by the `Sound` class, such as truncating, filtering, or normalizing the sound signal. The `Sound` class provides the features relying on more than one `Signal` instance, but still using the information from a single sound file, such as the power distribution of a sound across different frequency bands.
+- `SoundPack`: Contains multiple `Sound` class instances and provides the features used to compare the data between different sound files. The `SoundPack` methods are divided between methods developed to compare two sounds and methods developed to compare an arbitrary amount of sounds. As an example, the method plotting the FFT of two sounds in a mirror configuration can only be called if the `SoundPack` was constructed using exactly two sounds, whereas the method showing a table of the different sound fundamental frequencies can be called for a `SoundPack` instance created using an arbitrary number of `Sounds`.
  
 To illustrate the use of `guitarsounds`, the log-time envelope, a feature representing the amplitude of a sound with a higher definition in time at the start of the sound, can be computed using `guitarsounds`. 
 By plotting this feature for the same note played on two instruments, the dynamic response of the instruments can be compared for a specific excitation frequency.
@@ -92,8 +92,8 @@ The `guitarsounds` API is also used to give an introduction to programming for d
 The GUI was included in the package as knowledge or interest in programming isn't expected in the luthier's training. 
 A screen capture of the GUI is shown in \autoref{fig:gui}. 
 
-The features of `guitarsounds` differs from existing packages in its ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a Python data visualization stack where the sound specific needs can be handled by `guitarsounds`. 
-There exists an overlap between `guitarsounds`, and the `librosa` [@Librosa] Python package for music analysis, however `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning applications and lacks features tailored to harmonic sound analysis and  integrated comparison of sounds. 
+The features of `guitarsounds` differ from those of existing packages in their ability to be both used alone to produce decent figures with a minimal number of lines of code and as a tool in a Python data visualization stack where the sound specific needs can be handled by `guitarsounds`. 
+There exists an overlap between `guitarsounds` and the `librosa` [@Librosa] Python package for music analysis; however, `librosa` is not a dependency of `guitarsounds`, and the latter is more focused on feature extraction for machine learning applications and lacks features tailored to harmonic sound analysis and  integrated comparison of sounds. 
 The  `librosa` package is also aimed at an audience with a more developed knowledge of Python programming.
 
 ![Graphical user interface in the Jupyter Notebook environment.\label{fig:gui}](figuregui.png){width=50%}
