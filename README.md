@@ -3,7 +3,7 @@
 [![pytest](https://github.com/olivecha/guitarsounds/actions/workflows/python-app.yml/badge.svg)](https://github.com/olivecha/guitarsounds/actions/workflows/python-app.yml) 
 
 A python package to analyse guitar sounds. Developed as a lutherie research analysis tool with the [Bruand Lutherie School](https://bruand.com/). 
-The guitarsound python package documentation is available at [documentation](https://olivecha.github.io/guitarsounds/) and a Jupyter Notebook tutorial for the API is available [here](https://github.com/olivecha/guitarsounds/blob/main/docs/API_Tutorial.ipynb).
+The guitarsound python package documentation is available at [documentation](https://olivecha.github.io/guitarsounds/guitarsounds.html) and a Jupyter Notebook tutorial for the API is available [here](https://github.com/olivecha/guitarsounds/blob/JOSS-Paper/docs/API_Tutorial.ipynb).
 
 ## Motivation
 

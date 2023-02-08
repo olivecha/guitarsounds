@@ -6,5 +6,4 @@ scipy
 tabulate
 ipywidgets < 8.0.0
 pytest
-jupyter
 
